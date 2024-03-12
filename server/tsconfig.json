@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "baseUrl": ".",
+    "target": "ESNext",
+    "sourceMap": true,
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "importsNotUsedAsValues": "remove",
+    "strict": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["src/*"],
+    },
+  },
+  "include": ["src/**/*"],
+  "exclude": ["dist/**/*", "node_modules/**/*"]
+}
