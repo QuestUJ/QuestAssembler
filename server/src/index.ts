@@ -1,4 +1,6 @@
+import cors from 'cors';
 import express from 'express';
+import { auth } from 'express-oauth2-jwt-bearer';
 import http from 'http';
 import { Server } from 'socket.io';
 
@@ -12,12 +14,27 @@ const ioOptions =
         ? {}
         : {
               cors: {
-                  origin: ALLOWED_ORIGIN
+                  origin: ALLOWED_ORIGIN,
+                  methods: ['GET'],
+                  allowedHeaders: ['Authorization', 'Content-type'],
+                  maxAge: 86400
               }
           };
 
-console.log(ioOptions);
+const authMiddleware = auth({
+    issuerBaseURL: 'https://dev-cut6p8lm7mviao58.us.auth0.com',
+    audience: 'http://localhost:3000/'
+});
+
 const io = new Server(server, ioOptions);
+
+io.engine.use((req, res, next) => {
+    console.log(req.headers);
+
+    authMiddleware(req, res, next);
+
+    console.log('hi there');
+});
 
 io.on('connection', socket => {
     console.log(`Socket connected: ${socket.id}`);
@@ -31,9 +48,21 @@ io.on('connection', socket => {
 });
 
 app.use(express.static('static'));
+app.use(
+    cors({
+        origin: ALLOWED_ORIGIN,
+        methods: ['GET'],
+        allowedHeaders: ['Authorization', 'Content-type'],
+        maxAge: 86400
+    })
+);
 
 app.get('/', (_, res) => {
     res.send('hello there');
+});
+
+app.get('/api/test', authMiddleware, (req, res) => {
+    res.send({ hello: 'world', pay: req.auth });
 });
 
 server.listen(PORT, () => {

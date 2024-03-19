@@ -1,9 +1,13 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import { createFileRoute } from '@tanstack/react-router';
+import { warn } from 'console';
 import { useEffect, useState } from 'react';
+import { io, type Socket } from 'socket.io-client';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { socket } from '@/lib/socketio';
+
+let socket: Socket = null;
 
 function IndexRoute() {
   useEffect(() => {
@@ -13,8 +17,19 @@ function IndexRoute() {
   const [msg, setMsg] = useState<string>('');
   const [recv, setRecv] = useState<string[]>([]);
 
-  const connect = () => {
-    socket.connect();
+  const { getAccessTokenSilently } = useAuth0();
+
+  const connect = async () => {
+    const token = await getAccessTokenSilently();
+    socket = io('http://localhost:3000', {
+      extraHeaders: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    socket.on('msg', (data: string) => {
+      setRecv([...recv, data]);
+    });
   };
 
   const send = () => {
@@ -22,10 +37,23 @@ function IndexRoute() {
   };
 
   useEffect(() => {
+    if (!socket) return;
     socket.on('msg', (data: string) => {
       setRecv([...recv, data]);
     });
-  });
+  }, [recv]);
+
+  const request = async () => {
+    const token = await getAccessTokenSilently();
+    const data = await (
+      await fetch('http://localhost:3000/api/test', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+    ).json();
+    console.log(data);
+  };
 
   return (
     <>
@@ -46,6 +74,7 @@ function IndexRoute() {
         <div className='flex gap-2'>
           <Button onClick={connect}>Connect</Button>
           <Button onClick={send}>Click this to send</Button>
+          <Button onClick={() => void request()}>Test auth api</Button>
         </div>
       </div>
     </>
