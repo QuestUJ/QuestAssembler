@@ -54,7 +54,7 @@ Now you will need 2 separate terminal sessions in first go into `server` directo
 
 #### Server
 * `pnpm install` to install dependencies
-* `chmod +x ./src/infrastructure/local.sh` this will add execution rights to the script (You need it on Unix-like OS)
+* `chmod +x ./src/infrastructure/postgres/local.sh` this will add execution rights to the script (You need it on Unix-like OS)
 * `pnpm postgres:setup` If you have docker installed this command will automatically setup a docker container with postgresql running inside on port 5434
 * `pnpm postgres:migrate` this command will run database migrations, for now there's only one test migration to ensure it's working, this will change,
 * `pnpm dev` this command will launch your dev server by default on port 3000, now if you edit source code your server will automatically rebuild

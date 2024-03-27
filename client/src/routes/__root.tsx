@@ -2,6 +2,7 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
 
 import { User } from '@/components/User';
+import { SocketIOProvider } from '@/providers/SocketIOProvider';
 
 function RootLayout() {
   const domain = 'dev-cut6p8lm7mviao58.us.auth0.com';
@@ -17,20 +18,22 @@ function RootLayout() {
           audience: 'http://localhost:3000/'
         }}
       >
-        <nav className='absolute flex w-full items-center justify-end p-4 px-32'>
-          <Link to='/' className='mx-4 text-primary'>
-            Home
-          </Link>
-          <div>|</div>
-          <Link to='/rooms' className='mx-4'>
-            Rooms
-          </Link>
-          <div>|</div>
-          <User />
-        </nav>
-        <main className='min-h-screen w-screen'>
-          <Outlet />
-        </main>
+        <SocketIOProvider>
+          <nav className='absolute flex w-full items-center justify-end p-4 px-32'>
+            <Link to='/' className='mx-4 text-primary'>
+              Home
+            </Link>
+            <div>|</div>
+            <Link to='/rooms' className='mx-4'>
+              Rooms
+            </Link>
+            <div>|</div>
+            <User />
+          </nav>
+          <main className='min-h-screen w-screen'>
+            <Outlet />
+          </main>
+        </SocketIOProvider>
       </Auth0Provider>
     </>
   );

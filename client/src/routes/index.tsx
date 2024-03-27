@@ -1,13 +1,10 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { createFileRoute } from '@tanstack/react-router';
-import { warn } from 'console';
 import { useEffect, useState } from 'react';
-import { io, type Socket } from 'socket.io-client';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-
-let socket: Socket = null;
+import { useSocketIO, useSocketIOEvent } from '@/hooks/socketio';
 
 function IndexRoute() {
   useEffect(() => {
@@ -19,39 +16,33 @@ function IndexRoute() {
 
   const { getAccessTokenSilently } = useAuth0();
 
-  const connect = async () => {
-    const token = await getAccessTokenSilently();
-    socket = io('http://localhost:3000', {
-      extraHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+  const onMsg = (data: string) => {
+    setRecv([data, ...recv]);
+  };
 
-    socket.on('msg', (data: string) => {
-      setRecv([...recv, data]);
-    });
+  const { socket, connect } = useSocketIO();
+
+  useSocketIOEvent('msg', onMsg);
+
+  const onConnect = async () => {
+    const token = await getAccessTokenSilently();
+
+    connect(token);
   };
 
   const send = () => {
-    socket.emit('msg', msg);
+    socket?.emit('msg', msg);
   };
-
-  useEffect(() => {
-    if (!socket) return;
-    socket.on('msg', (data: string) => {
-      setRecv([...recv, data]);
-    });
-  }, [recv]);
 
   const request = async () => {
     const token = await getAccessTokenSilently();
-    const data = await (
+    const data = (await (
       await fetch('http://localhost:3000/api/test', {
         headers: {
           Authorization: `Bearer ${token}`
         }
       })
-    ).json();
+    ).json()) as unknown;
     console.log(data);
   };
 
@@ -72,7 +63,7 @@ function IndexRoute() {
           onChange={e => setMsg(e.target.value)}
         />
         <div className='flex gap-2'>
-          <Button onClick={connect}>Connect</Button>
+          <Button onClick={() => void onConnect()}>Connect</Button>
           <Button onClick={send}>Click this to send</Button>
           <Button onClick={() => void request()}>Test auth api</Button>
         </div>

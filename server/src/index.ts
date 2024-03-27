@@ -2,9 +2,11 @@ import cors from 'cors';
 import express from 'express';
 import { auth } from 'express-oauth2-jwt-bearer';
 import http from 'http';
+import { userInfo } from 'os';
 import { Server } from 'socket.io';
 
 import { ALLOWED_ORIGIN, NODE_ENV, PORT } from './env';
+import { getUserProfile } from './infrastructure/auth0';
 
 const app = express();
 const server = http.createServer(app);
@@ -28,16 +30,13 @@ const authMiddleware = auth({
 
 const io = new Server(server, ioOptions);
 
-io.engine.use((req, res, next) => {
-    console.log(req.headers);
-
-    authMiddleware(req, res, next);
-
-    console.log('hi there');
-});
-
-io.on('connection', socket => {
+io.on('connection', async socket => {
     console.log(`Socket connected: ${socket.id}`);
+
+    if ('token' in socket.handshake.auth) {
+        const { token } = socket.handshake.auth as { token: string };
+        console.log(await getUserProfile(token));
+    }
 
     socket.on('msg', data => {
         console.log('client has sent this: ', data);
