@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "@quasm/client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,8 +14,9 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
+    "@quasm/common": "workspace:^",
     "@radix-ui/react-slot": "^1.0.2",
-    "@tanstack/react-router": "^1.19.13",
+    "@tanstack/react-router": "^1.22.9",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "lucide-react": "^0.356.0",

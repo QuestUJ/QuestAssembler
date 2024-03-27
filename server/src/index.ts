@@ -1,15 +1,25 @@
+import 'dotenv/config';
+
 import cors from 'cors';
 import express from 'express';
 import { auth } from 'express-oauth2-jwt-bearer';
 import http from 'http';
-import { userInfo } from 'os';
 import { Server } from 'socket.io';
 
-import { ALLOWED_ORIGIN, NODE_ENV, PORT } from './env';
+import { config } from './config';
 import { getUserProfile } from './infrastructure/auth0';
 
 const app = express();
 const server = http.createServer(app);
+
+const { PORT, AUTH0_DOMAIN, AUTH0_AUDIENCE, ALLOWED_ORIGIN, NODE_ENV } =
+    config.pick([
+        'PORT',
+        'ALLOWED_ORIGIN',
+        'AUTH0_AUDIENCE',
+        'AUTH0_DOMAIN',
+        'NODE_ENV'
+    ]);
 
 const ioOptions =
     NODE_ENV === 'production'
@@ -24,8 +34,8 @@ const ioOptions =
           };
 
 const authMiddleware = auth({
-    issuerBaseURL: 'https://dev-cut6p8lm7mviao58.us.auth0.com',
-    audience: 'http://localhost:3000/'
+    issuerBaseURL: AUTH0_DOMAIN,
+    audience: AUTH0_AUDIENCE
 });
 
 const io = new Server(server, ioOptions);

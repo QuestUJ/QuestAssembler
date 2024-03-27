@@ -10,7 +10,15 @@ import {
 } from 'kysely';
 import { Pool } from 'pg';
 
-import { PG_HOST, PG_NAME, PG_PASSWORD, PG_PORT, PG_USER } from '@/env';
+import { config } from '@/config';
+
+const { PG_HOST, PG_NAME, PG_PASSWORD, PG_PORT, PG_USER } = config.pick([
+    'PG_HOST',
+    'PG_NAME',
+    'PG_PASSWORD',
+    'PG_PORT',
+    'PG_USER'
+]);
 
 export interface Database {
     person: PersonTable;

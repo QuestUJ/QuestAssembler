@@ -2,17 +2,20 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
 
 import { User } from '@/components/User';
+import { config } from '@/config';
 import { SocketIOProvider } from '@/providers/SocketIOProvider';
 
 function RootLayout() {
-  const domain = 'dev-cut6p8lm7mviao58.us.auth0.com';
-  const client = 'ssI1HRw1boSFw3L0Eb54GBoi0VYdM5Eh';
+  const { AUTH0_DOMAIN, AUTH0_CLIENTID } = config.pick([
+    'AUTH0_DOMAIN',
+    'AUTH0_CLIENTID'
+  ]);
 
   return (
     <>
       <Auth0Provider
-        domain={domain}
-        clientId={client}
+        domain={AUTH0_DOMAIN}
+        clientId={AUTH0_CLIENTID}
         authorizationParams={{
           redirect_uri: window.location.origin,
           audience: 'http://localhost:3000/'
