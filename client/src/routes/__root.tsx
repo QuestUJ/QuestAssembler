@@ -6,10 +6,13 @@ import { config } from '@/config';
 import { SocketIOProvider } from '@/providers/SocketIOProvider';
 
 function RootLayout() {
-  const { AUTH0_DOMAIN, AUTH0_CLIENTID } = config.pick([
+  const { AUTH0_DOMAIN, AUTH0_CLIENTID, AUTH0_AUDIENCE } = config.pick([
     'AUTH0_DOMAIN',
-    'AUTH0_CLIENTID'
+    'AUTH0_CLIENTID',
+    'AUTH0_AUDIENCE'
   ]);
+
+  console.log(AUTH0_DOMAIN, AUTH0_CLIENTID, AUTH0_AUDIENCE);
 
   return (
     <>
@@ -18,7 +21,7 @@ function RootLayout() {
         clientId={AUTH0_CLIENTID}
         authorizationParams={{
           redirect_uri: window.location.origin,
-          audience: 'http://localhost:3000/'
+          audience: AUTH0_AUDIENCE
         }}
       >
         <SocketIOProvider>

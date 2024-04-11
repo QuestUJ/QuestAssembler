@@ -1,5 +1,7 @@
 import { Config } from '@quasm/common';
 
+Config.initEnv(process.env);
+
 const configMap = {
     PORT: Config.loadInt('PORT') || 3000,
     NODE_ENV: Config.loadString('NODE_ENV') || 'development',
@@ -16,4 +18,15 @@ const configMap = {
     AUTH0_AUDIENCE: Config.loadString('AUTH0_AUDIENCE')
 };
 
+/**
+ * object with configuration map, extracts requested configuration, throws error if any of the config is not defined
+ * @example example usage
+ * ```
+ const { AUTH0_DOMAIN, AUTH0_AUDIENCE } = config.pick([
+   'AUTH0_DOMAIN',
+   'AUTH0_AUDIENCE'
+ ]);
+* 
+ * ```
+ */
 export const config = new Config(configMap);

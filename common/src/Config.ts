@@ -1,8 +1,10 @@
 import { ErrorLocation, QuasmError } from './QuasmError';
 
-type ConfigField = number | string | boolean | undefined
+type ConfigField = number | string | boolean | undefined;
 
 export class Config<ConfigMap extends Record<string, ConfigField>> {
+    private static _env: Record<string, string | undefined>;
+
     constructor(private readonly _configMap: ConfigMap) {}
 
     pick<T extends keyof ConfigMap>(keys: T[]): Pick<ConfigMap, T> {
@@ -33,15 +35,19 @@ export class Config<ConfigMap extends Record<string, ConfigField>> {
         return values;
     }
 
+    static initEnv(env: Record<string, string | undefined>) {
+        this._env = env;
+    }
+
     static loadString(key: string): string | undefined {
-        return process.env[key]?.toString();
+        return Config._env[key]?.toString();
     }
 
     static loadBool(key: string): boolean | undefined {
-        return !!process.env[key];
+        return !!Config._env[key];
     }
 
     static loadInt(key: string): number | undefined {
-        return parseInt(process.env[key] ?? '') ?? undefined;
+        return parseInt(Config._env[key] ?? '') ?? undefined;
     }
 }
