@@ -1,0 +1,8 @@
+pnpm --prefix server lint
+pnpm --prefix server format
+
+pnpm --prefix client lint
+pnpm --prefix client format
+
+pnpm --prefix common lint
+pnpm --prefix common format

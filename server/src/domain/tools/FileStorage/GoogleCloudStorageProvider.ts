@@ -6,4 +6,3 @@ export class GoogleCloudStorageProvider implements IFileStorage {
         return '';
     }
 }
-

@@ -1,0 +1,13 @@
+{
+  "name": "QuestAssembler",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "lint:fix": "pnpm --prefix server lint:fix && pnpm --prefix client lint:fix && pnpm --prefix common lint:fix",
+    "format": "pnpm --prefix server format && pnpm --prefix client format && pnpm --prefix common format",
+    "prepare": "husky"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

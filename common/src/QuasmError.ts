@@ -21,4 +21,3 @@ export class QuasmError extends Error {
         return `Error in ${this.errorLocation} with code ${this.statusCode}: ${this.message}`;
     }
 }
-
