@@ -7,6 +7,7 @@ export class Character {
     nick: string = '';
     description: string = '';
     room: UUID = randomUUID();
+    userID: string = '123';
 
     isGameMaster(): boolean {
         return false;
