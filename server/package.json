@@ -12,8 +12,7 @@
     "format": "prettier -w src",
     "postgres:setup": "./src/infrastructure/postgres/local.sh",
     "postgres:migrate": "tsx ./src/infrastructure/postgres/migrator.ts",
-    "test": "vitest",
-    "prepare": "husky"
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
