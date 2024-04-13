@@ -1,10 +1,9 @@
-import { UUID } from 'crypto';
 import { Kysely } from 'kysely';
 
 import { Character } from '@/domain/game/Character';
 import { Database } from '@/infrastructure/postgres/db';
 
-import { ICharacterRepository } from './ICharacterRepository';
+import { CharacterDetails, ICharacterRepository } from './ICharacterRepository';
 
 /**
  * Postgres based implementation of {@link ICharacterRepository}
@@ -18,15 +17,16 @@ export class CharacterRepositoryPostgres implements ICharacterRepository {
     /**
      * creates character entry in postgres and returns it's {@link Character} instance
      */
-    createCharacter(): Character {
+    async createCharacter(details: CharacterDetails): Promise<Character> {
+        await new Promise(() => details);
         return new Character();
     }
 
     /**
-     * retrieves characters of the user with given id
+     * retrieves characters of the user with given id from postgres db
      */
-    fetchCharacters(userID: UUID): Character[] {
+    fetchCharacters(userID: string): Promise<Character[]> {
         userID;
-        return [];
+        return new Promise(resolve => resolve([]));
     }
 }

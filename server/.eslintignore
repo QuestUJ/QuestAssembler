@@ -1,3 +1,4 @@
 dist
 .eslintrc.cjs
 tsup.config.ts
+vitest.config.mts
