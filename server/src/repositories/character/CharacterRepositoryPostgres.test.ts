@@ -13,7 +13,10 @@ describe('Basic CRUD operations', () => {
     const db = pgMem.adapters.createKysely() as Kysely<Database>;
 
     pgMem.public.none(
-        readFileSync(path.join(__dirname, 'dump-quasm.sql'), 'utf8')
+        readFileSync(
+            path.join(__dirname, '..', '..', 'sql_dumps', 'dump-quasm.sql'),
+            'utf8'
+        )
     );
 
     const backup = pgMem.backup();
