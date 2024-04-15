@@ -19,7 +19,7 @@
 
 ## Redirect to room
 1. User clicks on the room preview component.
-2. User is redirected to a given room ("/room/:givenRoomId").
+2. User is redirected to a given room ("/room/:givenRoomId/story").
 
 ## Sign out
 1. User clicks on the "Sign out" button.
