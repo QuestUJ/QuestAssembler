@@ -1,6 +1,12 @@
 import { IAIAssistant } from './IAIAssistant';
 
+/**
+ * Simple HuggingFace client
+ */
 export class HuggingFaceAiAssistant implements IAIAssistant {
+    /**
+     * @param hgToken huggingface access token (it is not required but without huggingface is blocking requests almost imediately)
+     */
     constructor(hgToken: string) {
         hgToken;
     }

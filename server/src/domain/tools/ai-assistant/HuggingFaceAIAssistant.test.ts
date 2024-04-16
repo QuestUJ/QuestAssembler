@@ -6,10 +6,16 @@ import { HuggingFaceAiAssistant } from './HuggingFaceAIAssistant';
 
 const { HUGGINGFACE_TOKEN } = config.pick(['HUGGINGFACE_TOKEN']);
 
+/**
+ * Check if png header is present
+ */
 function isPNG(buffer: Buffer) {
     return buffer[0] === 0x89 && buffer.toString('utf-8', 1, 4) == 'PNG';
 }
 
+/**
+ * Check if jpeg header is present
+ */
 function isJPEG(buffer: Buffer) {
     return buffer[0] === 0xff && buffer[1] === 0xd8;
 }

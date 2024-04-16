@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import { SupabaseStorageProvider } from './SupabaseStorageProvider';
 
+// path: server/test-assets/ex.jpeg
 const sampleImage = readFileSync(
     join(__dirname, '..', '..', '..', '..', 'test-assets', 'ex.jpeg')
 );
@@ -11,7 +12,7 @@ const sampleImage = readFileSync(
 describe('SupabaseStorageProvider', () => {
     const supa = new SupabaseStorageProvider();
 
-    it('Should be able to store simple image', async () => {
+    it('should be able to store simple image', async () => {
         const url = await supa.uploadImage(sampleImage);
 
         const response = await fetch(url);
