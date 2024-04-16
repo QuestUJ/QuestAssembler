@@ -1,7 +1,7 @@
-import { defineConfig } from "tsup";
+import { defineConfig } from 'tsup';
 
 export default defineConfig({
-    entry: ["./src/*.ts"],
+    entry: ['./src/*.ts'],
     sourcemap: true,
-    clean: true,
+    clean: true
 });

@@ -7,6 +7,7 @@ export class Character {
     nick: string = '';
     description: string = '';
     room: UUID = randomUUID();
+    private playerTurnSubmits: PlayerTurnSubmit[] = [];
 
     isGameMaster(): boolean {
         return false;
@@ -14,5 +15,21 @@ export class Character {
 
     getPlayerTurnSubmit(): PlayerTurnSubmit | undefined {
         return undefined;
+    }
+
+    setNick(newName: string): void {
+        this.nick = newName;
+    }
+
+    getNick(): string {
+        return '';
+    }
+
+    setDescription(newName: string): void {
+        newName;
+    }
+
+    getDescription(): string {
+        return '';
     }
 }
