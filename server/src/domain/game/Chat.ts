@@ -1,9 +1,15 @@
+import { IChatRepository } from '@/repositories/chat/IChatRepository';
+
 import { ChatMessage } from './ChatMessage';
 
 type Range = { start: number; end: number };
 
 export class Chat {
     messages: ChatMessage[] = [];
+
+    constructor(chatRepository: IChatRepository) {
+        chatRepository;
+    }
 
     /**
      * Appends a message to the chat history

@@ -1,17 +1,44 @@
 import { randomUUID } from 'crypto';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+import { IChatRepository } from '@/repositories/chat/IChatRepository';
 
 import { Chat } from './Chat';
 import { ChatMessage } from './ChatMessage';
 
 describe('Basic chat actions', () => {
+    const fakeRepo: IChatRepository = {
+        createMessage: vi.fn().mockReturnValue({
+            author: randomUUID(),
+            content: 'Test message!',
+            timestamp: new Date()
+        }),
+        fetchMessages: vi.fn().mockReturnValue([
+            {
+                author: randomUUID(),
+                content: 'Hi!',
+                timestamp: new Date()
+            },
+            {
+                author: randomUUID(),
+                content: 'Hello!',
+                timestamp: new Date()
+            },
+            {
+                author: randomUUID(),
+                content: 'World!',
+                timestamp: new Date()
+            }
+        ])
+    };
+
     const testMessages: ChatMessage[] = [
         new ChatMessage(randomUUID(), 'Hi!', new Date()),
         new ChatMessage(randomUUID(), 'Hello!', new Date()),
         new ChatMessage(randomUUID(), 'World!', new Date())
     ];
 
-    const chat = new Chat();
+    const chat = new Chat(fakeRepo);
 
     chat.addMessage(testMessages[0]);
     chat.addMessage(testMessages[1]);
