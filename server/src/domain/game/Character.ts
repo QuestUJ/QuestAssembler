@@ -9,6 +9,7 @@ export class Character {
     room: UUID = randomUUID();
     private playerTurnSubmits: PlayerTurnSubmit[] = [];
 
+
     isGameMaster(): boolean {
         return false;
     }
