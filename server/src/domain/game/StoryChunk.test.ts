@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { StoryChunk } from './StoryChunk';
 
-describe('StoryChunk contruction', () => {
+describe('StoryChunk construction', () => {
     const id = 0;
     const title = 'Test title!';
     const content = 'Test content!';
