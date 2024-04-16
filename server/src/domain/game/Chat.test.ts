@@ -55,7 +55,7 @@ describe('Basic chat actions', () => {
     });
 
     it('Returns undefined when invalid range is passed', () => {
-        expect(chat.fetchMessages({ start: 1, end: 0 })).toBeUndefined();
+        expect(chat.fetchMessages({ start: 1, end: 0 })).toStrictEqual([]);
     });
 
     it('Returns exactly one message when range with the same starting and ending index is passed', () => {
@@ -65,8 +65,8 @@ describe('Basic chat actions', () => {
     });
 
     it('Returns undefined when overflowing range is passed', () => {
-        expect(chat.fetchMessages({ start: 3, end: 6 })).toBeUndefined();
-        expect(chat.fetchMessages({ start: -2, end: 0 })).toBeUndefined();
+        expect(chat.fetchMessages({ start: 3, end: 6 })).toStrictEqual([]);
+        expect(chat.fetchMessages({ start: -2, end: 0 })).toStrictEqual([]);
     });
 
     it('Returns a valid slice when partially overflowing range is passed', () => {
