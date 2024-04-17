@@ -8,9 +8,9 @@ import { newDb } from 'pg-mem';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { Database } from '@/infrastructure/postgres/db';
-import { CharacterRepositoryPostgres } from '@/repositories/character/CharacterRepositoryPostgres';
+import { ChatRepositoryPostgres } from '@/repositories/chat/ChatRepositoryPostgres';
 
-describe('Basic CRUD operations', () => {
+describe('Basic chat CRUD operations', () => {
     const pgMem = newDb();
     const db = pgMem.adapters.createKysely() as Kysely<Database>;
 
@@ -27,23 +27,20 @@ describe('Basic CRUD operations', () => {
         backup.restore();
     });
 
-    it('Can store and persist character details', async () => {
-        const repo = new CharacterRepositoryPostgres(db);
-        const nick = 'MySimpleNick123#!@{},,``';
-        const room = randomUUID();
+    it('Can store and persist message details', async () => {
+        const repo = new ChatRepositoryPostgres(db);
+        const context = 'u bad';
 
-        // store simple character
-        const character = await repo.createCharacter({
-            nick,
-            room
-        });
+        // Store simple message
+        const message = await repo.createMessage(context);
 
         // Create second instance to check if data persists
-        const repo2 = new CharacterRepositoryPostgres(db);
+        const repo2 = new ChatRepositoryPostgres(db);
 
-        const results = await repo2.fetchCharacters(character.userID);
+        const chatID = randomUUID();
+        const results = await repo2.fetchMessages(chatID);
 
         expect(results.length).toEqual(1);
-        expect(results[0]).toEqual(character);
+        expect(results[0]).toEqual(message);
     });
 });
