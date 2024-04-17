@@ -5,5 +5,5 @@ export interface IFileStorage {
     /**
      * uploads Image
      */
-    uploadImage(image: ReadableStream): string;
+    uploadImage(image: Buffer): Promise<string>;
 }

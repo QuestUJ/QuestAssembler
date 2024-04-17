@@ -1,7 +1,10 @@
 export interface UserDetails {
-    email: string;
+    userID: string;
 }
 
 export interface IAuthProvider {
-    verify(token: string): UserDetails;
+    /**
+     * Verifies token and returns UsersDetails, throws on failed verification
+     */
+    verify(token: string): Promise<UserDetails>;
 }
