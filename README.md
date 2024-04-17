@@ -1,4 +1,4 @@
-<div align = center>
+![image](https://github.com/QuestUJ/QuestAssembler/assets/50048994/6ffcc5c9-b9a0-4d1a-8b85-b1a95fdd0da0)<div align = center>
 
 ---
 
@@ -24,13 +24,20 @@ Welcome to the Quest Assembler repository! This project aims to provide a text-b
 
 # Features
 
-- **Friend Invitations**: Easily invite friends and fellow adventurers to join your virtual room.
-- **Immersive Storytelling**: Embark on epic quests and unravel captivating narratives with AI-assisted story generation. From plot twists to character interactions, our platform enhances immersion and engagement in your campaigns.
-- **AI Image Generation**: Bring your campaign to life with AI-generated images for characters, creatures, and environments. From majestic landscapes to intricate character portraits, our AI assistance adds visual richness to your adventures.
-- **Dice Rolling Mechanics**: Roll virtual dice with precision and ease, ensuring fair and accurate gameplay for all participants. Our platform supports a variety of dice types and modifiers, empowering players and dungeon masters alike.
-- **Avatar and Description Setting**: Personalize your online presence by setting your avatar and character description. This allows you to visually represent your character during gameplay.
-- **Real-time Communication**: Stay connected with your party members and dungeon master through built-in chat, enhancing immersion and fostering teamwork.
-- **Customizable Game Settings**: Tailor your gameplay experience with customizable game settings, including house rules, campaign lore, and character backgrounds, to create unique and memorable adventures.
+- ### Friend Invitations 
+  Easily invite friends and fellow adventurers to join your virtual room.
+- ### Immersive Storytelling
+  Embark on epic quests and unravel captivating narratives with AI-assisted story generation. From plot twists to character interactions, our platform enhances immersion and engagement in your campaigns.
+- ### AI Image Generation
+  Bring your campaign to life with AI-generated images for characters, creatures, and environments. From majestic landscapes to intricate character portraits, our AI assistance adds visual richness to your adventures.
+- ### Dice Rolling Mechanics
+  Roll virtual dice with precision and ease, ensuring fair and accurate gameplay for all participants. Our platform supports a variety of dice types and modifiers, empowering players and dungeon masters alike.
+- ### Avatar and Description Setting
+   Personalize your online presence by setting your avatar and character description. This allows you to visually represent your character during gameplay.
+- ### Real-time Communication
+  Stay connected with your party members and dungeon master through built-in chat, enhancing immersion and fostering teamwork.
+- ### Customizable Game Settings
+  Tailor your gameplay experience with customizable game settings, including house rules, campaign lore, and character backgrounds, to create unique and memorable adventures.
 
 # Roadmap
 
