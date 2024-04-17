@@ -2,7 +2,7 @@
 
 ---
 
-<img src="https://raw.githubusercontent.com/QuestUJ/QuestAssembler/update-readme/assets/header.svg" width="750" height="300" alt="banner">
+<img src="/assets/header.svg" width="750" height="300" alt="banner">
 
 ---
 
@@ -20,7 +20,7 @@
 
 # About
 
-Welcome to the Quest Assembler repository! This project aims to provide a seamless and immersive experience for players and dungeon masters alike to enjoy Dungeons & Dragons sessions over the internet. With a focus on simplicity, accessibility, and customization, our platform facilitates virtual tabletop gameplay while fostering creativity and collaboration among players.
+Welcome to the Quest Assembler repository! This project aims to provide a text-based RPG platform for players and dungeon masters alike to enjoy game sessions over the internet.
 
 # Features
 
@@ -33,6 +33,14 @@ Welcome to the Quest Assembler repository! This project aims to provide a seamle
 - Customizable Game Settings: Tailor your gameplay experience with customizable game settings, including house rules, campaign lore, and character backgrounds, to create unique and memorable adventures.
 
 # Roadmap
+
+![](/assets/LandingPage.png)
+![](/assets/CreateRoom.png)
+![](/assets/Story.png)
+![](/assets/ChatInGame.png)
+![]("/assets/PlayersSubmits.png")
+![](/assets/StoryChunk.png)
+![](/assets/GameMaster.png)
 
 # License
 
