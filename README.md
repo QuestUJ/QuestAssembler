@@ -1,6 +1,8 @@
-# Quest Assembler monorepo v1
+<div align = center>
 
-First prototype of the project structure
+<img src="https://raw.githubusercontent.com/QuestUJ/QuestAssembler/dev/assets/header.svg" width="750" height="300" alt="banner">
+
+</div>
 
 ## Useful resources
 
