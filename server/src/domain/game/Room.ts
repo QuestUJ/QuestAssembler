@@ -13,6 +13,7 @@ export class Room {
     readonly gameMaster: UUID = randomUUID();
     private gameSettings: GameSettings = new GameSettings('', 5);
     private storyChunks: StoryChunk[] = [];
+    private characters: Character[] = [];
     private broadcast: Chat = new Chat();
     private characters: Character[] = [];
 
@@ -54,5 +55,13 @@ export class Room {
 
     setMaxPlayerCount(newMaxPlayerCount: number): void {
         newMaxPlayerCount;
+    }
+
+    addStoryChunk(chunk: StoryChunk): void {
+        chunk;
+    }
+
+    addCharacter(character: Character): void {
+        character;
     }
 }
