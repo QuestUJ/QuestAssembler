@@ -1,5 +1,4 @@
-import test, { expect } from '@playwright/test';
-import { testWithAuth } from './fixtures/Auth';
+import { expect } from '@playwright/test';
 import { testWithRooms } from './fixtures/Room';
 
 testWithRooms.describe('Dashboard', () => {

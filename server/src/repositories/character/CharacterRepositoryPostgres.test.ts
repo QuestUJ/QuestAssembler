@@ -1,5 +1,3 @@
-import test from 'node:test';
-
 import { randomUUID } from 'crypto';
 import { readFileSync } from 'fs';
 import { type Kysely } from 'kysely';
@@ -41,7 +39,7 @@ describe('Basic CRUD operations', () => {
         // Create second instance to check if data persists
         const repo2 = new CharacterRepositoryPostgres(db);
 
-        const results = await repo2.fetchCharacters(character.userID);
+        const results = await repo2.fetchCharacters(character.getUserID());
 
         expect(results.length).toEqual(1);
         expect(results[0]).toEqual(character);

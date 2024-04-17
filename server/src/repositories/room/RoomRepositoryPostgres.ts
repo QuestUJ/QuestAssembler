@@ -34,10 +34,15 @@ export class RoomRepositoryPostgres implements IRoomRepository {
     /**
      * Updates room with given id
      */
-    updateRoom(roomID: UUID, details: RoomDetails): void {}
+    updateRoom(roomID: UUID, details: RoomDetails): void {
+        roomID;
+        details;
+    }
 
     /**
      * Deletes room with given id
      */
-    deleteRoom(roomID: UUID): void {}
+    deleteRoom(roomID: UUID): void {
+        roomID;
+    }
 }

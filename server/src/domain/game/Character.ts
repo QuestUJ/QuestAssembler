@@ -32,4 +32,8 @@ export class Character {
     getDescription(): string {
         return '';
     }
+
+    getUserID(): string {
+        return '';
+    }
 }

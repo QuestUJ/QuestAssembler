@@ -33,7 +33,12 @@ export class Auth {
         await this._page.context().storageState({ path: AuthFile[user] });
     }
 
-    async useAuth(user: FakeUser) {
+    /**
+     * simple helper for using fake authenticated user
+     * @param user {FakeUser} which user should be authenticated
+     * @returns page with authenticated as {user} page
+     */
+    async useAuth(user: FakeUser): Promise<Page> {
         this._ctx = await this._browser.newContext({
             storageState: AuthFile[user]
         });
@@ -52,7 +57,12 @@ export class Auth {
     }
 }
 
-export const testWithAuth = base.extend<{ auth: Auth }>({
+export const testWithAuth = base.extend<{
+    /**
+     * Basic auth fixture for storing/restoring authentication state
+     */
+    auth: Auth;
+}>({
     auth: async ({ page, browser }, use) => {
         const auth = new Auth(page, browser);
         await use(auth);

@@ -1,5 +1,3 @@
-import test from 'node:test';
-
 import { randomUUID } from 'crypto';
 import { readFileSync } from 'fs';
 import { type Kysely } from 'kysely';

@@ -6,6 +6,9 @@ type Pages = Record<FakeUser, Page>;
 export class Room {
     constructor(private readonly _pages: Pages) {}
 
+    /**
+     * helper for creating room, specify who is the owner, the name, and max players
+     */
     async createRoom(who: FakeUser, roomName: string, maxPlayers: number) {
         const page = this._pages[who];
         const createGameButton = page.getByRole('button', {
@@ -31,6 +34,9 @@ export class Room {
             .click();
     }
 
+    /**
+     * helper for joining specified user to room, you need to provider the room owner, the user, and roomName
+     */
     async joinRoom(owner: FakeUser, user: FakeUser, roomName: string) {
         const ownerPage = this._pages[owner];
         const userPage = this._pages[user];
@@ -53,6 +59,9 @@ export class Room {
 }
 
 export const testWithRooms = testWithAuth.extend<{
+    /**
+     * Fixture with room utilities
+     */
     room: Room;
 }>({
     room: async ({ auth }, use) => {
