@@ -1,6 +1,6 @@
 <div align = center>
 
-<img src="https://raw.githubusercontent.com/QuestUJ/QuestAssembler/dev/assets/header.svg" width="750" height="300" alt="banner">
+<img src="https://raw.githubusercontent.com/QuestUJ/QuestAssembler/update-readme/assets/header.svg" width="750" height="300" alt="banner">
 
 </div>
 
