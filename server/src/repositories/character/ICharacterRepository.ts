@@ -10,7 +10,7 @@ export interface CharacterDetails {
 
 export interface ICharacterRepository {
     /**
-     * instantiates {@link Character} stores it's details in relavant storage and returns created object'
+     * Instantiates {@link Character} stores it's details in relavant storage and returns created object'
      */
     createCharacter(details: CharacterDetails): Promise<Character>;
     /**

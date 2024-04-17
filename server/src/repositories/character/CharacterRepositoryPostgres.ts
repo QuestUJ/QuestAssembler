@@ -15,7 +15,7 @@ export class CharacterRepositoryPostgres implements ICharacterRepository {
     }
 
     /**
-     * creates character entry in postgres and returns it's {@link Character} instance
+     * Creates character entry in postgres and returns it's {@link Character} instance
      */
     async createCharacter(details: CharacterDetails): Promise<Character> {
         await new Promise(() => details);
@@ -23,7 +23,7 @@ export class CharacterRepositoryPostgres implements ICharacterRepository {
     }
 
     /**
-     * retrieves characters of the user with given id from postgres db
+     * Retrieves characters of the user with given id from postgres db
      */
     fetchCharacters(userID: string): Promise<Character[]> {
         userID;
