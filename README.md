@@ -1,5 +1,3 @@
-![image](https://github.com/QuestUJ/QuestAssembler/assets/50048994/6ffcc5c9-b9a0-4d1a-8b85-b1a95fdd0da0)<div align = center>
-
 ---
 
 <img src="/assets/header.svg" width="750" height="300" alt="banner">
