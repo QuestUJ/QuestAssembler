@@ -15,7 +15,7 @@
 2. User is shown a "Create Game" modal.
 3. User inputs data into "Name" and "Max Players" inputs.
 4. User clicks on the "Create" button.
-5. User is shown a response with code of the game.
+5. A new room card in dashboard is visible
 
 ## Redirect to room
 1. User clicks on the room preview component.

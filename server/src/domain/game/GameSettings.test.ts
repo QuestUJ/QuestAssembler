@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
+import { IRoomRepository } from '@/repositories/room/IRoomRepository';
+
 import { Character } from './Character';
 import { Room } from './Room';
 
 describe('GameSettings', () => {
-    const room = new Room();
+    const fakerepo = {};
+    const room = new Room(fakerepo as IRoomRepository);
     const newName = 'New Room Name';
     const character = new Character();
 
@@ -14,7 +17,7 @@ describe('GameSettings', () => {
     });
 
     it('should allow changing the room name', () => {
-        room.setRoomName(newName);
+        room.setName(newName);
         expect(room.getGameSettings().roomName).toBe(newName);
     });
 
