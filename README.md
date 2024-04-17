@@ -38,7 +38,7 @@ Welcome to the Quest Assembler repository! This project aims to provide a text-b
 ![](/assets/CreateRoom.png)
 ![](/assets/Story.png)
 ![](/assets/ChatInGame.png)
-![]("/assets/PlayersSubmits.png")
+![](/assets/PlayersSubmits.png)
 ![](/assets/StoryChunk.png)
 ![](/assets/GameMaster.png)
 
