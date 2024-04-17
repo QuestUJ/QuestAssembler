@@ -17,12 +17,11 @@
             }
 
             h1 {
-                background-color: #ffd866;
                 font-family: "MedievalSharp";
-                font-size: 3rem;
+                font-size: 5rem;
                 position: relative;
-                top: 28%;
-                left: 10%;
+                top: 4%;
+                left: 16%;
                 transform: translateY(-50%);
                 z-index=2;
                 text-align: center;
@@ -30,14 +29,13 @@
                 background: linear-gradient(to right, #cfe8f6, #c8e6e3);
                 background-clip: text;
                 -webkit-background-clip: text;
-                color: transparent;
+                color: #ffd866;
                 animation: scaleit 4s infinite ease-in-out;
             }
 
             bgimg {
-                background-color: #ffd866;
                 position: absolute;
-                left: -5%;
+                left: -10%;
                 top: 50%;
                 -webkit-transform: translate(0, -50%);
                 transform: translate(0, -50%);
@@ -50,6 +48,7 @@
                 height: 100%;
                 max-width: 100%;
                 max-height: 100%;
+                filter: invert(19%) sepia(39%) saturate(644%) hue-rotate(341deg) brightness(105%) contrast(103%);
             }
 
             @keyframes scaleit {
