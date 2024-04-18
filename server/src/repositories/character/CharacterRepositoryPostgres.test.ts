@@ -8,7 +8,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { Database } from '@/infrastructure/postgres/db';
 import { CharacterRepositoryPostgres } from '@/repositories/character/CharacterRepositoryPostgres';
 
-describe('Basic CRUD operations', () => {
+describe('Basic character CRUD operations', () => {
     const pgMem = newDb();
     const db = pgMem.adapters.createKysely() as Kysely<Database>;
 

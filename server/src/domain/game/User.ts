@@ -1,6 +1,8 @@
 import { randomUUID, UUID } from 'crypto';
 
-import { ICharacterRepository } from '@/repositories/Character/ICharacterRepository';
+import { ICharacterRepository } from '@/repositories/character/ICharacterRepository';
+
+import { Room } from './Room';
 
 export class User {
     readonly id: UUID = randomUUID();
@@ -10,5 +12,7 @@ export class User {
         characterRepository;
     }
 
-    getRooms() {}
+    getRooms(): Room[] {
+        return [];
+    }
 }
