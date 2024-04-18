@@ -28,7 +28,7 @@ describe('Basic room actions', () => {
         expect(room.getGameSettings().roomName).toEqual(otherName);
     });
 
-    it('Changes its player count', () => {
+    it('Changes its player limit', () => {
         const room: Room = new Room(fakeRepo);
 
         room.setMaxPlayerCount(4);

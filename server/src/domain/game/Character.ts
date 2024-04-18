@@ -14,6 +14,7 @@ export class Character {
     }
 
     getPlayerTurnSubmit(): PlayerTurnSubmit | undefined {
+        this.playerTurnSubmits;
         return undefined;
     }
 
