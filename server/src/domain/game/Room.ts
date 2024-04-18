@@ -1,5 +1,6 @@
 import { randomUUID, UUID } from 'crypto';
 
+import { IChatRepository } from '@/repositories/chat/IChatRepository';
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { Character } from './Character';
@@ -11,14 +12,17 @@ import { StoryChunk } from './StoryChunk';
 export class Room {
     readonly id: UUID = randomUUID();
     readonly gameMaster: UUID = randomUUID();
-    private gameSettings: GameSettings = new GameSettings('', 5);
+    private gameSettings: GameSettings;
     private storyChunks: StoryChunk[] = [];
-    private characters: Character[] = [];
-    private broadcast: Chat = new Chat();
+    private broadcast: Chat;
     private characters: Character[] = [];
 
     constructor(roomRepository: IRoomRepository) {
         roomRepository;
+        this.storyChunks;
+        this.characters;
+        this.broadcast = new Chat({} as IChatRepository);
+        this.gameSettings = new GameSettings('test', 1);
     }
 
     addCharacter(character: Character): void {
@@ -55,13 +59,5 @@ export class Room {
 
     setMaxPlayerCount(newMaxPlayerCount: number): void {
         newMaxPlayerCount;
-    }
-
-    addStoryChunk(chunk: StoryChunk): void {
-        chunk;
-    }
-
-    addCharacter(character: Character): void {
-        character;
     }
 }

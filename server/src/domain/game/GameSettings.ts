@@ -1,9 +1,31 @@
 export class GameSettings {
-    roomName: string = '';
-    maxPlayerCount: number = 5;
+    constructor(
+        private _roomName: string = '',
+        private _maxPlayers: number = 1
+    ) {
+        this._roomName;
+        this._maxPlayers;
+    }
 
-    constructor(roomName: string, maxPlayerCount: number) {
-        this.roomName = roomName;
-        this.maxPlayerCount = maxPlayerCount;
+    /**
+     * Validates and updates roomName
+     */
+    setRoomName(name: string) {
+        name;
+    }
+
+    getRoomName(): string {
+        return '';
+    }
+
+    /**
+     * Validates and updates maxPlayers
+     */
+    setMaxPlayers(maxPlayers: number) {
+        maxPlayers;
+    }
+
+    getMaxPlayers(): number {
+        return -1;
     }
 }
