@@ -37,7 +37,7 @@ function IndexRoute() {
   const request = async () => {
     const token = await getAccessTokenSilently();
     const data = (await (
-      await fetch('http://localhost:3000/api/test', {
+      await fetch('http://localhost:3000/api/v1/test', {
         headers: {
           Authorization: `Bearer ${token}`
         }

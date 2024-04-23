@@ -1,18 +1,28 @@
 import 'dotenv/config';
 
-import http from 'http';
+import { extractMessage } from '@quasm/common';
+import { Server } from 'socket.io';
 
 import { config } from './config';
 import { logger } from './infrastructure/logger/Logger';
-import { app } from './presentation/httpServer';
-import { startSocketServer } from './presentation/socketServer';
+import { startHTTPServer } from './presentation/http/httpServer';
+import { startSocketServer } from './presentation/socket/socketServer';
 
 const { PORT } = config.pick(['PORT']);
 
-const server = http.createServer(app);
+(async () => {
+    const app = await startHTTPServer();
+    startSocketServer(app.io);
 
-startSocketServer(server);
+    await app.listen({ port: PORT });
 
-server.listen(PORT, () => {
-    logger.info('HTTP Server', `Running on port ${PORT}`);
-});
+    logger.info('STARTUP', 'Successful!');
+})().catch(err => logger.error('STARTUP', extractMessage(err)));
+
+declare module 'fastify' {
+    interface FastifyInstance {
+        io: Server<{
+            msg: string;
+        }>;
+    }
+}
