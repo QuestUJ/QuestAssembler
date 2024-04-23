@@ -1,0 +1,12 @@
+diff --git a/dist/node/esm/runtime/fetch_jwks.js b/dist/node/esm/runtime/fetch_jwks.js
+index de1d54556db0a8eed8cc29d9a0cd068183617c44..b36004d8476030b6c5eeba527cba2652d4ed46a1 100644
+--- a/dist/node/esm/runtime/fetch_jwks.js
++++ b/dist/node/esm/runtime/fetch_jwks.js
+@@ -1,5 +1,5 @@
+-import * as http from 'node:http';
+-import * as https from 'node:https';
++import http from 'node:http';
++import https from 'node:https';
+ import { once } from 'node:events';
+ import { JOSEError, JWKSTimeout } from '../util/errors.js';
+ import { concat, decoder } from '../lib/buffer_utils.js';

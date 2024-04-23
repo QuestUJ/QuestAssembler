@@ -19,6 +19,7 @@ describe('Auth0Provider', async () => {
         .setProtectedHeader({
             alg: 'RS256'
         })
+        .setIssuer(`https://${domain}/`)
         .setAudience(audience)
         .setSubject(userID)
         .setExpirationTime('2h')
@@ -36,6 +37,7 @@ describe('Auth0Provider', async () => {
         .setProtectedHeader({
             alg: 'RS256'
         })
+        .setIssuer(`https://${domain}/`)
         .setAudience('randomunmatchedaudience')
         .setSubject(userID)
         .setExpirationTime('2h')
@@ -49,6 +51,9 @@ describe('Auth0Provider', async () => {
             return HttpResponse.json({
                 keys: [jwks]
             });
+        }),
+        http.get(`https://${domain}/userinfo`, () => {
+            return HttpResponse.json({});
         })
     ];
 

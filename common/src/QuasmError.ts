@@ -1,5 +1,5 @@
 export enum ErrorLocation {
-    AUTH = 'Auth',
+    AUTH = 'Authorization',
     DATABASE = 'Database',
     SOCKET = 'Socket',
     HTTP = 'HTTP',
@@ -20,4 +20,19 @@ export class QuasmError extends Error {
     formattedError() {
         return `Error in ${this.errorLocation} with code ${this.statusCode}: ${this.message}`;
     }
+}
+
+/**
+ * Helper function to extract error string message if don't know type of Error
+ */
+export function extractMessage(e: unknown): string {
+    if (e instanceof Error) {
+        return e.message;
+    }
+
+    if (typeof e === 'string') {
+        return e;
+    }
+
+    return `Unkown unexpected error!`;
 }

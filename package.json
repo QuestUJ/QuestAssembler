@@ -12,5 +12,10 @@
   "license": "ISC",
   "devDependencies": {
     "husky": "^9.0.11"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "jose@5.2.4": "patches/jose@5.2.4.patch"
+    }
   }
 }
