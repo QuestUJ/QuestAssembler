@@ -23,6 +23,7 @@ function RootLayout() {
           redirect_uri: window.location.origin,
           audience: AUTH0_AUDIENCE
         }}
+        cacheLocation='localstorage'
       >
         <SocketIOProvider>
           <nav className='absolute flex w-full items-center justify-end p-4 px-32'>
