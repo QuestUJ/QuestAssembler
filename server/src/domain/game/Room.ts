@@ -1,63 +1,127 @@
-import { randomUUID, UUID } from 'crypto';
+import { UUID } from 'crypto';
 
-import { IChatRepository } from '@/repositories/chat/IChatRepository';
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
-import { Character } from './Character';
-import { Chat } from './Chat';
-import { ChatMessage } from './ChatMessage';
-import { GameSettings } from './GameSettings';
-import { StoryChunk } from './StoryChunk';
+import { Character, CharacterDetails } from './Character';
+// import { ChatMessage } from './ChatMessage';
+// import { StoryChunk } from './StoryChunk';
+
+const MAX_ROOM_NAME_LENGTH: number = 128;
+const MAX_ROOM_PLAYERS: number = 10;
+// const MAX_STORY_CHUNKS: number = 2000;
+
+export class RoomSettings {
+    constructor(
+        public roomName: string = '',
+        public maxPlayerCount: number = 1
+    ) {
+        this.roomName = roomName;
+        this.maxPlayerCount = maxPlayerCount;
+    }
+}
+
+export interface RoomDetails {
+    readonly gameMaster: UUID;
+    readonly roomSettings: RoomSettings;
+    readonly characters: Character[];
+}
 
 export class Room {
-    readonly id: UUID = randomUUID();
-    readonly gameMaster: UUID = randomUUID();
-    private gameSettings: GameSettings;
-    private storyChunks: StoryChunk[] = [];
-    private broadcast: Chat;
-    private characters: Character[] = [];
-
-    constructor(roomRepository: IRoomRepository) {
-        roomRepository;
-        this.storyChunks;
-        this.characters;
-        this.broadcast = new Chat({} as IChatRepository);
-        this.gameSettings = new GameSettings('test', 1);
+    constructor(
+        readonly roomRepository: IRoomRepository,
+        readonly id: UUID,
+        readonly gameMaster: UUID,
+        private roomSettings: RoomSettings,
+        private characters: Character[]
+        // private storyChunks: StoryChunk[] = [];
+        // private broadcast: Chat;
+        // private chats: Map<(UUID, UUID), Chat>; ???
+    ) {
+        this.roomRepository = roomRepository;
+        this.id = id;
+        this.gameMaster = gameMaster;
+        this.characters = characters;
+        this.roomSettings = roomSettings;
     }
 
-    addCharacter(character: Character): void {
-        character;
+    getRoomDetails(): RoomDetails {
+        return {
+            gameMaster: this.gameMaster,
+            roomSettings: this.roomSettings,
+            characters: this.characters
+        };
+    }
+
+    hasUser(userId: UUID): boolean {
+        return !!this.characters.find(
+            character => character.getUserID() === userId
+        );
     }
 
     getCharacters(): Character[] {
-        return [];
+        return this.characters;
     }
 
-    addStoryChunk(chunk: StoryChunk): void {
-        chunk;
+    addCharacter(characterDetails: CharacterDetails) {
+        if (this.characters.length < this.roomSettings.maxPlayerCount) {
+            const character = this.roomRepository.addCharacter(
+                this.id,
+                characterDetails
+            );
+
+            this.characters.push(character);
+        }
     }
 
-    getStoryChunks(): StoryChunk[] {
-        return [];
+    // getStoryChunks(): StoryChunk[] {
+    //     return this.storyChunks;
+    // }
+
+    // addStoryChunk(chunk: StoryChunk) {
+    //     if (this.storyChunks.length < MAX_STORY_CHUNKS) {
+    //         this.storyChunks.push(chunk);
+    //     }
+    // }
+
+    // getBroadcast(): Chat {
+    //     return this.broadcast;
+    // }
+
+    // addBrodcastMessage(message: ChatMessage) {
+    //     message;
+    // }
+
+    getName(): string {
+        return this.roomSettings.roomName;
     }
 
-    addBrodcastMessage(message: ChatMessage): void {
-        message;
+    setName(newName: string) {
+        if (newName.length >= 1 && newName.length <= MAX_ROOM_NAME_LENGTH) {
+            this.roomRepository.updateRoom({
+                ...this.roomSettings,
+                roomName: newName
+            });
+
+            this.roomSettings.roomName = newName;
+        }
     }
 
-    getBroadcast(): Chat {
-        return this.broadcast;
+    getMaxPlayerCount(): number {
+        return this.roomSettings.maxPlayerCount;
     }
 
-    getGameSettings(): GameSettings {
-        return this.gameSettings;
+    setMaxPlayerCount(newMaxPlayerCount: number) {
+        if (newMaxPlayerCount >= 2 && newMaxPlayerCount <= MAX_ROOM_PLAYERS) {
+            this.roomRepository.updateRoom({
+                ...this.roomSettings,
+                maxPlayerCount: newMaxPlayerCount
+            });
+
+            this.roomSettings.maxPlayerCount = newMaxPlayerCount;
+        }
     }
 
-    setName(newName: string): void {
-        newName;
-    }
-
-    setMaxPlayerCount(newMaxPlayerCount: number): void {
-        newMaxPlayerCount;
+    hasEmptySlot(): boolean {
+        return this.characters.length < this.getMaxPlayerCount();
     }
 }
