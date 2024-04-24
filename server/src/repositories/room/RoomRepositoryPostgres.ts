@@ -20,7 +20,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
      */
     async createRoom(details: RoomDetails): Promise<Room> {
         await new Promise(() => details);
-        return new Room();
+        return new Room(this);
     }
 
     /**
@@ -29,6 +29,11 @@ export class RoomRepositoryPostgres implements IRoomRepository {
     async fetchRooms(userID: string): Promise<Room[]> {
         userID;
         return new Promise(resolve => resolve([]));
+    }
+
+    async getRoom(roomID: string): Promise<Room> {
+        roomID;
+        return new Promise(resolve => resolve(new Room(this)));
     }
 
     /**

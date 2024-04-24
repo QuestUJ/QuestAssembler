@@ -16,6 +16,10 @@ export interface IRoomRepository {
      */
     fetchRooms(userID: string): Promise<Room[]>;
     /**
+     * Retrive room with specific ID
+     */
+    getRoom(roomID: string): Promise<Room>;
+    /**
      * Updates room with given id
      */
     updateRoom(roomID: UUID, details: RoomDetails): void;

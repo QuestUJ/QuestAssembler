@@ -1,18 +1,23 @@
 import 'dotenv/config';
 
 import { extractMessage } from '@quasm/common';
-import { Server } from 'socket.io';
 
 import { config } from './config';
 import { logger } from './infrastructure/logger/Logger';
+import { db } from './infrastructure/postgres/db';
 import { startHTTPServer } from './presentation/http/httpServer';
-import { startSocketServer } from './presentation/socket/socketServer';
+import {
+    QuasmSocketServer,
+    startSocketServer
+} from './presentation/socket/socketServer';
+import { RoomRepositoryPostgres } from './repositories/room/RoomRepositoryPostgres';
 
 const { PORT } = config.pick(['PORT']);
+const roomRepo = new RoomRepositoryPostgres(db);
 
 (async () => {
     const app = await startHTTPServer();
-    startSocketServer(app.io);
+    startSocketServer(app.io, roomRepo);
 
     await app.listen({ port: PORT });
 
@@ -21,8 +26,6 @@ const { PORT } = config.pick(['PORT']);
 
 declare module 'fastify' {
     interface FastifyInstance {
-        io: Server<{
-            msg: string;
-        }>;
+        io: QuasmSocketServer;
     }
 }

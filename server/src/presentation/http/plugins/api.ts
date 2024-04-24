@@ -1,14 +1,11 @@
-import { ErrorLocation, QuasmError } from '@quasm/common';
+import { ErrorLocation, QuasmError, UserDetails } from '@quasm/common';
 import {
     type FastifyInstance,
     type FastifyPluginOptions,
     type FastifyRequest
 } from 'fastify';
 
-import {
-    IAuthProvider,
-    UserDetails
-} from '@/domain/tools/auth-provider/IAuthProvider';
+import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
 
 export function apiRoutes(authProvider: IAuthProvider) {
     return (

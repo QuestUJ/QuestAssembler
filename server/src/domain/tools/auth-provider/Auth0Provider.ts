@@ -1,7 +1,12 @@
-import { ErrorLocation, extractMessage, QuasmError } from '@quasm/common';
+import {
+    ErrorLocation,
+    extractMessage,
+    QuasmError,
+    UserDetails
+} from '@quasm/common';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 
-import { IAuthProvider, UserDetails } from './IAuthProvider';
+import { IAuthProvider } from './IAuthProvider';
 
 interface Config {
     domain: string;
