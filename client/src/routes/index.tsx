@@ -1,11 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
+import diceImg from '@/assets/dice.png';
 import LogoWithText from '@/components/LogoWithText';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-
-import diceImg from '../public/dice.png';
 
 function LandingPage() {
   useEffect(() => {

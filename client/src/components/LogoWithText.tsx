@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
 
-import logoSVG from '/public/logo.svg';
+import logoSVG from '@/assets/logo.svg';
 
 export default function LogoWithText() {
   return (
