@@ -1,6 +1,7 @@
 import { Auth0Provider } from '@auth0/auth0-react';
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 
+import { Toaster } from '@/components/ui/toaster';
 import { config } from '@/config';
 import { SocketIOProvider } from '@/providers/SocketIOProvider';
 
@@ -27,6 +28,7 @@ function RootLayout() {
         <SocketIOProvider>
           <main className='min-h-screen w-screen'>
             <Outlet />
+            <Toaster />
           </main>
         </SocketIOProvider>
       </Auth0Provider>

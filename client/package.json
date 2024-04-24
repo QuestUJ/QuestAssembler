@@ -15,8 +15,11 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
     "@quasm/common": "workspace:^",
+    "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-toast": "^1.1.5",
+    "@tanstack/react-query": "^5.32.0",
     "@tanstack/react-router": "^1.22.9",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
