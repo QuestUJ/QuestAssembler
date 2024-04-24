@@ -15,6 +15,7 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
     "@quasm/common": "workspace:^",
+    "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
     "@tanstack/react-router": "^1.22.9",
     "class-variance-authority": "^0.7.0",

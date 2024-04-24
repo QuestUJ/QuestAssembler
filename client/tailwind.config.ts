@@ -28,6 +28,10 @@ const config = {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))'
         },
+        supporting: {
+          DEFAULT: 'hsl(var(--supporting))',
+          foreground: 'hsl(var(--supporting'
+        },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))'
@@ -71,6 +75,10 @@ const config = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out'
+      },
+      fontFamily: {
+        'sans': ['Inter', 'ui-sans-serif', 'system-ui'],
+        'medieval': ['MedievalSharp']
       }
     }
   },
