@@ -10,9 +10,9 @@ export function Sidebar() {
         <button>Open Drawer</button>
       </Drawer.Trigger>
       <Drawer.Portal>
-        <Drawer.Overlay className='fixed inset-0 bg-black/40' />
+        <Drawer.Overlay className='inset-0 bg-black/40' />
         <Drawer.Content className='fixed bottom-0 left-0 mt-24 flex h-full w-[400px]'>
-          <div className='flex-1 bg-white p-4'>
+          <div className='flex-1 bg-black p-4'>
             <img src={'assets/logo.png'} />
             {/* */}
             <QuasmCollapsible />

@@ -1,5 +1,3 @@
-import './QuasmCollapsible.css';
-
 import * as ScrollArea from '@radix-ui/react-scroll-area';
 
 import { Button } from '@/components/ui/button';
@@ -15,30 +13,33 @@ const TAGS = Array.from({ length: 15 }).map(
 
 export function ScrollableContent() {
   return (
-    <ScrollArea.Root className='ScrollAreaRoot'>
-      <ScrollArea.Viewport className='ScrollAreaViewport'>
-        <div style={{ padding: '15px 20px' }}>
-          <div className='Text'>Tags</div>
+    <ScrollArea.Root className='h-[225px] w-[200px] overflow-hidden rounded bg-white shadow-lg'>
+      <ScrollArea.Viewport className='h-full w-full rounded'>
+        <div className='p-5'>
+          <div className='text-sm font-medium text-violet-600'>Tags</div>
           {TAGS.map(tag => (
-            <Button className='Tag' key={tag}>
+            <Button
+              className='border-mauve-200 text-mauve-800 mt-2 border-t pt-2 text-xs'
+              key={tag}
+            >
               {tag}
             </Button>
           ))}
         </div>
       </ScrollArea.Viewport>
       <ScrollArea.Scrollbar
-        className='ScrollAreaScrollbar'
+        className='flex touch-none select-none bg-black/60 p-0.5 transition duration-150 ease-out'
         orientation='vertical'
       >
-        <ScrollArea.Thumb className='ScrollAreaThumb' />
+        <ScrollArea.Thumb className='bg-mauve-300 relative flex-1 rounded' />
       </ScrollArea.Scrollbar>
       <ScrollArea.Scrollbar
-        className='ScrollAreaScrollbar'
+        className='flex touch-none select-none flex-col bg-black/60 p-0.5 transition duration-150 ease-out'
         orientation='horizontal'
       >
-        <ScrollArea.Thumb className='ScrollAreaThumb' />
+        <ScrollArea.Thumb className='bg-mauve-300 relative flex-1 rounded' />
       </ScrollArea.Scrollbar>
-      <ScrollArea.Corner className='ScrollAreaCorner' />
+      <ScrollArea.Corner className='bg-black/75' />
     </ScrollArea.Root>
   );
 }
