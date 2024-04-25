@@ -1,5 +1,4 @@
 import './index.css';
-import './index.css';
 
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { StrictMode } from 'react';
