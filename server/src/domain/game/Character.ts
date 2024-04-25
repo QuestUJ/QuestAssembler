@@ -22,7 +22,6 @@ export class Character {
         readonly roomRepository: IRoomRepository,
         readonly id: UUID,
         readonly userID: UUID,
-        readonly user: User | undefined,
         readonly room: Room,
         private nick: string,
         private description: string,
@@ -30,9 +29,8 @@ export class Character {
     ) {
         this.roomRepository = roomRepository;
         this.id = id;
-        this.user = user;
-        this.room = room;
         this.nick = nick;
+        this.room = room;
         this.description = description;
         this.playerTurnSubmit = playerTurnSubmit;
     }
