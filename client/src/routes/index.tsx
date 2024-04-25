@@ -12,13 +12,13 @@ function LandingPage() {
   }, []);
 
   return (
-    <div className='flex h-screen w-screen flex-col content-between p-2 md:p-4'>
+    <div className='flex h-screen w-screen flex-col content-between bg-background p-2 md:p-4'>
       <nav className='w-full'>
         <LogoWithText />
       </nav>
       <div className='flex h-full w-full flex-row'>
         <div className='flex h-full w-full flex-col md:w-3/4 lg:w-1/2'>
-          <main className='my-7 flex flex-col'>
+          <main className='my-7 md:ml-24 flex h-2/3 flex-col justify-center'>
             <h1 className='font-medieval text-7xl text-primary'>
               Quest Assembler
             </h1>

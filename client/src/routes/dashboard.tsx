@@ -1,17 +1,11 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { DialogClose } from '@radix-ui/react-dialog';
-import {
-  QueryClient,
-  QueryClientProvider,
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { UUID } from 'crypto';
 import { Crown, Swords } from 'lucide-react';
 import { useState } from 'react';
 
-import { Sidebar } from '@/components/Sidebar';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -27,13 +21,14 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
 import { config } from '@/config';
 
-const queryClient = new QueryClient();
 const { API_BASE_URL } = config.pick(['API_BASE_URL']);
 
 export function JoinGameDialog() {
   const [gameCode, setGameCode] = useState('');
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
   const { toast } = useToast();
+
+  const queryClient = useQueryClient();
 
   const joinGameMutation = useMutation({
     mutationFn: async (gameCode: string) => {
@@ -72,7 +67,7 @@ export function JoinGameDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className='m-2 w-4/5 rounded'>Join Game</Button>
+        <Button className='m-2 w-60 rounded'>Join Game</Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
@@ -168,7 +163,7 @@ export function CreateGameDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className='m-2 w-4/5 rounded'>Create Game</Button>
+        <Button className='m-2 w-60 rounded'>Create Game</Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
@@ -313,13 +308,7 @@ function RoomOverview() {
             <h1>You are not authenticated. Click here to authenticate: </h1>
             <Button
               className='rounded border'
-              onClick={() => {
-                // jiggy floppa move that linter requires
-                loginWithRedirect().then(
-                  () => {},
-                  () => {}
-                );
-              }}
+              onClick={() => void loginWithRedirect()}
             >
               Authenticate
             </Button>
@@ -351,16 +340,11 @@ function RoomOverview() {
 
 function Dashboard() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className='flex h-screen w-screen bg-background'>
-        <div style={{ width: '150px' }}>
-          <Sidebar />
-        </div>
-        <div style={{ flexGrow: 1, overflow: 'auto' }}>
-          <RoomOverview />
-        </div>
+    <div className='flex min-h-screen w-full bg-background'>
+      <div style={{ flexGrow: 1, overflow: 'auto' }}>
+        <RoomOverview />
       </div>
-    </QueryClientProvider>
+    </div>
   );
 }
 

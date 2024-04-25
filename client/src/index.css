@@ -59,5 +59,7 @@
   }
   body {
     @apply bg-background text-foreground;
+
+    background: linear-gradient(#222, #111);
   }
 }
