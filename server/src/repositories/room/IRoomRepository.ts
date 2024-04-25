@@ -4,17 +4,17 @@ import { Character, CharacterDetails } from '@/domain/game/Character';
 import { Room, RoomDetails, RoomSettings } from '@/domain/game/Room';
 
 export interface IRoomRepository {
-    getRoomByID(roomID: UUID): Promise<Room>;
+    createRoom(roomDetails: RoomDetails): Promise<Room>;
 
     fetchRooms(userID: UUID): Promise<Room[]>;
 
-    addCharacter(roomID: UUID, character: CharacterDetails): Character;
+    getRoomByID(roomID: UUID): Promise<Room>;
 
-    createRoom(roomDetails: RoomDetails): Room;
+    updateRoom(roomID: UUID, roomSettings: RoomSettings): Promise<void>;
 
-    deleteRoom(roomID: UUID): void;
+    deleteRoom(roomID: UUID): Promise<void>;
 
-    updateRoom(roomSettings: RoomSettings): void;
+    addCharacter(characterDetails: CharacterDetails): Promise<Character>;
 
-    updateCharacter(character: CharacterDetails): void;
+    updateCharacter(character: CharacterDetails): Promise<void>;
 }
