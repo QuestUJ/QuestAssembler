@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
 import diceImg from '@/assets/dice.png';
@@ -26,7 +26,9 @@ function LandingPage() {
               The best story is your story
             </h3>
             <div className='my-3 flex flex-row justify-center md:justify-normal'>
-              <Button className='w-52 text-xl'>Join the game</Button>
+              <Link to='/dashboard'>
+                <Button className='w-52 text-xl'>Join the game</Button>
+              </Link>
             </div>
           </main>
           <div className='mt-auto flex w-full flex-col items-center md:items-start'>
