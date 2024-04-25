@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { useAuth0 } from '@auth0/auth0-react';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
 import diceImg from '@/assets/dice.png';
@@ -11,6 +12,8 @@ function LandingPage() {
     document.querySelector('html')?.classList.add('dark');
   }, []);
 
+  const { loginWithRedirect } = useAuth0();
+
   return (
     <div className='flex h-screen w-screen flex-col content-between bg-background p-2 md:p-4'>
       <nav className='w-full'>
@@ -18,7 +21,7 @@ function LandingPage() {
       </nav>
       <div className='flex h-full w-full flex-row'>
         <div className='flex h-full w-full flex-col md:w-3/4 lg:w-1/2'>
-          <main className='my-7 md:ml-24 flex h-2/3 flex-col justify-center'>
+          <main className='my-7 flex h-2/3 flex-col justify-center md:ml-24'>
             <h1 className='font-medieval text-7xl text-primary'>
               Quest Assembler
             </h1>
@@ -26,9 +29,12 @@ function LandingPage() {
               The best story is your story
             </h3>
             <div className='my-3 flex flex-row justify-center md:justify-normal'>
-              <Link to='/dashboard'>
-                <Button className='w-52 text-xl'>Join the game</Button>
-              </Link>
+              <Button
+                onClick={() => void loginWithRedirect()}
+                className='w-52 text-xl'
+              >
+                Join the game
+              </Button>
             </div>
           </main>
           <div className='mt-auto flex w-full flex-col items-center md:items-start'>

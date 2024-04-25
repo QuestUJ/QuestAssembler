@@ -1,15 +1,9 @@
 import { Auth0Provider } from '@auth0/auth0-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import {
-  createRootRoute,
-  Outlet,
-  useRouterState
-} from '@tanstack/react-router';
+import { createRootRoute, Outlet } from '@tanstack/react-router';
 
-import { Navigation } from '@/components/navigation/Navigation';
 import { Toaster } from '@/components/ui/toaster';
 import { config } from '@/config';
-import { cn } from '@/lib/utils';
 import { SocketIOProvider } from '@/providers/SocketIOProvider';
 
 function RootLayout() {
@@ -20,7 +14,6 @@ function RootLayout() {
   ]);
 
   const queryClient = new QueryClient();
-  const routerState = useRouterState();
 
   return (
     <>
@@ -29,29 +22,14 @@ function RootLayout() {
           domain={AUTH0_DOMAIN}
           clientId={AUTH0_CLIENTID}
           authorizationParams={{
-            redirect_uri: window.location.origin,
+            redirect_uri: `${window.location.origin}/dashboard/`,
             audience: AUTH0_AUDIENCE
           }}
           cacheLocation='localstorage'
         >
           <SocketIOProvider>
-            <div className='flex'>
-              {routerState.location.pathname !== '/' && (
-                <nav>
-                  <Navigation />
-                </nav>
-              )}
-
-              <main
-                className={cn(
-                  'min-h-screen w-screen',
-                  routerState.location.pathname !== '/' && 'pt-20 lg:pt-0'
-                )}
-              >
-                <Outlet />
-                <Toaster />
-              </main>
-            </div>
+            <Outlet />
+            <Toaster />
           </SocketIOProvider>
         </Auth0Provider>
       </QueryClientProvider>

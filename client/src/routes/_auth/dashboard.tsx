@@ -203,18 +203,6 @@ export function CreateGameDialog() {
   );
 }
 
-function SidebarPrototype() {
-  return (
-    <div className='flex h-full w-1/5 flex-col justify-end [&>button]:m-1'>
-      <div className='flex w-full flex-col items-center justify-center'>
-        <Separator className='w-4/5' />
-        <JoinGameDialog />
-        <CreateGameDialog />
-      </div>
-    </div>
-  );
-}
-
 type RoomResponse = {
   id: UUID;
   roomName: string;
@@ -340,7 +328,7 @@ function RoomOverview() {
 
 function Dashboard() {
   return (
-    <div className='flex min-h-screen w-full bg-background'>
+    <div className='flex min-h-screen w-full'>
       <div style={{ flexGrow: 1, overflow: 'auto' }}>
         <RoomOverview />
       </div>
@@ -348,6 +336,6 @@ function Dashboard() {
   );
 }
 
-export const Route = createFileRoute('/dashboard')({
+export const Route = createFileRoute('/_auth/dashboard')({
   component: Dashboard
 });
