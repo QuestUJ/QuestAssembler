@@ -9,7 +9,10 @@ const configMap = {
   AUTH0_CLIENTID:
     Config.loadString('VITE_AUTH0_CLIENTID') ||
     'ssI1HRw1boSFw3L0Eb54GBoi0VYdM5Eh',
-  AUTH0_AUDIENCE: Config.loadString('VITE_AUTH0_AUDIENCE') || ''
+  AUTH0_AUDIENCE: Config.loadString('VITE_AUTH0_AUDIENCE') || '',
+  // BASE_URL without ending slash
+  API_BASE_URL:
+    Config.loadString('VITE_API_BASE_URL') || 'http://localhost:3000'
 };
 
 export const config = new Config(configMap);

@@ -1,7 +1,7 @@
 import { Auth0Provider } from '@auth0/auth0-react';
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
+import { createRootRoute, Outlet } from '@tanstack/react-router';
 
-import { User } from '@/components/User';
+import { Toaster } from '@/components/ui/toaster';
 import { config } from '@/config';
 import { SocketIOProvider } from '@/providers/SocketIOProvider';
 
@@ -26,19 +26,9 @@ function RootLayout() {
         cacheLocation='localstorage'
       >
         <SocketIOProvider>
-          <nav className='absolute flex w-full items-center justify-end p-4 px-32'>
-            <Link to='/' className='mx-4 text-primary'>
-              Home
-            </Link>
-            <div>|</div>
-            <Link to='/rooms' className='mx-4'>
-              Rooms
-            </Link>
-            <div>|</div>
-            <User />
-          </nav>
           <main className='min-h-screen w-screen'>
             <Outlet />
+            <Toaster />
           </main>
         </SocketIOProvider>
       </Auth0Provider>

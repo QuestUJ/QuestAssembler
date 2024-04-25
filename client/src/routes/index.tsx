@@ -1,77 +1,56 @@
-import { useAuth0 } from '@auth0/auth0-react';
-import { createFileRoute } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { useEffect } from 'react';
 
+import diceImg from '@/assets/dice.png';
+import LogoWithText from '@/components/LogoWithText';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useSocketIO, useSocketIOEvent } from '@/hooks/socketio';
+import { Separator } from '@/components/ui/separator';
 
-function IndexRoute() {
+function LandingPage() {
   useEffect(() => {
     document.querySelector('html')?.classList.add('dark');
   }, []);
 
-  const [msg, setMsg] = useState<string>('');
-  const [recv, setRecv] = useState<string[]>([]);
-
-  const { getAccessTokenSilently } = useAuth0();
-
-  const onMsg = (data: string) => {
-    setRecv([data, ...recv]);
-  };
-
-  const { socket, connect } = useSocketIO();
-
-  useSocketIOEvent('msg', onMsg);
-
-  const onConnect = async () => {
-    const token = await getAccessTokenSilently();
-
-    connect(token);
-  };
-
-  const send = () => {
-    socket?.emit('msg', msg);
-  };
-
-  const request = async () => {
-    const token = await getAccessTokenSilently();
-    const data = (await (
-      await fetch('http://localhost:3000/api/v1/test', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-    ).json()) as unknown;
-    console.log(data);
-  };
-
   return (
-    <>
-      <div className='flex h-screen w-screen flex-col items-center justify-center gap-5'>
-        {recv.map((str, i) => (
-          <div
-            key={i}
-            className='w-1/5 animate-bounce rounded-xl border-2 border-primary p-2 text-left duration-500 repeat-1'
-          >
-            {str}
+    <div className='flex h-screen w-screen flex-col content-between p-2 md:p-4'>
+      <nav className='w-full'>
+        <LogoWithText />
+      </nav>
+      <div className='flex h-full w-full flex-row'>
+        <div className='flex h-full w-full flex-col md:w-3/4 lg:w-1/2'>
+          <main className='my-7 flex flex-col'>
+            <h1 className='font-medieval text-7xl text-primary'>
+              Quest Assembler
+            </h1>
+            <h3 className='my-4 text-4xl text-supporting'>
+              The best story is your story
+            </h3>
+            <div className='my-3 flex flex-row justify-center md:justify-normal'>
+              <Link to='/dashboard'>
+                <Button className='w-52 text-xl'>Join the game</Button>
+              </Link>
+            </div>
+          </main>
+          <div className='mt-auto flex w-full flex-col items-center md:items-start'>
+            <Separator className='w-5/6 md:hidden' orientation='horizontal' />
+            <h4 className='my-2 text-2xl text-supporting'>
+              Created by QuestUJ@2024
+            </h4>
+            <div className='hidden flex-row text-nowrap text-sm text-secondary md:flex [&>a]:mx-2'>
+              <a href='https://github.com/avgmathenjoyer'>@avgmathenjoyer</a>
+              <a href='https://github.com/patrykfulara7'>@nier</a>
+              <a href='https://github.com/St0pien'>@st0pien</a>
+              <a href='https://github.com/werka-z'>@werka-z</a>
+              <a href='https://github.com/wouchan'>@wouchan</a>
+            </div>
           </div>
-        ))}
-        <Input
-          className='w-1/5'
-          value={msg}
-          onChange={e => setMsg(e.target.value)}
-        />
-        <div className='flex gap-2'>
-          <Button onClick={() => void onConnect()}>Connect</Button>
-          <Button onClick={send}>Click this to send</Button>
-          <Button onClick={() => void request()}>Test auth api</Button>
         </div>
+        <img src={diceImg} className='hidden w-1/2 lg:block' />
       </div>
-    </>
+    </div>
   );
 }
 
 export const Route = createFileRoute('/')({
-  component: IndexRoute
+  component: LandingPage
 });

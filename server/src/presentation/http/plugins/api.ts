@@ -1,5 +1,5 @@
 import { ErrorLocation, QuasmError } from '@quasm/common';
-import { UUID } from 'crypto';
+import { randomUUID } from 'crypto';
 import {
     type FastifyInstance,
     type FastifyPluginOptions,
@@ -22,6 +22,30 @@ export function apiRoutes(
         _: FastifyPluginOptions,
         done: () => void
     ) => {
+        /** FOR TESTING ONLY */
+        const rooms = [
+            {
+                id: randomUUID(),
+                roomName: 'test 1',
+                gameMasterName: 'Mariusz Pudzianowski',
+                currentPlayers: 5,
+                maxPlayers: 6,
+                isCurrentUserGameMaster: true,
+                lastImageUrl: undefined,
+                lastMessages: undefined
+            },
+            {
+                id: randomUUID(),
+                roomName: 'test 2',
+                gameMasterName: 'Kolmogorov',
+                currentPlayers: 3,
+                maxPlayers: 7,
+                isCurrentUserGameMaster: false,
+                lastImageUrl: undefined,
+                lastMessages: undefined
+            }
+        ];
+
         fastify.decorateRequest('user', null);
 
         fastify.addHook('preHandler', async (req: FastifyRequest) => {
@@ -48,67 +72,78 @@ export function apiRoutes(
             });
         });
 
-        fastify.get(
-            '/room/:roomID/details',
-            async (
-                request: FastifyRequest<{ Params: { roomID: UUID } }>,
-                reply
-            ) => {
-                const userID = request.user.userID as UUID;
+        fastify.get('/fetchRooms', async (request, reply) => {
+            // get user details from the preHandler auth hook
+            //const userID = request.user.userID;
 
-                const room = await roomRepository.getRoomByID(
-                    request.params.roomID
-                );
+            // call db and fetch rooms with that userID
+            // const response = await fetchRooms(...);
+            // mock response
 
-                if (room.hasUser(userID)) {
-                    return await reply.send(
-                        JSON.stringify(room.getRoomDetails())
-                    );
-                }
+            await reply.send({
+                rooms: rooms
+            });
+            /**
+             * expects object {rooms: RoomResponse[]} where ResponseRoom:
+                type RoomResponse = {
+                    id: UUID;
+                    roomName: string;
+                    gameMasterName: string;
+                    currentPlayers: number;
+                    maxPlayers: number;
+                    isCurrentUserGameMaster: boolean;
+                    lastImageUrl: string | undefined;
+                    lastMessages: string[] | undefined;
+                };
+             */
+        });
 
-                if (room.hasEmptySlot()) {
-                    throw new QuasmError(
-                        ErrorLocation.VALIDATION,
-                        500,
-                        'User is not in the room'
-                    );
-                } else {
-                    throw new QuasmError(
-                        ErrorLocation.VALIDATION,
-                        500,
-                        'Room is full already'
-                    );
-                }
-            }
-        );
+        fastify.post('/joinGame', async (request, reply) => {
+            // get user details from the preHandler auth hook
+            //const userID = request.user.userID;
+            //const gameCode = request.body.gameCode;
+            //calldb and see if joining the room is even possible
+            //mock response
+            rooms.push({
+                id: randomUUID(),
+                roomName: 'test 3',
+                gameMasterName: 'Kolmogorov 2',
+                currentPlayers: 35,
+                maxPlayers: 78,
+                isCurrentUserGameMaster: false,
+                lastImageUrl: undefined,
+                lastMessages: undefined
+            });
 
-        fastify.get(
-            '/room/:roomID/join',
-            async (
-                request: FastifyRequest<{
-                    Params: {
-                        roomID: UUID;
-                        characterDetails: CharacterDetails;
-                    };
-                }>,
-                reply
-            ) => {
-                const room = await roomRepository.getRoomByID(
-                    request.params.roomID
-                );
+            await reply.code(200);
+            /**
+             * expects just the response code:
+             * - 200 is everything ok
+             * - anything else is bad
+             */
+        });
 
-                if (room.hasEmptySlot()) {
-                    room.addCharacter(request.params.characterDetails);
-                    return await reply.send();
-                } else {
-                    throw new QuasmError(
-                        ErrorLocation.VALIDATION,
-                        500,
-                        'Room is full already'
-                    );
-                }
-            }
-        );
+        fastify.post('/createGame', async (request, reply) => {
+            // get user details from the preHandler auth hook
+            //const userID = request.user.userID;
+            //const maxNumberOfPlayers = request.body.maxPlayers;
+            //const roomName = request.body.name;
+            //calldb and see if creating the room is even possible
+            //mock response
+            rooms.push({
+                id: randomUUID(),
+                roomName: 'test 7',
+                gameMasterName: 'Kolmogorov 2',
+                currentPlayers: 35,
+                maxPlayers: 78,
+                isCurrentUserGameMaster: true,
+                lastImageUrl: undefined,
+                lastMessages: undefined
+            });
+            await reply.code(200).send({
+                gameCode: rooms[rooms.length - 1].id
+            });
+        });
 
         done();
     };
