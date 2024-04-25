@@ -6,12 +6,17 @@ import {
     type FastifyRequest
 } from 'fastify';
 
+import { CharacterDetails } from '@/domain/game/Character';
 import {
     IAuthProvider,
     UserDetails
 } from '@/domain/tools/auth-provider/IAuthProvider';
+import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
-export function apiRoutes(authProvider: IAuthProvider) {
+export function apiRoutes(
+    authProvider: IAuthProvider,
+    roomRepository: IRoomRepository
+) {
     return (
         fastify: FastifyInstance,
         _: FastifyPluginOptions,
@@ -61,7 +66,7 @@ export function apiRoutes(authProvider: IAuthProvider) {
         });
 
         fastify.get('/test', async (request, reply) => {
-            await reply.send({
+            return await reply.send({
                 hello: 'there',
                 user: request.user
             });
