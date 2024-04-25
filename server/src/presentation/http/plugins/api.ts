@@ -42,7 +42,7 @@ export function apiRoutes(
         });
 
         fastify.get('/test', async (request, reply) => {
-            await reply.send({
+            return await reply.send({
                 hello: 'there',
                 user: request.user
             });
@@ -61,7 +61,9 @@ export function apiRoutes(
                 );
 
                 if (room.hasUser(userID)) {
-                    await reply.send(JSON.stringify(room.getRoomDetails()));
+                    return await reply.send(
+                        JSON.stringify(room.getRoomDetails())
+                    );
                 }
 
                 if (room.hasEmptySlot()) {
@@ -97,7 +99,7 @@ export function apiRoutes(
 
                 if (room.hasEmptySlot()) {
                     room.addCharacter(request.params.characterDetails);
-                    await reply.send();
+                    return await reply.send();
                 } else {
                     throw new QuasmError(
                         ErrorLocation.VALIDATION,
