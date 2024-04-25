@@ -17,7 +17,6 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
 import { config } from '@/config';
 
@@ -328,7 +327,7 @@ function RoomOverview() {
 
 function Dashboard() {
   return (
-    <div className='flex min-h-screen w-full'>
+    <div className='flex w-full'>
       <div style={{ flexGrow: 1, overflow: 'auto' }}>
         <RoomOverview />
       </div>

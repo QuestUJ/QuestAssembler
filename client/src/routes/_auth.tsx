@@ -9,7 +9,7 @@ function AuthLayout() {
         <Navigation />
       </nav>
 
-      <main className='min-h-screen w-screen bg-gradient-to-b from-[#222] to-[#111] pt-20 lg:pt-0'>
+      <main className='min-h-screen w-screen bg-gradient-to-b from-[#222] to-[#111] pt-20'>
         <Outlet />
       </main>
     </div>
