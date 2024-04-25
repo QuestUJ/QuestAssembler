@@ -11,6 +11,7 @@ import { UUID } from 'crypto';
 import { Crown, Swords } from 'lucide-react';
 import { useState } from 'react';
 
+import { Sidebar } from '@/components/Sidebar';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -29,7 +30,7 @@ import { config } from '@/config';
 const queryClient = new QueryClient();
 const { API_BASE_URL } = config.pick(['API_BASE_URL']);
 
-function JoinGameDialog() {
+export function JoinGameDialog() {
   const [gameCode, setGameCode] = useState('');
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
   const { toast } = useToast();
@@ -101,7 +102,7 @@ function JoinGameDialog() {
   );
 }
 
-function CreateGameDialog() {
+export function CreateGameDialog() {
   const [name, setName] = useState('');
   const [maxPlayers, setMaxPlayers] = useState(0);
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
@@ -311,6 +312,7 @@ function RoomOverview() {
           <div>
             <h1>You are not authenticated. Click here to authenticate: </h1>
             <Button
+              className='rounded border'
               onClick={() => {
                 // jiggy floppa move that linter requires
                 loginWithRedirect().then(
@@ -350,9 +352,13 @@ function RoomOverview() {
 function Dashboard() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className='flex h-screen w-screen flex-row bg-background'>
-        <SidebarPrototype />
-        <RoomOverview />
+      <div className='flex h-screen w-screen bg-background'>
+        <div style={{ width: '150px' }}>
+          <Sidebar />
+        </div>
+        <div style={{ flexGrow: 1, overflow: 'auto' }}>
+          <RoomOverview />
+        </div>
       </div>
     </QueryClientProvider>
   );
