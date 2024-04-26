@@ -27,7 +27,7 @@ const { PORT, AUTH0_DOMAIN, AUTH0_AUDIENCE } = config.pick([
     const app = await startHTTPServer(roomRepo, auth0);
     startSocketServer(app.io);
 
-    await app.listen({ port: PORT });
+    await app.listen({ port: PORT, host: '0.0.0.0' });
 
     logger.info('STARTUP', 'Successful!');
 })().catch(err => logger.error('STARTUP', extractMessage(err)));
