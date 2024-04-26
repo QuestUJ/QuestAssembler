@@ -17,7 +17,10 @@ export interface IRoomRepository {
 
     deleteRoom(roomID: UUID): Promise<void>;
 
-    addCharacter(characterDetails: CharacterDetails): Promise<Character>;
+    addCharacter(
+        roomID: UUID,
+        characterDetails: CharacterDetails
+    ): Promise<Character>;
 
     updateCharacter(id: UUID, character: CharacterDetails): Promise<void>;
 }
