@@ -44,7 +44,7 @@ export async function up(db: Kysely<Database>): Promise<void> {
         .addColumn('userID', 'varchar(36)', col => col.notNull())
         .addColumn('submitContent', 'varchar')
         .addColumn('submitTimestamp', 'timestamp', col =>
-            col.notNull().defaultTo(sql`NOW()`)
+            col.defaultTo(sql`NOW()`)
         )
         .execute();
 

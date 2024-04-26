@@ -3,53 +3,41 @@ import { UUID } from 'crypto';
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { PlayerTurnSubmit } from './PlayerTurnSubmit';
-import { Room } from './Room';
-import { User } from './User';
 
 const MAX_CHARACTER_NICK_LENGTH = 64;
 const MAX_CHARACTER_DESCRIPTION_LENGTH = 256;
 
 export interface CharacterDetails {
-    readonly userID: UUID;
-    readonly room: Room;
-    readonly nick: string;
-    readonly description: string;
-    readonly playerTurnSubmit: PlayerTurnSubmit | undefined;
+    userID: string;
+    nick: string;
+    description: string;
 }
 
 export class Character {
     constructor(
         readonly roomRepository: IRoomRepository,
         readonly id: UUID,
-        readonly userID: UUID,
-        readonly room: Room,
+        readonly userID: string,
         private nick: string,
         private description: string,
-        private playerTurnSubmit: PlayerTurnSubmit | undefined
-    ) {
-        this.roomRepository = roomRepository;
-        this.id = id;
-        this.nick = nick;
-        this.room = room;
-        this.description = description;
-        this.playerTurnSubmit = playerTurnSubmit;
-    }
+        readonly isGameMaster: boolean,
+        private playerTurnSubmit?: PlayerTurnSubmit
+    ) {}
 
-    getUserID(): UUID | undefined {
-        return this.user?.id;
-    }
-
-    isGameMaster(): boolean {
-        return this.id === this.room.gameMaster;
+    getUserID(): string {
+        return this.userID;
     }
 
     getNick(): string {
         return this.nick;
     }
 
-    setNick(newNick: string) {
+    async setNick(newNick: string) {
         if (newNick.length <= MAX_CHARACTER_NICK_LENGTH) {
-            this.roomRepository.updateCharacter({ ...this, nick: newNick });
+            await this.roomRepository.updateCharacter(this.id, {
+                ...this,
+                nick: newNick
+            });
             this.nick = newNick;
         }
     }
@@ -58,9 +46,9 @@ export class Character {
         return this.description;
     }
 
-    setDescription(newDescription: string) {
+    async setDescription(newDescription: string) {
         if (newDescription.length <= MAX_CHARACTER_DESCRIPTION_LENGTH) {
-            this.roomRepository.updateCharacter({
+            await this.roomRepository.updateCharacter(this.id, {
                 ...this,
                 description: newDescription
             });
@@ -73,8 +61,8 @@ export class Character {
         return this.playerTurnSubmit;
     }
 
-    setPlayerTurnSubmit(submit: PlayerTurnSubmit | undefined) {
-        this.roomRepository.updateCharacter({
+    async setPlayerTurnSubmit(submit: PlayerTurnSubmit | undefined) {
+        await this.roomRepository.updateCharacter(this.id, {
             ...this,
             playerTurnSubmit: submit
         });

@@ -38,7 +38,7 @@ export function JoinGameDialog() {
       const token = await getAccessTokenSilently();
 
       // API call
-      const response = await fetch(`${API_BASE_URL}/api/v1/joinGame`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/joinRoom`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -101,6 +101,7 @@ export function CreateGameDialog() {
   const [maxPlayers, setMaxPlayers] = useState(0);
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const createGameMutation = useMutation({
     mutationFn: async ({

@@ -1,12 +1,12 @@
 import { ErrorLocation, QuasmError } from '@quasm/common';
-import { randomUUID } from 'crypto';
+import { randomUUID, UUID } from 'crypto';
 import {
     type FastifyInstance,
     type FastifyPluginOptions,
     type FastifyRequest
 } from 'fastify';
 
-import { CharacterDetails } from '@/domain/game/Character';
+import { RoomSettings } from '@/domain/game/Room';
 import {
     IAuthProvider,
     UserDetails
@@ -80,9 +80,9 @@ export function apiRoutes(
             // const response = await fetchRooms(...);
             // mock response
 
-            await reply.send({
-                rooms: rooms
-            });
+            // await reply.send({
+            //     rooms: rooms
+            // });
             /**
              * expects object {rooms: RoomResponse[]} where ResponseRoom:
                 type RoomResponse = {
@@ -96,31 +96,46 @@ export function apiRoutes(
                     lastMessages: string[] | undefined;
                 };
              */
+
+            const rooms = await roomRepository.fetchRooms(request.user.userID);
+            await reply.send({
+                rooms: rooms.map(r => ({
+                    id: r.id,
+                    roomName: r.getName(),
+                    gameMasterName: '',
+                    currentPlayers: r.getCharacters.length,
+                    maxPlayers: r.getMaxPlayerCount(),
+                    isCurrentUserGameMaster: false,
+                    lastImageUrl: undefined,
+                    lastMessages: undefined
+                }))
+            });
         });
 
-        fastify.post('/joinGame', async (request, reply) => {
+        fastify.post('/joinRoom', async (request, reply) => {
             // get user details from the preHandler auth hook
             //const userID = request.user.userID;
             //const gameCode = request.body.gameCode;
             //calldb and see if joining the room is even possible
             //mock response
-            rooms.push({
-                id: randomUUID(),
-                roomName: 'test 3',
-                gameMasterName: 'Kolmogorov 2',
-                currentPlayers: 35,
-                maxPlayers: 78,
-                isCurrentUserGameMaster: false,
-                lastImageUrl: undefined,
-                lastMessages: undefined
-            });
-
-            await reply.code(200);
             /**
              * expects just the response code:
              * - 200 is everything ok
              * - anything else is bad
              */
+
+            const { gameCode } = request.body as { gameCode: string };
+            const room = await roomRepository.getRoomByID(gameCode as UUID);
+            console.log('hi', room);
+
+            console.log(request.user);
+            await room.addCharacter({
+                nick: 'Test',
+                description: 'test',
+                userID: request.user.userID
+            });
+
+            await reply.send('ok');
         });
 
         fastify.post('/createGame', async (request, reply) => {
@@ -130,18 +145,21 @@ export function apiRoutes(
             //const roomName = request.body.name;
             //calldb and see if creating the room is even possible
             //mock response
-            rooms.push({
-                id: randomUUID(),
-                roomName: 'test 7',
-                gameMasterName: 'Kolmogorov 2',
-                currentPlayers: 35,
-                maxPlayers: 78,
-                isCurrentUserGameMaster: true,
-                lastImageUrl: undefined,
-                lastMessages: undefined
+
+            const { name, maxPlayers } = request.body as {
+                name: string;
+                maxPlayers: number;
+            };
+            const settings = new RoomSettings(name, maxPlayers);
+            const room = await roomRepository.createRoom(settings, {
+                userID: request.user.userID,
+                description: 'test description',
+                nick: 'boss'
             });
-            await reply.code(200).send({
-                gameCode: rooms[rooms.length - 1].id
+            console.log(room);
+
+            await reply.send({
+                gameCode: room.id
             });
         });
 

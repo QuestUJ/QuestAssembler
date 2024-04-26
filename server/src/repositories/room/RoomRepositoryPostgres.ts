@@ -1,10 +1,11 @@
-import { UUID, randomUUID } from 'crypto';
+import { randomUUID, UUID } from 'crypto';
 import { Kysely } from 'kysely';
 
-import { Database } from '@/infrastructure/postgres/db';
-import { IRoomRepository, } from './IRoomRepository';
 import { Character, CharacterDetails } from '@/domain/game/Character';
-import { Room, RoomDetails, RoomSettings } from '@/domain/game/Room';
+import { Room, RoomSettings } from '@/domain/game/Room';
+import { Database } from '@/infrastructure/postgres/db';
+
+import { IRoomRepository } from './IRoomRepository';
 
 export class RoomRepositoryPostgres implements IRoomRepository {
     private fetchedRooms: Map<UUID, Room>;
@@ -13,47 +14,85 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         this.fetchedRooms = new Map();
     }
 
-    async createRoom(roomDetails: RoomDetails): Promise<Room> {
-        const room = {
-            id: randomUUID(), // sliskie
-            gameMasterID: roomDetails.gameMaster,
-            roomName: roomDetails.roomSettings.roomName,
-            maxPlayerCount: roomDetails.roomSettings.maxPlayerCount
-        }
+    async createRoom(
+        roomDetails: RoomSettings,
+        gameMasterDetails: CharacterDetails
+    ): Promise<Room> {
+        const gameMasterUUID = randomUUID();
+        const roomUUID = randomUUID();
+        await this.db.transaction().execute(async trx => {
+            await trx
+                .insertInto('Rooms')
+                .values({
+                    id: roomUUID,
+                    gameMasterID: gameMasterUUID,
+                    roomName: roomDetails.roomName,
+                    maxPlayerCount: roomDetails.maxPlayerCount
+                })
+                .executeTakeFirstOrThrow();
 
-        await this.db.insertInto('Rooms')
-                     .values(room)
-                     .execute();
+            await trx
+                .insertInto('Characters')
+                .values({
+                    id: gameMasterUUID,
+                    nick: gameMasterDetails.nick,
+                    description: gameMasterDetails.description,
+                    roomID: roomUUID,
+                    userID: gameMasterDetails.userID
+                })
+                .executeTakeFirstOrThrow();
+        });
 
-        const newRoom = new Room(
+        const room = new Room(this, roomUUID, roomDetails);
+        const master = new Character(
             this,
-            room.id,
-            roomDetails.gameMaster,
-            roomDetails.roomSettings,
-            []);
+            gameMasterUUID,
+            gameMasterDetails.userID,
+            gameMasterDetails.nick,
+            gameMasterDetails.description,
+            true
+        );
 
-        this.fetchedRooms.set(room.id, newRoom);
-        return newRoom;
+        room.restoreCharacter(master);
+
+        this.fetchedRooms.set(room.id, room);
+        return room;
     }
 
-    async fetchRooms(userID: UUID): Promise<Room[]> {
-        const fetchedRoomIDs = await this.db
+    async fetchRooms(userID: string): Promise<Room[]> {
+        const roomsData = await this.db
             .selectFrom('Rooms')
-            .innerJoin('Characters', 'roomID', 'roomID')
-            .where('userID', '=', userID)
-            .select(['roomID'])
+            .innerJoin('Characters', 'Rooms.id', 'Characters.roomID')
+            .where('Characters.userID', '=', userID)
+            .selectAll()
             .execute();
 
-        let rooms: Room[] = [];
-        for (let i = 0; i < rooms.length; i++) {
-            if (this.fetchedRooms.has(fetchedRoomIDs[i].roomID as UUID)) {
-                rooms[i] = this.fetchedRooms.get(fetchedRoomIDs[i].roomID as UUID)!;
-            } else {
-                rooms[i] = await this.getRoomByID(fetchedRoomIDs[i].roomID as UUID);
-            }
-        }
+        roomsData.forEach(r => {
+            this.fetchedRooms.delete(r.id as UUID);
+        });
 
-        return rooms;
+        const result: Room[] = [];
+
+        roomsData.forEach(r => {
+            if (!this.fetchedRooms.has(r.id as UUID)) {
+                const settings = new RoomSettings(r.roomName, r.maxPlayerCount);
+                const room = new Room(this, r.id as UUID, settings);
+                this.fetchedRooms.set(r.id as UUID, room);
+                result.push(room);
+            }
+
+            const character = new Character(
+                this,
+                r.id as UUID,
+                r.userID,
+                r.nick,
+                r.description,
+                r.gameMasterID === r.id
+            );
+            this.fetchedRooms.get(r.id as UUID)?.restoreCharacter(character);
+        });
+
+        return result;
     }
 
     async getRoomByID(roomID: UUID): Promise<Room> {
@@ -61,39 +100,32 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             return this.fetchedRooms.get(roomID)!;
         }
 
-        const fetchedRoom = await this.db
+        const roomData = await this.db
             .selectFrom('Rooms')
-            .where('id', '=', roomID)
-            .selectAll()
-            .executeTakeFirst();
-
-        const fetchedCharacters = await this.db
-            .selectFrom('Characters')
-            .where('roomID', '=', roomID)
+            .innerJoin('Characters', 'Rooms.id', 'Characters.roomID')
+            .where('Rooms.id', '=', roomID)
             .selectAll()
             .execute();
 
-        const roomSettings = {
-            roomName: fetchedRoom!.roomName,
-            maxPlayerCount: fetchedRoom!.maxPlayerCount
-        }
+        const { roomName, maxPlayerCount } = roomData[0];
 
-        let characters: Character[] = [];
-        const room = new Room(this, fetchedRoom!.id as UUID, fetchedRoom!.gameMasterID as UUID, roomSettings, characters);
-
-        for (let i = 0; i < characters.length; i++) {
-            characters[i] = new Character(
+        const settings = new RoomSettings(roomName, maxPlayerCount);
+        const room = new Room(this, roomID, settings);
+        roomData.forEach(r => {
+            const character = new Character(
                 this,
-                fetchedCharacters[i].id as UUID,
-                fetchedCharacters[i].userID as UUID,
-                room,
-                fetchedCharacters[i].nick,
-                fetchedCharacters[i].description,
-                undefined
-            )
-        }
+                r.id as UUID,
+                r.userID,
+                r.nick,
+                r.description,
+                r.gameMasterID === r.id
+            );
+
+            room.restoreCharacter(character);
+        });
 
         this.fetchedRooms.set(room.id, room);
+
         return room;
     }
 
@@ -103,54 +135,53 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             .set(roomSettings)
             .where('id', '=', roomID)
             .execute();
-
-        let room = this.fetchedRooms.get(roomID)!;
-        room.setName(roomSettings.roomName);
-        room.setMaxPlayerCount(roomSettings.maxPlayerCount);
     }
 
     async deleteRoom(roomID: UUID): Promise<void> {
-        await this.db
-            .deleteFrom('Rooms')
-            .where('id', '=', roomID)
-            .execute();
+        await this.db.deleteFrom('Rooms').where('id', '=', roomID).execute();
 
         this.fetchedRooms.delete(roomID);
     }
 
-    async addCharacter(characterDetails: CharacterDetails): Promise<Character> {
-        const character = {
-            id: randomUUID(),
-            nick: characterDetails.nick,
-            description: characterDetails.description,
-            userID: characterDetails.userID,
-            roomID: characterDetails.room.id
-        }
+    async addCharacter(
+        roomID: UUID,
+        characterDetails: CharacterDetails
+    ): Promise<Character> {
+        const newCharacter = new Character(
+            this,
+            randomUUID(),
+            characterDetails.userID,
+            characterDetails.nick,
+            characterDetails.description,
+            false
+        );
+
+        console.log(roomID);
 
         await this.db
             .insertInto('Characters')
-            .values(character)
-            .execute();
+            .values({
+                id: randomUUID(),
+                nick: characterDetails.nick,
+                roomID,
+                description: characterDetails.description,
+                userID: characterDetails.userID,
+                submitContent: null,
+                submitTimestamp: null
+            })
+            .executeTakeFirstOrThrow();
 
-        const newCharacter = new Character(
-            this,
-            character.id,
-            characterDetails.userID,
-            characterDetails.room,
-            characterDetails.nick,
-            characterDetails.description,
-            undefined // tu player submit
-        )
-            
         return newCharacter;
     }
 
-    async updateCharacter(characterDetails: CharacterDetails): Promise<void> {
+    async updateCharacter(
+        id: UUID,
+        characterDetails: CharacterDetails
+    ): Promise<void> {
         await this.db
             .updateTable('Characters')
             .set(characterDetails)
-            .where('userID', '=', characterDetails.userID)
-            .where('roomID', '=', characterDetails.room.id)
+            .where('id', '=', id)
             .execute();
     }
 }
