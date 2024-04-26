@@ -60,5 +60,9 @@ export async function startHTTPServer(
         prefix: '/api/v1'
     });
 
+    app.setNotFoundHandler(async (_, reply) => {
+        await reply.sendFile('index.html');
+    });
+
     return app;
 }
