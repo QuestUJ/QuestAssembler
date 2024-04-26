@@ -1,40 +1,72 @@
-import { randomUUID, UUID } from 'crypto';
+import { UUID } from 'crypto';
+
+import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { PlayerTurnSubmit } from './PlayerTurnSubmit';
 
+const MAX_CHARACTER_NICK_LENGTH = 64;
+const MAX_CHARACTER_DESCRIPTION_LENGTH = 256;
+
+export interface CharacterDetails {
+    userID: string;
+    nick: string;
+    description: string;
+}
+
 export class Character {
-    readonly id: UUID = randomUUID();
-    nick: string = '';
-    description: string = '';
-    room: UUID = randomUUID();
-    private playerTurnSubmits: PlayerTurnSubmit[] = [];
+    constructor(
+        readonly roomRepository: IRoomRepository,
+        readonly id: UUID,
+        readonly userID: string,
+        private nick: string,
+        private description: string,
+        readonly isGameMaster: boolean,
+        private playerTurnSubmit?: PlayerTurnSubmit
+    ) {}
 
-    isGameMaster(): boolean {
-        return false;
-    }
-
-    getPlayerTurnSubmit(): PlayerTurnSubmit | undefined {
-        this.playerTurnSubmits;
-        return undefined;
-    }
-
-    setNick(newName: string): void {
-        this.nick = newName;
+    getUserID(): string {
+        return this.userID;
     }
 
     getNick(): string {
-        return '';
+        return this.nick;
     }
 
-    setDescription(newName: string): void {
-        newName;
+    async setNick(newNick: string) {
+        if (newNick.length <= MAX_CHARACTER_NICK_LENGTH) {
+            await this.roomRepository.updateCharacter(this.id, {
+                ...this,
+                nick: newNick
+            });
+            this.nick = newNick;
+        }
     }
 
     getDescription(): string {
-        return '';
+        return this.description;
     }
 
-    getUserID(): string {
-        return '';
+    async setDescription(newDescription: string) {
+        if (newDescription.length <= MAX_CHARACTER_DESCRIPTION_LENGTH) {
+            await this.roomRepository.updateCharacter(this.id, {
+                ...this,
+                description: newDescription
+            });
+
+            this.description = newDescription;
+        }
+    }
+
+    getPlayerTurnSubmit(): PlayerTurnSubmit | undefined {
+        return this.playerTurnSubmit;
+    }
+
+    async setPlayerTurnSubmit(submit: PlayerTurnSubmit | undefined) {
+        await this.roomRepository.updateCharacter(this.id, {
+            ...this,
+            playerTurnSubmit: submit
+        });
+
+        this.playerTurnSubmit = submit;
     }
 }

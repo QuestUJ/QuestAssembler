@@ -1,63 +1,121 @@
-import { randomUUID, UUID } from 'crypto';
+import { UUID } from 'crypto';
 
-import { IChatRepository } from '@/repositories/chat/IChatRepository';
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
-import { Character } from './Character';
-import { Chat } from './Chat';
-import { ChatMessage } from './ChatMessage';
-import { GameSettings } from './GameSettings';
-import { StoryChunk } from './StoryChunk';
+import { Character, CharacterDetails } from './Character';
+// import { ChatMessage } from './ChatMessage';
+// import { StoryChunk } from './StoryChunk';
+
+const MAX_ROOM_NAME_LENGTH: number = 128;
+const MAX_ROOM_PLAYERS: number = 10;
+// const MAX_STORY_CHUNKS: number = 2000;
+
+export class RoomSettings {
+    constructor(
+        public roomName: string = '',
+        public maxPlayerCount: number = 1
+    ) {
+        this.roomName = roomName;
+        this.maxPlayerCount = maxPlayerCount;
+    }
+}
 
 export class Room {
-    readonly id: UUID = randomUUID();
-    readonly gameMaster: UUID = randomUUID();
-    private gameSettings: GameSettings;
-    private storyChunks: StoryChunk[] = [];
-    private broadcast: Chat;
+    private gameMaster?: UUID;
     private characters: Character[] = [];
 
-    constructor(roomRepository: IRoomRepository) {
-        roomRepository;
-        this.storyChunks;
-        this.characters;
-        this.broadcast = new Chat({} as IChatRepository);
-        this.gameSettings = new GameSettings('test', 1);
+    constructor(
+        readonly roomRepository: IRoomRepository,
+        readonly id: UUID,
+        private roomSettings: RoomSettings
+        // private storyChunks: StoryChunk[] = [];
+        // private broadcast: Chat;
+        // private chats: Map<(UUID, UUID), Chat>; ???
+    ) {}
+
+    restoreCharacter(character: Character) {
+        if (this.characters.length < this.roomSettings.maxPlayerCount) {
+            this.characters.push(character);
+            if (character.isGameMaster) {
+                this.gameMaster = character.id;
+            }
+        }
     }
 
-    addCharacter(character: Character): void {
-        character;
+    getRoomSettings(): RoomSettings {
+        return this.roomSettings;
+    }
+
+    hasUser(userId: UUID): boolean {
+        return !!this.characters.find(
+            character => character.getUserID() === userId
+        );
     }
 
     getCharacters(): Character[] {
-        return [];
+        return this.characters;
     }
 
-    addStoryChunk(chunk: StoryChunk): void {
-        chunk;
+    async addCharacter(characterDetails: CharacterDetails) {
+        if (this.characters.length < this.roomSettings.maxPlayerCount) {
+            const character = await this.roomRepository.addCharacter(
+                this.id,
+                characterDetails
+            );
+
+            this.characters.push(character);
+        }
     }
 
-    getStoryChunks(): StoryChunk[] {
-        return [];
+    // getStoryChunks(): StoryChunk[] {
+    //     return this.storyChunks;
+    // }
+
+    // addStoryChunk(chunk: StoryChunk) {
+    //     if (this.storyChunks.length < MAX_STORY_CHUNKS) {
+    //         this.storyChunks.push(chunk);
+    //     }
+    // }
+
+    // getBroadcast(): Chat {
+    //     return this.broadcast;
+    // }
+
+    // addBrodcastMessage(message: ChatMessage) {
+    //     message;
+    // }
+
+    getName(): string {
+        return this.roomSettings.roomName;
     }
 
-    addBrodcastMessage(message: ChatMessage): void {
-        message;
+    async setName(newName: string) {
+        if (newName.length >= 1 && newName.length <= MAX_ROOM_NAME_LENGTH) {
+            await this.roomRepository.updateRoom({
+                ...this.roomSettings,
+                roomName: newName
+            });
+
+            this.roomSettings.roomName = newName;
+        }
     }
 
-    getBroadcast(): Chat {
-        return this.broadcast;
+    getMaxPlayerCount(): number {
+        return this.roomSettings.maxPlayerCount;
     }
 
-    getGameSettings(): GameSettings {
-        return this.gameSettings;
+    async setMaxPlayerCount(newMaxPlayerCount: number) {
+        if (newMaxPlayerCount >= 2 && newMaxPlayerCount <= MAX_ROOM_PLAYERS) {
+            await this.roomRepository.updateRoom(this.id, {
+                ...this.roomSettings,
+                maxPlayerCount: newMaxPlayerCount
+            });
+
+            this.roomSettings.maxPlayerCount = newMaxPlayerCount;
+        }
     }
 
-    setName(newName: string): void {
-        newName;
-    }
-
-    setMaxPlayerCount(newMaxPlayerCount: number): void {
-        newMaxPlayerCount;
+    hasEmptySlot(): boolean {
+        return this.characters.length < this.getMaxPlayerCount();
     }
 }

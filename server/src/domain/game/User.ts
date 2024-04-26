@@ -1,18 +1,23 @@
-import { randomUUID, UUID } from 'crypto';
+import { UUID } from 'crypto';
 
-import { ICharacterRepository } from '@/repositories/character/ICharacterRepository';
+import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { Room } from './Room';
 
 export class User {
-    readonly id: UUID = randomUUID();
-    profileIMG: string = '';
-
-    constructor(characterRepository: ICharacterRepository) {
-        characterRepository;
+    constructor(
+        readonly roomRepository: IRoomRepository,
+        readonly id: UUID,
+        private rooms: Room[],
+        private profileIMG: string
+    ) {
+        this.roomRepository = roomRepository;
+        this.id = id;
+        this.rooms = rooms;
+        this.profileIMG = profileIMG;
     }
 
     getRooms(): Room[] {
-        return [];
+        return this.rooms;
     }
 }

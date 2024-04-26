@@ -6,3 +6,5 @@ pnpm --prefix client format
 
 pnpm --prefix common lint
 pnpm --prefix common format
+
+git add -A .

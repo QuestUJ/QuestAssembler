@@ -1,26 +1,26 @@
 import { UUID } from 'crypto';
 
-import { Room } from '@/domain/game/Room';
-
-export interface RoomDetails {
-    gameMaster: UUID;
-}
+import { Character, CharacterDetails } from '@/domain/game/Character';
+import { Room, RoomSettings } from '@/domain/game/Room';
 
 export interface IRoomRepository {
-    /**
-     * instantiates {@link Room} stores it's details in relavant storage and returns created object'
-     */
-    createRoom(details: RoomDetails): Promise<Room>;
-    /**
-     * Retrieves rooms with user with given id in them
-     */
-    fetchRooms(userID: string): Promise<Room[]>;
-    /**
-     * Updates room with given id
-     */
-    updateRoom(roomID: UUID, details: RoomDetails): void;
-    /**
-     * Deletes room with given id
-     */
-    deleteRoom(roomID: UUID): void;
+    createRoom(
+        roomDetails: RoomSettings,
+        gameMasterDetails: CharacterDetails
+    ): Promise<Room>;
+
+    fetchRooms(userID: UUID): Promise<Room[]>;
+
+    getRoomByID(roomID: UUID): Promise<Room>;
+
+    updateRoom(roomID: UUID, roomSettings: RoomSettings): Promise<void>;
+
+    deleteRoom(roomID: UUID): Promise<void>;
+
+    addCharacter(
+        roomID: UUID,
+        characterDetails: CharacterDetails
+    ): Promise<Character>;
+
+    updateCharacter(id: UUID, character: CharacterDetails): Promise<void>;
 }

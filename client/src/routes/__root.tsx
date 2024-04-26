@@ -1,7 +1,8 @@
 import { Auth0Provider } from '@auth0/auth0-react';
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { createRootRoute, Outlet } from '@tanstack/react-router';
 
-import { User } from '@/components/User';
+import { Toaster } from '@/components/ui/toaster';
 import { config } from '@/config';
 import { SocketIOProvider } from '@/providers/SocketIOProvider';
 
@@ -12,35 +13,26 @@ function RootLayout() {
     'AUTH0_AUDIENCE'
   ]);
 
-  console.log(AUTH0_DOMAIN, AUTH0_CLIENTID, AUTH0_AUDIENCE);
+  const queryClient = new QueryClient();
 
   return (
     <>
-      <Auth0Provider
-        domain={AUTH0_DOMAIN}
-        clientId={AUTH0_CLIENTID}
-        authorizationParams={{
-          redirect_uri: window.location.origin,
-          audience: AUTH0_AUDIENCE
-        }}
-      >
-        <SocketIOProvider>
-          <nav className='absolute flex w-full items-center justify-end p-4 px-32'>
-            <Link to='/' className='mx-4 text-primary'>
-              Home
-            </Link>
-            <div>|</div>
-            <Link to='/rooms' className='mx-4'>
-              Rooms
-            </Link>
-            <div>|</div>
-            <User />
-          </nav>
-          <main className='min-h-screen w-screen'>
+      <QueryClientProvider client={queryClient}>
+        <Auth0Provider
+          domain={AUTH0_DOMAIN}
+          clientId={AUTH0_CLIENTID}
+          authorizationParams={{
+            redirect_uri: `${window.location.origin}/dashboard/`,
+            audience: AUTH0_AUDIENCE
+          }}
+          cacheLocation='localstorage'
+        >
+          <SocketIOProvider>
             <Outlet />
-          </main>
-        </SocketIOProvider>
-      </Auth0Provider>
+            <Toaster />
+          </SocketIOProvider>
+        </Auth0Provider>
+      </QueryClientProvider>
     </>
   );
 }
