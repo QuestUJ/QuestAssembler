@@ -1,7 +1,9 @@
 import cors from '@fastify/cors';
+import fastifyStatic from '@fastify/static';
 import { QuasmError } from '@quasm/common';
 import Fastify from 'fastify';
 import FastifyIO from 'fastify-socket.io';
+import path from 'path';
 
 import { config } from '@/config';
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
@@ -49,6 +51,10 @@ export async function startHTTPServer(
               }
             : {}
     );
+
+    await app.register(fastifyStatic, {
+        root: path.join(__dirname, '..', 'static')
+    });
 
     await app.register(apiRoutes(authProvider, roomRepository), {
         prefix: '/api/v1'
