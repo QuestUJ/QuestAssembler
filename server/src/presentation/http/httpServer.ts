@@ -4,19 +4,21 @@ import Fastify from 'fastify';
 import FastifyIO from 'fastify-socket.io';
 
 import { config } from '@/config';
-import { Auth0Provider } from '@/domain/tools/auth-provider/Auth0Provider';
+import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
 import { logger } from '@/infrastructure/logger/Logger';
+import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { apiRoutes } from './plugins/api';
 
-const { ALLOWED_ORIGIN, NODE_ENV, AUTH0_AUDIENCE, AUTH0_DOMAIN } = config.pick([
+const { ALLOWED_ORIGIN, NODE_ENV } = config.pick([
     'ALLOWED_ORIGIN',
-    'NODE_ENV',
-    'AUTH0_DOMAIN',
-    'AUTH0_AUDIENCE'
+    'NODE_ENV'
 ]);
 
-export async function startHTTPServer() {
+export async function startHTTPServer(
+    roomRepository: IRoomRepository,
+    authProvider: IAuthProvider
+) {
     const app = Fastify();
 
     app.setErrorHandler(async (error, _, reply) => {
@@ -48,12 +50,7 @@ export async function startHTTPServer() {
             : {}
     );
 
-    const auth0 = new Auth0Provider({
-        domain: AUTH0_DOMAIN,
-        audience: AUTH0_AUDIENCE
-    });
-
-    await app.register(apiRoutes(auth0), {
+    await app.register(apiRoutes(authProvider, roomRepository), {
         prefix: '/api/v1'
     });
 

@@ -1,4 +1,7 @@
 import { Config } from '@quasm/common';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 Config.initEnv(process.env);
 
@@ -13,6 +16,7 @@ const configMap = {
     PG_HOST: Config.loadString('PG_HOST') || 'localhost',
     PG_PORT: Config.loadInt('PG_PORT') || 5434,
     PG_NAME: Config.loadString('PG_NAME') || 'quasm',
+    PG_SSL: Config.loadBool('PG_SSL'),
 
     AUTH0_DOMAIN:
         Config.loadString('AUTH)_DOMAIN') ||

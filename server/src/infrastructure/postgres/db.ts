@@ -3,13 +3,9 @@ import { Pool } from 'pg';
 
 import { config } from '@/config';
 
-const { PG_HOST, PG_NAME, PG_PASSWORD, PG_PORT, PG_USER } = config.pick([
-    'PG_HOST',
-    'PG_NAME',
-    'PG_PASSWORD',
-    'PG_PORT',
-    'PG_USER'
-]);
+const { PG_HOST, PG_NAME, PG_PASSWORD, PG_PORT, PG_USER, PG_SSL } = config.pick(
+    ['PG_HOST', 'PG_NAME', 'PG_PASSWORD', 'PG_PORT', 'PG_USER', 'PG_SSL']
+);
 
 export interface Database {
     Rooms: RoomsTable;
@@ -62,7 +58,8 @@ const dialect = new PostgresDialect({
         host: PG_HOST,
         user: PG_USER,
         password: PG_PASSWORD,
-        port: PG_PORT
+        port: PG_PORT,
+        ssl: PG_SSL
     })
 });
 

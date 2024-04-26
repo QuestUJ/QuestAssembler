@@ -20,36 +20,30 @@ export class RoomSettings {
     }
 }
 
-export interface RoomDetails {
-    readonly gameMaster: UUID;
-    readonly roomSettings: RoomSettings;
-    readonly characters: Character[];
-}
-
 export class Room {
+    private gameMaster?: UUID;
+    private characters: Character[] = [];
+
     constructor(
         readonly roomRepository: IRoomRepository,
         readonly id: UUID,
-        readonly gameMaster: UUID,
-        private roomSettings: RoomSettings,
-        private characters: Character[]
+        private roomSettings: RoomSettings
         // private storyChunks: StoryChunk[] = [];
         // private broadcast: Chat;
         // private chats: Map<(UUID, UUID), Chat>; ???
-    ) {
-        this.roomRepository = roomRepository;
-        this.id = id;
-        this.gameMaster = gameMaster;
-        this.characters = characters;
-        this.roomSettings = roomSettings;
+    ) {}
+
+    restoreCharacter(character: Character) {
+        if (this.characters.length < this.roomSettings.maxPlayerCount) {
+            this.characters.push(character);
+            if (character.isGameMaster) {
+                this.gameMaster = character.id;
+            }
+        }
     }
 
-    getRoomDetails(): RoomDetails {
-        return {
-            gameMaster: this.gameMaster,
-            roomSettings: this.roomSettings,
-            characters: this.characters
-        };
+    getRoomSettings(): RoomSettings {
+        return this.roomSettings;
     }
 
     hasUser(userId: UUID): boolean {
@@ -62,9 +56,9 @@ export class Room {
         return this.characters;
     }
 
-    addCharacter(characterDetails: CharacterDetails) {
+    async addCharacter(characterDetails: CharacterDetails) {
         if (this.characters.length < this.roomSettings.maxPlayerCount) {
-            const character = this.roomRepository.addCharacter(
+            const character = await this.roomRepository.addCharacter(
                 this.id,
                 characterDetails
             );
@@ -95,9 +89,9 @@ export class Room {
         return this.roomSettings.roomName;
     }
 
-    setName(newName: string) {
+    async setName(newName: string) {
         if (newName.length >= 1 && newName.length <= MAX_ROOM_NAME_LENGTH) {
-            this.roomRepository.updateRoom({
+            await this.roomRepository.updateRoom({
                 ...this.roomSettings,
                 roomName: newName
             });
@@ -110,9 +104,9 @@ export class Room {
         return this.roomSettings.maxPlayerCount;
     }
 
-    setMaxPlayerCount(newMaxPlayerCount: number) {
+    async setMaxPlayerCount(newMaxPlayerCount: number) {
         if (newMaxPlayerCount >= 2 && newMaxPlayerCount <= MAX_ROOM_PLAYERS) {
-            this.roomRepository.updateRoom({
+            await this.roomRepository.updateRoom(this.id, {
                 ...this.roomSettings,
                 maxPlayerCount: newMaxPlayerCount
             });
