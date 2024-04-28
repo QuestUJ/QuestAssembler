@@ -1,8 +1,10 @@
+import { QuasmComponent } from '@quasm/common';
 import { randomUUID, UUID } from 'crypto';
 import { Kysely } from 'kysely';
 
 import { Character, CharacterDetails } from '@/domain/game/Character';
 import { Room, RoomSettings } from '@/domain/game/Room';
+import { logger } from '@/infrastructure/logger/Logger';
 import { Database } from '@/infrastructure/postgres/db';
 
 import { IRoomRepository } from './IRoomRepository';
@@ -23,6 +25,29 @@ export class RoomRepositoryPostgres implements IRoomRepository {
     ): Promise<Room> {
         const gameMasterUUID = randomUUID();
         const roomUUID = randomUUID();
+
+        logger.info(
+            QuasmComponent.DATABASE,
+            `Creating Room ${roomUUID} instance and validating`
+        );
+
+        // Instantiate - and perform validation
+        const room = new Room(this, roomUUID, roomDetails);
+        const master = new Character(
+            this,
+            gameMasterUUID,
+            gameMasterDetails.userID,
+            gameMasterDetails.nick,
+            gameMasterDetails.description,
+            true
+        );
+
+        room.restoreCharacter(master);
+
+        logger.info(
+            QuasmComponent.DATABASE,
+            `Room ${roomUUID} validation passed, persisting in database`
+        );
         await this.db.transaction().execute(async trx => {
             await trx
                 .insertInto('Rooms')
@@ -45,18 +70,6 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 })
                 .executeTakeFirstOrThrow();
         });
-
-        const room = new Room(this, roomUUID, roomDetails);
-        const master = new Character(
-            this,
-            gameMasterUUID,
-            gameMasterDetails.userID,
-            gameMasterDetails.nick,
-            gameMasterDetails.description,
-            true
-        );
-
-        room.restoreCharacter(master);
 
         this.fetchedRooms.set(room.id, room);
         return room;
