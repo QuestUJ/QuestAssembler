@@ -1,4 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
+import { FetchRoomsResponse } from '@quasm/common';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
@@ -129,7 +130,7 @@ export function CreateGameDialog() {
       const token = await getAccessTokenSilently();
 
       // API call
-      const response = await fetch(`${API_BASE_URL}/api/v1/createGame`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/createRoom`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -263,7 +264,7 @@ function RoomOverview() {
   const { getAccessTokenSilently, loginWithRedirect, isAuthenticated } =
     useAuth0();
 
-  const { isPending, isError, data, error } = useQuery({
+  const { isPending, isError, data, error } = useQuery<FetchRoomsResponse>({
     queryKey: ['roomFetch'],
     queryFn: async () => {
       // auth related validation

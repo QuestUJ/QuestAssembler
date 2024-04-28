@@ -1,9 +1,14 @@
 import {
+    CreateRoomBody,
+    CreateRoomResponse,
     ErrorCode,
+    JoinRoomBody,
+    JoinRoomResponse,
     QuasmComponent,
     QuasmError,
     UserDetails
 } from '@quasm/common';
+import { FetchRoomsResponse } from '@quasm/common';
 import { UUID } from 'crypto';
 import {
     type FastifyInstance,
@@ -44,13 +49,16 @@ export function apiRoutes(
             done();
         });
 
-        fastify.get('/fetchRooms', async (request, reply) => {
+        fastify.get<{
+            Reply: FetchRoomsResponse;
+        }>('/fetchRooms', async (request, reply) => {
             const rooms = await roomRepository.fetchRooms(
                 request.user.userID as UUID
             );
 
             await reply.send({
-                rooms: rooms.map(r => ({
+                success: true,
+                payload: rooms.map(r => ({
                     id: r.id,
                     roomName: r.getName(),
                     gameMasterName: '',
@@ -63,8 +71,11 @@ export function apiRoutes(
             });
         });
 
-        fastify.post('/joinRoom', async (request, reply) => {
-            const { gameCode } = request.body as { gameCode: string };
+        fastify.post<{
+            Body: JoinRoomBody;
+            Reply: JoinRoomResponse;
+        }>('/joinRoom', async (request, reply) => {
+            const { gameCode } = request.body;
             const room = await roomRepository.getRoomByID(gameCode as UUID);
 
             await room.addCharacter({
@@ -73,10 +84,16 @@ export function apiRoutes(
                 userID: request.user.userID
             });
 
-            await reply.send('ok');
+            await reply.send({
+                success: true,
+                payload: 'ok'
+            });
         });
 
-        fastify.post('/createGame', async (request, reply) => {
+        fastify.post<{
+            Body: CreateRoomBody;
+            Reply: CreateRoomResponse;
+        }>('/createRoom', async (request, reply) => {
             const { name, maxPlayers } = request.body as {
                 name: string;
                 maxPlayers: number;
@@ -89,7 +106,8 @@ export function apiRoutes(
             });
 
             await reply.send({
-                gameCode: room.id
+                success: true,
+                payload: room.id
             });
         });
 
