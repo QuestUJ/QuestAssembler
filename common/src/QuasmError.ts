@@ -1,3 +1,9 @@
+import {
+    MAX_CHARACTER_DESCRIPTION_LENGTH,
+    MAX_CHARACTER_NICK_LENGTH,
+    MAX_ROOM_NAME_LENGTH,
+    MAX_ROOM_PLAYERS
+} from './constant';
 import { QuasmComponent } from './Structure';
 
 /**
@@ -11,7 +17,16 @@ export enum ErrorCode {
 
     // Access token related stuff
     MissingAccessToken = 'missing.access.token',
-    IncorrectAccessToken = 'incorrect.access.token'
+    IncorrectAccessToken = 'incorrect.access.token',
+
+    // Room related
+    MaxPlayersExceeded = 'max.players.exceeded',
+    MaxRoomName = 'max.room.name',
+    IncorrectMaxPlayers = 'incorrect.max.players',
+
+    // Character related
+    NickLength = 'nick.length',
+    DescriptionLength = 'description.length'
 }
 
 /**
@@ -26,7 +41,15 @@ export const ErrorMap: Record<ErrorCode, string> = {
     [ErrorCode.MissingAccessToken]:
         'Authorization failed! Missing access token, try to log out and log in again',
     [ErrorCode.IncorrectAccessToken]:
-        'Authorization failed! Incorrect access token'
+        'Authorization failed! Incorrect access token',
+
+    [ErrorCode.MaxPlayersExceeded]:
+        'The room reached maximum number of players',
+    [ErrorCode.MaxRoomName]: `Name of the room cannot be empty or longer than ${MAX_ROOM_NAME_LENGTH}`,
+    [ErrorCode.IncorrectMaxPlayers]: `Player limit cannot be bigger than ${MAX_ROOM_PLAYERS}`,
+
+    [ErrorCode.NickLength]: `Player nick cannot be empty or longer than ${MAX_CHARACTER_NICK_LENGTH}`,
+    [ErrorCode.DescriptionLength]: `Player description cannot be longer than ${MAX_CHARACTER_DESCRIPTION_LENGTH}`
 };
 
 export class QuasmError extends Error {

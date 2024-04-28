@@ -1,3 +1,10 @@
+import {
+    ErrorCode,
+    MAX_ROOM_NAME_LENGTH,
+    MAX_ROOM_PLAYERS,
+    QuasmComponent,
+    QuasmError
+} from '@quasm/common';
 import { UUID } from 'crypto';
 
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
@@ -6,8 +13,6 @@ import { Character, CharacterDetails } from './Character';
 // import { ChatMessage } from './ChatMessage';
 // import { StoryChunk } from './StoryChunk';
 
-const MAX_ROOM_NAME_LENGTH: number = 128;
-const MAX_ROOM_PLAYERS: number = 10;
 // const MAX_STORY_CHUNKS: number = 2000;
 
 export class RoomSettings {
@@ -16,7 +21,6 @@ export class RoomSettings {
         public maxPlayerCount: number = 1
     ) {}
 }
-
 export class Room {
     private gameMaster?: UUID;
     private characters: Character[] = [];
@@ -34,11 +38,18 @@ export class Room {
      * Helper method for reassigning character to the Room, for adding new character to the room use {@link addCharacter}
      */
     restoreCharacter(character: Character) {
-        if (this.characters.length < this.roomSettings.maxPlayerCount) {
-            this.characters.push(character);
-            if (character.isGameMaster) {
-                this.gameMaster = character.id;
-            }
+        if (this.characters.length >= this.roomSettings.maxPlayerCount) {
+            throw new QuasmError(
+                QuasmComponent.ROOM,
+                500,
+                ErrorCode.MaxPlayersExceeded,
+                'Too many characters restored'
+            );
+        }
+
+        this.characters.push(character);
+        if (character.isGameMaster) {
+            this.gameMaster = character.id;
         }
     }
 
@@ -57,14 +68,21 @@ export class Room {
     }
 
     async addCharacter(characterDetails: CharacterDetails) {
-        if (this.characters.length < this.roomSettings.maxPlayerCount) {
-            const character = await this.roomRepository.addCharacter(
-                this.id,
-                characterDetails
+        if (this.characters.length >= this.roomSettings.maxPlayerCount) {
+            throw new QuasmError(
+                QuasmComponent.ROOM,
+                500,
+                ErrorCode.MaxPlayersExceeded,
+                'Too many characters restored'
             );
-
-            this.characters.push(character);
         }
+
+        const character = await this.roomRepository.addCharacter(
+            this.id,
+            characterDetails
+        );
+
+        this.characters.push(character);
     }
 
     // getStoryChunks(): StoryChunk[] {
@@ -90,14 +108,21 @@ export class Room {
     }
 
     async setName(newName: string) {
-        if (newName.length >= 1 && newName.length <= MAX_ROOM_NAME_LENGTH) {
-            await this.roomRepository.updateRoom(this.id, {
-                ...this.roomSettings,
-                roomName: newName
-            });
-
-            this.roomSettings.roomName = newName;
+        if (newName.length <= 0 || newName.length > MAX_ROOM_NAME_LENGTH) {
+            throw new QuasmError(
+                QuasmComponent.ROOM,
+                400,
+                ErrorCode.MaxRoomName,
+                'Incorrect name'
+            );
         }
+
+        await this.roomRepository.updateRoom(this.id, {
+            ...this.roomSettings,
+            roomName: newName
+        });
+
+        this.roomSettings.roomName = newName;
     }
 
     getMaxPlayerCount(): number {
@@ -105,14 +130,21 @@ export class Room {
     }
 
     async setMaxPlayerCount(newMaxPlayerCount: number) {
-        if (newMaxPlayerCount >= 2 && newMaxPlayerCount <= MAX_ROOM_PLAYERS) {
-            await this.roomRepository.updateRoom(this.id, {
-                ...this.roomSettings,
-                maxPlayerCount: newMaxPlayerCount
-            });
-
-            this.roomSettings.maxPlayerCount = newMaxPlayerCount;
+        if (newMaxPlayerCount < 2 || newMaxPlayerCount > MAX_ROOM_PLAYERS) {
+            throw new QuasmError(
+                QuasmComponent.ROOM,
+                400,
+                ErrorCode.IncorrectMaxPlayers,
+                'Incorrect max players'
+            );
         }
+
+        await this.roomRepository.updateRoom(this.id, {
+            ...this.roomSettings,
+            maxPlayerCount: newMaxPlayerCount
+        });
+
+        this.roomSettings.maxPlayerCount = newMaxPlayerCount;
     }
 
     hasEmptySlot(): boolean {

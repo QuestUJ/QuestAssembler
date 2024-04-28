@@ -1,11 +1,15 @@
+import {
+    ErrorCode,
+    MAX_CHARACTER_DESCRIPTION_LENGTH,
+    MAX_CHARACTER_NICK_LENGTH,
+    QuasmComponent,
+    QuasmError
+} from '@quasm/common';
 import { UUID } from 'crypto';
 
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { PlayerTurnSubmit } from './PlayerTurnSubmit';
-
-const MAX_CHARACTER_NICK_LENGTH = 64;
-const MAX_CHARACTER_DESCRIPTION_LENGTH = 256;
 
 export interface CharacterDetails {
     userID: string;
@@ -33,13 +37,20 @@ export class Character {
     }
 
     async setNick(newNick: string) {
-        if (newNick.length <= MAX_CHARACTER_NICK_LENGTH) {
-            await this.roomRepository.updateCharacter(this.id, {
-                ...this,
-                nick: newNick
-            });
-            this.nick = newNick;
+        if (newNick.length <= 0 || newNick.length > MAX_CHARACTER_NICK_LENGTH) {
+            throw new QuasmError(
+                QuasmComponent.CHARACTER,
+                400,
+                ErrorCode.NickLength,
+                newNick
+            );
         }
+
+        await this.roomRepository.updateCharacter(this.id, {
+            ...this,
+            nick: newNick
+        });
+        this.nick = newNick;
     }
 
     getDescription(): string {
@@ -47,14 +58,21 @@ export class Character {
     }
 
     async setDescription(newDescription: string) {
-        if (newDescription.length <= MAX_CHARACTER_DESCRIPTION_LENGTH) {
-            await this.roomRepository.updateCharacter(this.id, {
-                ...this,
-                description: newDescription
-            });
-
-            this.description = newDescription;
+        if (newDescription.length > MAX_CHARACTER_DESCRIPTION_LENGTH) {
+            throw new QuasmError(
+                QuasmComponent.CHARACTER,
+                400,
+                ErrorCode.DescriptionLength,
+                `Description length: ${newDescription.length}`
+            );
         }
+
+        await this.roomRepository.updateCharacter(this.id, {
+            ...this,
+            description: newDescription
+        });
+
+        this.description = newDescription;
     }
 
     getPlayerTurnSubmit(): PlayerTurnSubmit | undefined {

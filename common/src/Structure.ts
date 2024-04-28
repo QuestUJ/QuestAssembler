@@ -4,6 +4,6 @@ export enum QuasmComponent {
     SOCKET = 'Socket',
     HTTP = 'HTTP',
     CONFIG = 'Config',
-    VALIDATION = 'Validation',
-    OTHER = 'Other'
+    ROOM = 'Room',
+    CHARACTER = 'Character'
 }
