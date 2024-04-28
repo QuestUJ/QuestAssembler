@@ -15,7 +15,7 @@ interface ApiResponse<Payload> {
 // =======================
 // /fetchRooms/
 // =======================
-interface Room {
+export interface RoomPayload {
     id: string;
     roomName: string;
     gameMasterName: string;
@@ -26,7 +26,7 @@ interface Room {
     lastMessages: string[] | undefined;
 }
 
-export type FetchRoomsResponse = ApiResponse<Room[]>;
+export type FetchRoomsResponse = ApiResponse<RoomPayload[]>;
 
 // =======================
 // /joinRoom/
