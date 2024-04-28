@@ -1,9 +1,4 @@
-export interface UserDetails {
-    userID: string;
-    email: string;
-    nickname: string;
-    profileImg: string;
-}
+import { UserDetails } from '@quasm/common';
 
 export interface IAuthProvider {
     /**

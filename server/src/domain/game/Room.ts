@@ -14,10 +14,7 @@ export class RoomSettings {
     constructor(
         public roomName: string = '',
         public maxPlayerCount: number = 1
-    ) {
-        this.roomName = roomName;
-        this.maxPlayerCount = maxPlayerCount;
-    }
+    ) {}
 }
 
 export class Room {
@@ -33,6 +30,9 @@ export class Room {
         // private chats: Map<(UUID, UUID), Chat>; ???
     ) {}
 
+    /**
+     * Helper method for reassigning character to the Room, for adding new character to the room use {@link addCharacter}
+     */
     restoreCharacter(character: Character) {
         if (this.characters.length < this.roomSettings.maxPlayerCount) {
             this.characters.push(character);
@@ -91,7 +91,7 @@ export class Room {
 
     async setName(newName: string) {
         if (newName.length >= 1 && newName.length <= MAX_ROOM_NAME_LENGTH) {
-            await this.roomRepository.updateRoom({
+            await this.roomRepository.updateRoom(this.id, {
                 ...this.roomSettings,
                 roomName: newName
             });

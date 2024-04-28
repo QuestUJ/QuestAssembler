@@ -4,17 +4,29 @@ import { QuasmComponent } from './Structure';
  * Indicates what type of error we'are facing'
  */
 export enum ErrorCode {
+    Unexpected = 'unexpected',
+
+    // Config
     MissingConfig = 'missing.config',
-    MissingAccessToken = 'missing.access.token'
+
+    // Access token related stuff
+    MissingAccessToken = 'missing.access.token',
+    IncorrectAccessToken = 'incorrect.access.token'
 }
 
 /**
  * Defines user friendly messages describing errors
  */
 export const ErrorMap: Record<ErrorCode, string> = {
+    [ErrorCode.Unexpected]:
+        'An unexpected error has occurred, please try again.',
+
+    [ErrorCode.MissingConfig]: 'Fatal error, missing configuration',
+
     [ErrorCode.MissingAccessToken]:
-        'Authorization failed! missing access token, try to log out and log in again',
-    [ErrorCode.MissingConfig]: 'Fatal error, missing configuration'
+        'Authorization failed! Missing access token, try to log out and log in again',
+    [ErrorCode.IncorrectAccessToken]:
+        'Authorization failed! Incorrect access token'
 };
 
 export class QuasmError extends Error {

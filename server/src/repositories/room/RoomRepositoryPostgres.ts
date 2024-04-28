@@ -7,6 +7,9 @@ import { Database } from '@/infrastructure/postgres/db';
 
 import { IRoomRepository } from './IRoomRepository';
 
+/**
+ * Main repository providing access to PostgreSQL based database
+ */
 export class RoomRepositoryPostgres implements IRoomRepository {
     private fetchedRooms: Map<UUID, Room>;
 
@@ -155,8 +158,6 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             characterDetails.description,
             false
         );
-
-        console.log(roomID);
 
         await this.db
             .insertInto('Characters')

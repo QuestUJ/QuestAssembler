@@ -1,5 +1,10 @@
-import { ErrorLocation, QuasmError } from '@quasm/common';
-import { randomUUID, UUID } from 'crypto';
+import {
+    ErrorCode,
+    QuasmComponent,
+    QuasmError,
+    UserDetails
+} from '@quasm/common';
+import { UUID } from 'crypto';
 import {
     type FastifyInstance,
     type FastifyPluginOptions,
@@ -7,10 +12,7 @@ import {
 } from 'fastify';
 
 import { RoomSettings } from '@/domain/game/Room';
-import {
-    IAuthProvider,
-    UserDetails
-} from '@/domain/tools/auth-provider/IAuthProvider';
+import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 export function apiRoutes(
@@ -22,39 +24,16 @@ export function apiRoutes(
         _: FastifyPluginOptions,
         done: () => void
     ) => {
-        /** FOR TESTING ONLY */
-        const rooms = [
-            {
-                id: randomUUID(),
-                roomName: 'test 1',
-                gameMasterName: 'Mariusz Pudzianowski',
-                currentPlayers: 5,
-                maxPlayers: 6,
-                isCurrentUserGameMaster: true,
-                lastImageUrl: undefined,
-                lastMessages: undefined
-            },
-            {
-                id: randomUUID(),
-                roomName: 'test 2',
-                gameMasterName: 'Kolmogorov',
-                currentPlayers: 3,
-                maxPlayers: 7,
-                isCurrentUserGameMaster: false,
-                lastImageUrl: undefined,
-                lastMessages: undefined
-            }
-        ];
-
         fastify.decorateRequest('user', null);
 
         fastify.addHook('preHandler', async (req: FastifyRequest) => {
             const token = req.headers.authorization;
             if (token === undefined) {
                 throw new QuasmError(
-                    ErrorLocation.AUTH,
+                    QuasmComponent.SOCKET,
                     401,
-                    'Unauthorized, missing access token'
+                    ErrorCode.MissingAccessToken,
+                    `Expected bearer token in headers not found`
                 );
             }
 
@@ -65,39 +44,11 @@ export function apiRoutes(
             done();
         });
 
-        fastify.get('/test', async (request, reply) => {
-            return await reply.send({
-                hello: 'there',
-                user: request.user
-            });
-        });
-
         fastify.get('/fetchRooms', async (request, reply) => {
-            // get user details from the preHandler auth hook
-            //const userID = request.user.userID;
+            const rooms = await roomRepository.fetchRooms(
+                request.user.userID as UUID
+            );
 
-            // call db and fetch rooms with that userID
-            // const response = await fetchRooms(...);
-            // mock response
-
-            // await reply.send({
-            //     rooms: rooms
-            // });
-            /**
-             * expects object {rooms: RoomResponse[]} where ResponseRoom:
-                type RoomResponse = {
-                    id: UUID;
-                    roomName: string;
-                    gameMasterName: string;
-                    currentPlayers: number;
-                    maxPlayers: number;
-                    isCurrentUserGameMaster: boolean;
-                    lastImageUrl: string | undefined;
-                    lastMessages: string[] | undefined;
-                };
-             */
-
-            const rooms = await roomRepository.fetchRooms(request.user.userID);
             await reply.send({
                 rooms: rooms.map(r => ({
                     id: r.id,
@@ -113,22 +64,9 @@ export function apiRoutes(
         });
 
         fastify.post('/joinRoom', async (request, reply) => {
-            // get user details from the preHandler auth hook
-            //const userID = request.user.userID;
-            //const gameCode = request.body.gameCode;
-            //calldb and see if joining the room is even possible
-            //mock response
-            /**
-             * expects just the response code:
-             * - 200 is everything ok
-             * - anything else is bad
-             */
-
             const { gameCode } = request.body as { gameCode: string };
             const room = await roomRepository.getRoomByID(gameCode as UUID);
-            console.log('hi', room);
 
-            console.log(request.user);
             await room.addCharacter({
                 nick: 'Test',
                 description: 'test',
@@ -139,13 +77,6 @@ export function apiRoutes(
         });
 
         fastify.post('/createGame', async (request, reply) => {
-            // get user details from the preHandler auth hook
-            //const userID = request.user.userID;
-            //const maxNumberOfPlayers = request.body.maxPlayers;
-            //const roomName = request.body.name;
-            //calldb and see if creating the room is even possible
-            //mock response
-
             const { name, maxPlayers } = request.body as {
                 name: string;
                 maxPlayers: number;
@@ -156,7 +87,6 @@ export function apiRoutes(
                 description: 'test description',
                 nick: 'boss'
             });
-            console.log(room);
 
             await reply.send({
                 gameCode: room.id
