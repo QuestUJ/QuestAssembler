@@ -1,14 +1,16 @@
 import 'dotenv/config';
 
-import { extractMessage } from '@quasm/common';
-import { Server } from 'socket.io';
+import { QuasmComponent } from '@quasm/common';
 
 import { config } from './config';
 import { Auth0Provider } from './domain/tools/auth-provider/Auth0Provider';
 import { logger } from './infrastructure/logger/Logger';
 import { db } from './infrastructure/postgres/db';
 import { startHTTPServer } from './presentation/http/httpServer';
-import { startSocketServer } from './presentation/socket/socketServer';
+import {
+    QuasmSocketServer,
+    startSocketServer
+} from './presentation/socket/socketServer';
 import { RoomRepositoryPostgres } from './repositories/room/RoomRepositoryPostgres';
 
 const { PORT, AUTH0_DOMAIN, AUTH0_AUDIENCE } = config.pick([
@@ -25,17 +27,15 @@ const { PORT, AUTH0_DOMAIN, AUTH0_AUDIENCE } = config.pick([
     });
 
     const app = await startHTTPServer(roomRepo, auth0);
-    startSocketServer(app.io);
+    startSocketServer(app.io, auth0);
 
     await app.listen({ port: PORT, host: '0.0.0.0' });
 
-    logger.info('STARTUP', 'Successful!');
-})().catch(err => logger.error('STARTUP', extractMessage(err)));
+    logger.info(QuasmComponent.HTTP, `Started successfully on port: ${PORT}`);
+})().catch(err => logger.error(QuasmComponent.HTTP, `Failed to start: ${err}`));
 
 declare module 'fastify' {
     interface FastifyInstance {
-        io: Server<{
-            msg: string;
-        }>;
+        io: QuasmSocketServer;
     }
 }

@@ -1,7 +1,13 @@
-import { ErrorLocation, extractMessage, QuasmError } from '@quasm/common';
+import {
+    ErrorCode,
+    extractMessage,
+    QuasmComponent,
+    QuasmError,
+    type UserDetails
+} from '@quasm/common';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 
-import { IAuthProvider, UserDetails } from './IAuthProvider';
+import { IAuthProvider } from './IAuthProvider';
 
 interface Config {
     domain: string;
@@ -33,9 +39,10 @@ export class Auth0Provider implements IAuthProvider {
             // Ensure sub claim exists
             if (payload.sub === undefined) {
                 throw new QuasmError(
-                    ErrorLocation.AUTH,
+                    QuasmComponent.AUTH,
                     401,
-                    'Unauthorized, Missing sub claim'
+                    ErrorCode.IncorrectAccessToken,
+                    `Missing sub claim in token: ${JSON.stringify(payload)}`
                 );
             }
 
@@ -69,8 +76,9 @@ export class Auth0Provider implements IAuthProvider {
             // Rethrow an instance of our Erorr indicating location and status code
             const err = extractMessage(e);
             throw new QuasmError(
-                ErrorLocation.AUTH,
+                QuasmComponent.AUTH,
                 401,
+                ErrorCode.Unexpected,
                 `Unauthorized, ${err}`
             );
         }

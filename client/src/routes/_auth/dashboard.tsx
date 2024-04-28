@@ -1,4 +1,12 @@
 import { useAuth0 } from '@auth0/auth0-react';
+import {
+  CreateRoomResponse,
+  FetchRoomsResponse,
+  JoinRoomResponse,
+  QuasmComponent,
+  QuasmError,
+  RoomPayload
+} from '@quasm/common';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
@@ -38,7 +46,7 @@ export function JoinGameDialog() {
       const token = await getAccessTokenSilently();
 
       // API call
-      const response = await fetch(`${API_BASE_URL}/api/v1/joinRoom`, {
+      const response = (await fetch(`${API_BASE_URL}/api/v1/joinRoom`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -46,20 +54,20 @@ export function JoinGameDialog() {
         },
         body: JSON.stringify({ gameCode }),
         signal: AbortSignal.timeout(10000)
-      });
+      }).then(res => res.json())) as JoinRoomResponse;
 
       // response handling
-      if (!response.ok) {
+      if (!response.success) {
         toast({
           variant: 'destructive',
           title: 'Something went wrong',
-          description: 'Something went wrong when joining the room'
+          description: response.error?.message
         });
-        throw new Error(`Something went wrong ${response.status}`);
+        throw new Error(`Something went wrong ${response.error?.message}`);
       } else {
         await queryClient.invalidateQueries({ queryKey: ['roomFetch'] });
       }
-      return response.status;
+      return response.success;
     }
   });
 
@@ -129,7 +137,7 @@ export function CreateGameDialog() {
       const token = await getAccessTokenSilently();
 
       // API call
-      const response = await fetch(`${API_BASE_URL}/api/v1/createGame`, {
+      const response = (await fetch(`${API_BASE_URL}/api/v1/createRoom`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -137,26 +145,25 @@ export function CreateGameDialog() {
         },
         body: JSON.stringify({ name, maxPlayers }),
         signal: AbortSignal.timeout(10000)
-      });
+      }).then(res => res.json())) as CreateRoomResponse;
 
       // response handling
-      if (!response.ok) {
+      if (!response.success) {
         toast({
           variant: 'destructive',
           title: 'Something went wrong',
-          description: 'Something went wrong when joining the room'
+          description: response.error?.message
         });
-        throw new Error(`Something went wrong ${response.status}`);
+        throw new Error(`Something went wrong ${response.error?.message}`);
       } else {
-        const data = (await response.json()) as { gameCode: string };
         toast({
           title: 'Room created succcessfully',
-          description: `Your room game code is ${data.gameCode} `
+          description: `Your room game code is ${response.payload} `
         });
         await queryClient.invalidateQueries({ queryKey: ['roomFetch'] });
       }
 
-      return response.status;
+      return response.success;
     }
   });
 
@@ -203,18 +210,7 @@ export function CreateGameDialog() {
   );
 }
 
-type RoomResponse = {
-  id: UUID;
-  roomName: string;
-  gameMasterName: string;
-  currentPlayers: number;
-  maxPlayers: number;
-  isCurrentUserGameMaster: boolean;
-  lastImageUrl: string | undefined;
-  lastMessages: string[] | undefined;
-};
-
-function RoomComponent({ room }: { room: RoomResponse }) {
+function RoomComponent({ room }: { room: RoomPayload }) {
   return (
     <div className='my-2 grid h-40 w-[450px] grid-cols-10 grid-rows-3 gap-0 rounded-xl border-2 bg-card lg:h-48 lg:w-[600px] [&>div]:border-zinc-800 [&>div]:p-1'>
       <div className='col-span-1 row-span-1 border-r-2'>
@@ -273,19 +269,20 @@ function RoomOverview() {
       const token = await getAccessTokenSilently();
 
       // API call
-      const response = await fetch(`${API_BASE_URL}/api/v1/fetchRooms`, {
+      const response = (await fetch(`${API_BASE_URL}/api/v1/fetchRooms`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`
         },
         signal: AbortSignal.timeout(10000)
-      });
+      }).then(res => res.json())) as FetchRoomsResponse;
 
       // response handling
-      if (!response.ok) {
-        throw new Error(`Something didn't work out, code: ${response.status}`);
+      if (!response.success) {
+        throw new Error(response.error?.message);
       }
-      return (await response.json()) as { rooms: RoomResponse[] };
+
+      return response.payload!;
     }
   });
   if (isError) {
@@ -316,10 +313,8 @@ function RoomOverview() {
         <div>Loading, please wait...</div>
       ) : (
         <div>
-          {data.rooms &&
-            data.rooms.map((room: RoomResponse) => (
-              <RoomComponent room={room} key={room.id} />
-            ))}
+          {data &&
+            data.map(room => <RoomComponent room={room} key={room.id} />)}
         </div>
       )}
     </div>

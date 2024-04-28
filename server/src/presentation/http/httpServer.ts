@@ -1,6 +1,6 @@
 import cors from '@fastify/cors';
 import fastifyStatic from '@fastify/static';
-import { QuasmError } from '@quasm/common';
+import { ErrorMap, QuasmError } from '@quasm/common';
 import Fastify from 'fastify';
 import FastifyIO from 'fastify-socket.io';
 import path from 'path';
@@ -17,6 +17,9 @@ const { ALLOWED_ORIGIN, NODE_ENV } = config.pick([
     'NODE_ENV'
 ]);
 
+/**
+ * it will spin up an fastify HTTP server for REST API and serving prebuilt static files
+ */
 export async function startHTTPServer(
     roomRepository: IRoomRepository,
     authProvider: IAuthProvider
@@ -25,10 +28,17 @@ export async function startHTTPServer(
 
     app.setErrorHandler(async (error, _, reply) => {
         if (error instanceof QuasmError) {
-            logger.error(error.errorLocation, error.message);
+            logger.error(
+                error.errorLocation,
+                `ErrorCod: ${error.errorCode}, Context: ${error.message}`
+            );
             await reply.status(error.statusCode).send({
-                message: error.message,
-                location: error.errorLocation
+                success: false,
+                error: {
+                    message: ErrorMap[error.errorCode],
+                    location: error.errorLocation,
+                    code: error.errorCode
+                }
             });
         } else {
             await reply.send(error);

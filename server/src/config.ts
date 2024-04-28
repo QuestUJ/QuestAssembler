@@ -18,9 +18,7 @@ const configMap = {
     PG_NAME: Config.loadString('PG_NAME') || 'quasm',
     PG_SSL: Config.loadBool('PG_SSL'),
 
-    AUTH0_DOMAIN:
-        Config.loadString('AUTH)_DOMAIN') ||
-        'dev-cut6p8lm7mviao58.us.auth0.com',
+    AUTH0_DOMAIN: Config.loadString('AUTH0_DOMAIN'),
     AUTH0_AUDIENCE: Config.loadString('AUTH0_AUDIENCE'),
 
     HUGGINGFACE_TOKEN: Config.loadString('HUGGINGFACE_TOKEN')
