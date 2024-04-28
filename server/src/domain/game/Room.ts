@@ -20,7 +20,7 @@ export class RoomSettings {
     constructor(
         public roomName: string = '',
         public maxPlayerCount: number = 1
-    ) { }
+    ) {}
 }
 
 export class Room {
