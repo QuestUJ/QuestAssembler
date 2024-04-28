@@ -1,2 +1,3 @@
 export { Config } from '@/Config';
-export { ErrorLocation, extractMessage, QuasmError } from '@/QuasmError';
+export { ErrorCode, ErrorMap, extractMessage, QuasmError } from '@/QuasmError';
+export { QuasmComponent } from '@/Structure';

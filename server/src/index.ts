@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-import { extractMessage } from '@quasm/common';
+import { QuasmComponent } from '@quasm/common';
 import { Server } from 'socket.io';
 
 import { config } from './config';
@@ -29,8 +29,8 @@ const { PORT, AUTH0_DOMAIN, AUTH0_AUDIENCE } = config.pick([
 
     await app.listen({ port: PORT, host: '0.0.0.0' });
 
-    logger.info('STARTUP', 'Successful!');
-})().catch(err => logger.error('STARTUP', extractMessage(err)));
+    logger.info(QuasmComponent.HTTP, `Started successfully on port: ${PORT}`);
+})().catch(err => logger.error(QuasmComponent.HTTP, `Failed to start: ${err}`));
 
 declare module 'fastify' {
     interface FastifyInstance {
