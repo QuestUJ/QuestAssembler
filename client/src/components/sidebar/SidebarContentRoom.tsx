@@ -3,7 +3,6 @@ import LogoWithText from '../LogoWithText';
 import { Accordion, AccordionContent, AccordionTrigger } from '../ui/accordion';
 import { useRoomStore } from '@/lib/roomStore';
 import { CircleCheck, Crown, Reply, Scroll } from 'lucide-react';
-import { Separator } from '@radix-ui/react-separator';
 
 function Player({
   imgURL,
