@@ -13,7 +13,7 @@ export function SidebarDrawer() {
   return (
     <Drawer direction='left'>
       <DrawerTrigger asChild>
-        <div className='fixed left-5 top-5'>
+        <div className='fixed left-5 top-5 h-10'>
           <button>
             <img src={hamburgerIcon} alt='Open nav' />
           </button>
