@@ -5,12 +5,12 @@ import { Navigation } from '@/components/navigation/Navigation';
 
 function AuthLayout() {
   return (
-    <div className='flex'>
+    <div className='flex h-screen'>
       <nav>
         <Navigation />
       </nav>
 
-      <main className='min-h-screen w-screen bg-gradient-to-b from-[#222] to-[#111] pt-20'>
+      <main className='h-full min-h-screen w-screen bg-gradient-to-b from-[#222] to-[#111] pt-20'>
         <Outlet />
       </main>
     </div>
