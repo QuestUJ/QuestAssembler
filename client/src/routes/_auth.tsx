@@ -1,3 +1,4 @@
+import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 
 import { Navigation } from '@/components/navigation/Navigation';
@@ -17,5 +18,5 @@ function AuthLayout() {
 }
 
 export const Route = createFileRoute('/_auth')({
-  component: AuthLayout
+  component: withAuthenticationRequired(AuthLayout)
 });

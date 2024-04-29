@@ -61,4 +61,3 @@ export class User {
             .find(ch => ch.getUserID() === this.userDetails.userID);
     }
 }
-

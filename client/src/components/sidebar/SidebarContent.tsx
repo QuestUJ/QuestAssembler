@@ -1,5 +1,5 @@
-import { CreateGameDialog, JoinGameDialog } from '@/routes/_auth/dashboard';
-
+import { CreateGameDialog } from '../dialogs/CreateGameDialog';
+import { JoinGameDialog } from '../dialogs/JoinGameDialog';
 import LogoWithText from '../LogoWithText';
 import { QuasmCollapsible } from '../QuasmCollapsible';
 import { Separator } from '../ui/separator';

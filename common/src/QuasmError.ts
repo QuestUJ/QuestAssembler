@@ -23,6 +23,7 @@ export enum ErrorCode {
     MaxPlayersExceeded = 'max.players.exceeded',
     MaxRoomName = 'max.room.name',
     IncorrectMaxPlayers = 'incorrect.max.players',
+    UserExists = 'user.exists',
 
     // Character related
     NickLength = 'nick.length',
@@ -46,7 +47,8 @@ export const ErrorMap: Record<ErrorCode, string> = {
     [ErrorCode.MaxPlayersExceeded]:
         'The room reached maximum number of players',
     [ErrorCode.MaxRoomName]: `Name of the room cannot be empty or longer than ${MAX_ROOM_NAME_LENGTH}`,
-    [ErrorCode.IncorrectMaxPlayers]: `Player limit cannot be bigger than ${MAX_ROOM_PLAYERS}`,
+    [ErrorCode.IncorrectMaxPlayers]: `Player limit cannot be less than 2 or bigger than ${MAX_ROOM_PLAYERS}`,
+    [ErrorCode.UserExists]: `You have already joined this room`,
 
     [ErrorCode.NickLength]: `Player nick cannot be empty or longer than ${MAX_CHARACTER_NICK_LENGTH}`,
     [ErrorCode.DescriptionLength]: `Player description cannot be longer than ${MAX_CHARACTER_DESCRIPTION_LENGTH}`

@@ -18,6 +18,7 @@ import {
 
 import { RoomSettings } from '@/domain/game/Room';
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
+import { logger } from '@/infrastructure/logger/Logger';
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 export function apiRoutes(
@@ -76,6 +77,8 @@ export function apiRoutes(
             Reply: JoinRoomResponse;
         }>('/joinRoom', async (request, reply) => {
             const { gameCode } = request.body;
+            logger.info(QuasmComponent.HTTP, `POST /joinRoom ${gameCode}`);
+
             const room = await roomRepository.getRoomByID(gameCode as UUID);
 
             await room.addCharacter({
@@ -99,6 +102,12 @@ export function apiRoutes(
                 maxPlayers: number;
             };
             const settings = new RoomSettings(name, maxPlayers);
+
+            logger.info(
+                QuasmComponent.HTTP,
+                `POST /createRoom ${JSON.stringify(request.body)}`
+            );
+
             const room = await roomRepository.createRoom(settings, {
                 userID: request.user.userID,
                 description: 'test description',

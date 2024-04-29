@@ -26,7 +26,32 @@ export class Character {
         private description: string,
         readonly isGameMaster: boolean,
         private playerTurnSubmit?: PlayerTurnSubmit
-    ) {}
+    ) {
+        this.validateNick(this.nick);
+        this.validateDescription(this.description);
+    }
+
+    validateNick(nick: string) {
+        if (nick.length <= 0 || nick.length > MAX_CHARACTER_NICK_LENGTH) {
+            throw new QuasmError(
+                QuasmComponent.CHARACTER,
+                400,
+                ErrorCode.NickLength,
+                nick
+            );
+        }
+    }
+
+    validateDescription(description: string) {
+        if (description.length > MAX_CHARACTER_DESCRIPTION_LENGTH) {
+            throw new QuasmError(
+                QuasmComponent.CHARACTER,
+                400,
+                ErrorCode.DescriptionLength,
+                `Description length: ${description.length}`
+            );
+        }
+    }
 
     getUserID(): string {
         return this.userID;
@@ -37,14 +62,7 @@ export class Character {
     }
 
     async setNick(newNick: string) {
-        if (newNick.length <= 0 || newNick.length > MAX_CHARACTER_NICK_LENGTH) {
-            throw new QuasmError(
-                QuasmComponent.CHARACTER,
-                400,
-                ErrorCode.NickLength,
-                newNick
-            );
-        }
+        this.validateNick(newNick);
 
         await this.roomRepository.updateCharacter(this.id, {
             ...this,
@@ -58,14 +76,7 @@ export class Character {
     }
 
     async setDescription(newDescription: string) {
-        if (newDescription.length > MAX_CHARACTER_DESCRIPTION_LENGTH) {
-            throw new QuasmError(
-                QuasmComponent.CHARACTER,
-                400,
-                ErrorCode.DescriptionLength,
-                `Description length: ${newDescription.length}`
-            );
-        }
+        this.validateDescription(newDescription);
 
         await this.roomRepository.updateCharacter(this.id, {
             ...this,
