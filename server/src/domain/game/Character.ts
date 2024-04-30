@@ -11,10 +11,12 @@ import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { PlayerTurnSubmit } from './PlayerTurnSubmit';
 
+const MAX_PLAYER_SUBMIT_LENGTH = 280;
 export interface CharacterDetails {
     userID: string;
     nick: string;
     description: string;
+    playerTurnSubmit: PlayerTurnSubmit;
 }
 
 export class Character {
@@ -90,12 +92,24 @@ export class Character {
         return this.playerTurnSubmit;
     }
 
-    async setPlayerTurnSubmit(submit: PlayerTurnSubmit | undefined) {
-        await this.roomRepository.updateCharacter(this.id, {
-            ...this,
-            playerTurnSubmit: submit
-        });
+    async setPlayerTurnSubmit(submit: PlayerTurnSubmit) {
+        //is there a point of setting to undefined (submit undefined)?
+        if (submit && submit?.content.length > MAX_PLAYER_SUBMIT_LENGTH) {
+            throw new QuasmError(
+                QuasmComponent.CHARACTER,
+                400,
+                ErrorCode.MaxRoomName, //change this to a new error code
+                'Exceeded PlayerTurnSubmit max length'
+            );
+        }
 
-        this.playerTurnSubmit = submit;
+        const characterDetails: CharacterDetails = {
+            userID: this.id,
+            nick: this.nick,
+            description: this.description,
+            playerTurnSubmit: submit
+        };
+
+        return this.roomRepository.updateCharacter(this.id, characterDetails);
     }
 }
