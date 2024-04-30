@@ -77,13 +77,13 @@ function RoomOverview() {
 function Dashboard() {
   return (
     <div className='flex w-full'>
-      <div style={{ flexGrow: 1, overflow: 'auto' }}>
+      <div className='flex-grow overflow-auto'>
         <RoomOverview />
       </div>
     </div>
   );
 }
 
-export const Route = createFileRoute('/_auth/dashboard')({
+export const Route = createFileRoute('/_dashboard_layout/dashboard')({
   component: Dashboard
 });

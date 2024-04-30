@@ -19,8 +19,8 @@ export function User() {
   }
 
   return (
-    <div className='flex flex-row items-center h-8 lg:h-10'>
-      <h2 className='mx-4 text-xs lg:text-sm'>{user?.name}</h2>
+    <div className='flex h-8 flex-row items-center lg:h-10'>
+      <h2 className='mx-4 hidden text-xs lg:block lg:text-sm'>{user?.name}</h2>
       <img className='h-10 rounded-full' src={user?.picture} />
       <Button className='mx-4 w-16' onClick={() => void logout()}>
         Log out

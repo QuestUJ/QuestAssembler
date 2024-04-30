@@ -86,7 +86,7 @@ export function CreateGameDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className='m-2 w-60 rounded'>Create Game</Button>
+        <Button className='m-2 w-4/5 rounded'>Create Game</Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>

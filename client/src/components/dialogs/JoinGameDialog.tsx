@@ -64,7 +64,7 @@ export function JoinGameDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className='m-2 w-60 rounded'>Join Game</Button>
+        <Button className='m-2 w-4/5 rounded'>Join Game</Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
