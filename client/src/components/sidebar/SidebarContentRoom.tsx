@@ -12,7 +12,7 @@ function Player({
   name: string;
 }) {
   return (
-    <div className='my-1 flex h-10 flex-row items-center hover:bg-card-foreground hover:cursor-pointer rounded-xl p-1'>
+    <div className='my-1 flex h-10 flex-row items-center rounded-xl p-1 hover:cursor-pointer hover:bg-card-foreground'>
       <img src={imgURL} className='aspect-square h-full rounded-full' />
       <h1 className='text-2xl'>{name}</h1>
     </div>
@@ -57,27 +57,27 @@ export function SidebarContentRoom() {
               </AccordionTrigger>
             </AccordionHeader>
             <AccordionContent className='[&>div]:flex [&>div]:h-10 [&>div]:items-center [&>h1]:text-lg'>
-              <div className='hover:bg-card-foreground hover:cursor-pointer rounded-xl p-1 m-1'>
+              <div className='m-1 rounded-xl p-1 hover:cursor-pointer hover:bg-card-foreground'>
                 <Scroll className='mr-2 h-full text-primary' />
                 <h1>View story</h1>
               </div>
               {isCurrentUserGameMaster ? (
                 <>
-                  <div className='hover:bg-card-foreground hover:cursor-pointer rounded-xl p-1 m-1'>
+                  <div className='m-1 rounded-xl p-1 hover:cursor-pointer hover:bg-card-foreground'>
                     <Crown className='mr-2 h-full text-primary' />
                     <h1>AI support</h1>
                   </div>
-                  <div className='hover:bg-card-foreground hover:cursor-pointer rounded-xl p-1 m-1'>
+                  <div className='m-1 rounded-xl p-1 hover:cursor-pointer hover:bg-card-foreground'>
                     <Reply className='mr-2 h-full text-primary' />
                     <h1>Submit story chunk</h1>
                   </div>
-                  <div className='hover:bg-card-foreground hover:cursor-pointer rounded-xl p-1 m-1'>
+                  <div className='m-1 rounded-xl p-1 hover:cursor-pointer hover:bg-card-foreground'>
                     <CircleCheck className='mr-2 h-full text-primary' />
                     <h1>Players' submits</h1>
                   </div>
                 </>
               ) : (
-                <div className='hover:bg-card-foreground hover:cursor-pointer rounded-xl p-1 m-1'>
+                <div className='m-1 rounded-xl p-1 hover:cursor-pointer hover:bg-card-foreground'>
                   <Crown className='mr-2 h-full text-primary' />
                   <h1>Contact game master</h1>
                 </div>
