@@ -13,7 +13,7 @@ import LogoWithText from '@/components/LogoWithText';
 function TopBarExpanded() {
   const currentRoomName = useRoomStore(state => state.roomName);
   return (
-    <div className='flex h-full w-full flex-row items-center justify-between p-1'>
+    <div className='flex h-full w-full flex-row items-center justify-between p-1 pl-4'>
       <div className='flex flex-row items-center'>
         <Swords className='mr-1 text-primary' />
         <h1 className='text-4xl text-primary'>{currentRoomName}</h1>

@@ -12,7 +12,7 @@ function Player({
   name: string;
 }) {
   return (
-    <div className='my-1 flex h-10 flex-row items-center'>
+    <div className='my-1 flex h-10 flex-row items-center hover:bg-card-foreground hover:cursor-pointer rounded-xl p-1'>
       <img src={imgURL} className='aspect-square h-full rounded-full' />
       <h1 className='text-2xl'>{name}</h1>
     </div>
@@ -29,13 +29,15 @@ export function SidebarContentRoom() {
   );
   const currentPlayerName = useRoomStore(state => state.currentPlayerName);
   return (
-    <div className='flex h-full flex-col justify-between p-2'>
+    <div className='flex h-full flex-col justify-between p-4'>
       <div>
-        <LogoWithText />
+        <div className='flex flex-row justify-center'>
+          <LogoWithText />
+        </div>
         <Accordion type='multiple'>
           <AccordionItem value='players'>
             <AccordionHeader>
-              <AccordionTrigger className='w-full text-2xl text-primary'>
+              <AccordionTrigger className='w-full text-2xl text-primary hover:text-primary-shaded'>
                 Players
               </AccordionTrigger>
             </AccordionHeader>
@@ -50,32 +52,32 @@ export function SidebarContentRoom() {
           </AccordionItem>
           <AccordionItem value='tools'>
             <AccordionHeader>
-              <AccordionTrigger className='w-full text-2xl text-primary'>
+              <AccordionTrigger className='w-full text-2xl text-primary hover:text-primary-shaded'>
                 Tools
               </AccordionTrigger>
             </AccordionHeader>
             <AccordionContent className='[&>div]:flex [&>div]:h-10 [&>div]:items-center [&>h1]:text-lg'>
-              <div>
+              <div className='hover:bg-card-foreground hover:cursor-pointer rounded-xl p-1 m-1'>
                 <Scroll className='mr-2 h-full text-primary' />
                 <h1>View story</h1>
               </div>
               {isCurrentUserGameMaster ? (
                 <>
-                  <div>
+                  <div className='hover:bg-card-foreground hover:cursor-pointer rounded-xl p-1 m-1'>
                     <Crown className='mr-2 h-full text-primary' />
                     <h1>AI support</h1>
                   </div>
-                  <div>
+                  <div className='hover:bg-card-foreground hover:cursor-pointer rounded-xl p-1 m-1'>
                     <Reply className='mr-2 h-full text-primary' />
                     <h1>Submit story chunk</h1>
                   </div>
-                  <div>
+                  <div className='hover:bg-card-foreground hover:cursor-pointer rounded-xl p-1 m-1'>
                     <CircleCheck className='mr-2 h-full text-primary' />
                     <h1>Players' submits</h1>
                   </div>
                 </>
               ) : (
-                <div>
+                <div className='hover:bg-card-foreground hover:cursor-pointer rounded-xl p-1 m-1'>
                   <Crown className='mr-2 h-full text-primary' />
                   <h1>Contact game master</h1>
                 </div>
