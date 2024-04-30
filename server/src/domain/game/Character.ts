@@ -94,7 +94,7 @@ export class Character {
 
     async setPlayerTurnSubmit(submit: PlayerTurnSubmit) {
         //is there a point of setting to undefined (submit undefined)?
-        if (submit && submit?.content.length > MAX_PLAYER_SUBMIT_LENGTH) {
+        if (submit.content.length > MAX_PLAYER_SUBMIT_LENGTH) {
             throw new QuasmError(
                 QuasmComponent.CHARACTER,
                 400,

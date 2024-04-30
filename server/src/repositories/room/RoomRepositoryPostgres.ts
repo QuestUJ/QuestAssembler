@@ -1,22 +1,29 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { QuasmComponent } from '@quasm/common';
 import { randomUUID, UUID } from 'crypto';
 import { Kysely } from 'kysely';
 
 import { Character, CharacterDetails } from '@/domain/game/Character';
 import { Room, RoomSettings } from '@/domain/game/Room';
+import { Range } from '@/domain/game/Room';
+import { StoryChunk } from '@/domain/game/StoryChunk';
 import { logger } from '@/infrastructure/logger/Logger';
 import { Database } from '@/infrastructure/postgres/db';
 
 import { IRoomRepository } from './IRoomRepository';
+
+const DEFAULT_FETCHED_STORYCHUNKS = 20;
 
 /**
  * Main repository providing access to PostgreSQL based database
  */
 export class RoomRepositoryPostgres implements IRoomRepository {
     private fetchedRooms: Map<UUID, Room>;
+    private fetchedStoryChunks: Map<UUID, StoryChunk>;
 
     constructor(private db: Kysely<Database>) {
         this.fetchedRooms = new Map();
+        this.fetchedStoryChunks = new Map();
     }
 
     async createRoom(
@@ -197,5 +204,59 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             .set(characterDetails)
             .where('id', '=', id)
             .execute();
+    }
+
+    async addStoryChunk(roomID: UUID, chunk: StoryChunk): Promise<StoryChunk> {
+        await this.db
+            .insertInto('StoryChunks')
+            .values({
+                chunkID: randomUUID(), //?? there is a sequence for that, but I have problems when this is uninitialized
+                roomID: roomID,
+                title: chunk.title,
+                content: chunk.content,
+                imageURL: chunk.imageUrl
+            })
+            .executeTakeFirstOrThrow();
+        return chunk;
+    }
+
+    async fetchStory(roomID: UUID, range: Range): Promise<StoryChunk[]> {
+        if (typeof range.offset == 'undefined')
+            range.offset = DEFAULT_FETCHED_STORYCHUNKS;
+
+        const lowerBound = range.offset - range.count + 1;
+        const upperBound = range.offset;
+
+        const storyChunkData = await this.db 
+            .selectFrom('StoryChunks')
+            .where('roomID', '=', roomID)
+            .where('id', '>=', lowerBound)
+            .where('id', '<=', upperBound)
+            .selectAll()
+            .execute();
+
+        storyChunkData.forEach(r => {
+            this.fetchedRooms.delete(r.chunkID as unknown as UUID);
+        });
+
+        const result: StoryChunk[] = [];
+
+        storyChunkData.forEach(r => {
+            if (!this.fetchedRooms.has(r.chunkID as unknown as UUID)){
+                const chunk = new StoryChunk(
+                    r.chunkID,
+                    r.title,
+                    r.content,
+                    r.imageURL,
+                    r.timestamp
+                );
+                this.fetchedStoryChunks.set(
+                    r.chunkID as unknown as UUID,
+                    chunk
+                );
+                result.push(chunk);
+            }
+        });
+        return result;
     }
 }
