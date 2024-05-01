@@ -1,5 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
 import diceImg from '@/assets/dice.png';

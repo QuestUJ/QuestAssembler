@@ -50,7 +50,7 @@ export function StoryChunk({ storyChunk }: { storyChunk: DisplayStoryChunk }) {
 export function MessageContainer({ messages }: { messages: MessageTypes[] }) {
   return (
     <div className='h-full overflow-y-auto p-3'>
-      <div className='flex h-fit min-h-full flex-col justify-end'>
+      <div className='flex h-fit min-h-full flex-col'>
         {messages.map((message: MessageTypes) => {
           if (message.type === 'Message') {
             return <Message message={message} />;
