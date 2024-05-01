@@ -157,12 +157,12 @@ function SubmitStory() {
             </div>
           </div>
           <div className='col-start-3 row-span-3 row-start-4 p-1'>
-            <Button className='flex items-center w-full bg-white text-xs p-2 max-w-72'>
+            <Button className='flex w-full max-w-72 items-center bg-white p-2 text-xs'>
               <Bot className='mr-1' />
               Rewrite with LLM
             </Button>
             <Button
-              className='flex items-center text-xs w-full my-1 p-2 max-w-72'
+              className='my-1 flex w-full max-w-72 items-center p-2 text-xs'
               onClick={handleSubmit}
             >
               <CheckCircle className='mr-1' />
