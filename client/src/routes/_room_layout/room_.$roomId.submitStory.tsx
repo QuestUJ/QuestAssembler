@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { Character, useRoomStore } from '@/lib/roomStore';
+import { useRoomStore } from '@/lib/roomStore';
 import { createFileRoute } from '@tanstack/react-router';
 import { Bot, CheckCircle, ChevronDown } from 'lucide-react';
 import defaultProfilePic from '@/assets/defaultProfilePicture.jpg';
@@ -16,37 +16,41 @@ import {
 } from '@radix-ui/react-accordion';
 import { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
+import { CharacterDetails } from '%/src/DataInterface';
 
-function TabNavigation({ characterInfo }: { characterInfo: Character }) {
-  const { id, characterPictureURL } = characterInfo;
+function TabNavigation({ characterInfo }: { characterInfo: CharacterDetails }) {
+  const { id, pictureURL } = characterInfo;
   return (
     <TabsTrigger value={id.toString()}>
       <img
-        src={characterPictureURL ? characterPictureURL : defaultProfilePic}
+        src={pictureURL ? pictureURL : defaultProfilePic}
         className='mx-1 h-7 w-7 rounded-full'
       />
     </TabsTrigger>
   );
 }
 
-function TurnSubmitCard({ characterInfo }: { characterInfo: Character }) {
-  const { characterPictureURL, characterTurnSubmit, characterName } =
-    characterInfo;
+function TurnSubmitCard({
+  characterInfo
+}: {
+  characterInfo: CharacterDetails;
+}) {
+  const { pictureURL, turnSubmit, name } = characterInfo;
   return (
     <Card className='my-1 max-h-48 overflow-auto'>
       <CardHeader className='lg:p-2'>
         <div className='flex items-center'>
           <img
             className='mr-2 h-10 w-10 rounded-full'
-            src={characterPictureURL ? characterPictureURL : defaultProfilePic}
+            src={pictureURL ? pictureURL : defaultProfilePic}
           />
-          <h1 className='text-2xl text-primary lg:text-lg'>{characterName}</h1>
+          <h1 className='text-2xl text-primary lg:text-lg'>{name}</h1>
         </div>
         <Separator className='w-full' />
       </CardHeader>
       <CardContent className='text-sm lg:text-xs'>
-        {characterTurnSubmit
-          ? characterTurnSubmit
+        {turnSubmit.content
+          ? turnSubmit.content
           : 'Player turn submit is unavailable.'}
       </CardContent>
     </Card>
@@ -108,7 +112,7 @@ function ActionsAccordion({
 function CharacterSubmitTab({
   roomCharacters
 }: {
-  roomCharacters: Character[];
+  roomCharacters: CharacterDetails[];
 }) {
   return (
     <Tabs defaultValue={roomCharacters[0].id.toString()} className='w-4/5'>
@@ -127,7 +131,7 @@ function CharacterSubmitTab({
 }
 
 function SubmitStory() {
-  const roomCharacters = useRoomStore(state => state.roomPlayers);
+  const roomCharacters = useRoomStore(state => state.roomCharacters);
   const [story, setStory] = useState('');
   const { width } = useWindowSize();
 
