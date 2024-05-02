@@ -1,14 +1,17 @@
 import { AccordionHeader, AccordionItem } from '@radix-ui/react-accordion';
+import { CircleCheck, Crown, Reply, Scroll } from 'lucide-react';
+
+import { useRoomStore } from '@/lib/roomStore';
+import { CharacterDetails } from '%/src/DataInterface';
+
+import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
 import LogoWithText from '../LogoWithText';
 import { Accordion, AccordionContent, AccordionTrigger } from '../ui/accordion';
-import { useRoomStore } from '@/lib/roomStore';
-import { CircleCheck, Crown, Reply, Scroll } from 'lucide-react';
-import { CharacterDetails } from '%/src/DataInterface';
 
 function Character({ characterInfo }: { characterInfo: CharacterDetails }) {
   const { pictureURL, name } = characterInfo;
   return (
-    <div className='my-1 flex h-10 flex-row items-center'>
+    <div className='my-1 flex h-10 flex-row items-center rounded-xl p-1 hover:cursor-pointer hover:bg-card-foreground'>
       <img src={pictureURL} className='aspect-square h-full rounded-full' />
       <h1 className='text-2xl'>{name}</h1>
     </div>
@@ -81,25 +84,27 @@ export function SidebarContentRoom() {
   );
   const currentPlayerName = useRoomStore(state => state.currentPlayerName);
   return (
-    <div className='flex h-full flex-col justify-between p-2'>
+    <div className='flex h-full flex-col justify-between p-4'>
       <div>
-        <LogoWithText />
+        <div className='flex flex-row justify-center'>
+          <LogoWithText />
+        </div>
         <Accordion type='multiple'>
           <CharactersAccordion />
           <ToolsAccordion />
         </Accordion>
       </div>
-      <div>
-        <div className='flex h-10 flex-row items-center'>
-          <img
-            src={currentPlayerUrlImage}
-            className='mr-2 aspect-square h-full rounded-full'
-            alt='current player character picture'
-          />
-          <h1 className='text-2xl'>{currentPlayerName}</h1>
-          {/**
-           * TODO: Add character customization
-           */}
+      <div className='w-full'>
+        <div className='flex h-10 flex-row items-center justify-between'>
+          <div className='flex h-full items-center'>
+            <img
+              src={currentPlayerUrlImage}
+              className='mr-2 aspect-square h-full rounded-full'
+              alt='current player character picture'
+            />
+            <h1 className='text-2xl'>{currentPlayerName}</h1>
+          </div>
+          <CharacterSettingsDialog />
         </div>
       </div>
     </div>

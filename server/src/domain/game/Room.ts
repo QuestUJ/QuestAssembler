@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
     ErrorCode,
     MAX_ROOM_NAME_LENGTH,
@@ -12,10 +14,14 @@ import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { Character, CharacterDetails } from './Character';
 // import { ChatMessage } from './ChatMessage';
-// import { StoryChunk } from './StoryChunk';
+import { StoryChunk } from './StoryChunk';
 
-// const MAX_STORY_CHUNKS: number = 2000;
+const MAX_STORY_CHUNKS: number = 2000;
 
+export interface Range {
+    offset: number | undefined; // id of the last message (undefined when we only want 'count')
+    count: number; // how many messages/story chunks preceding that ID we want
+}
 export class RoomSettings {
     constructor(
         public roomName: string = '',
@@ -30,8 +36,8 @@ export class Room {
     constructor(
         readonly roomRepository: IRoomRepository,
         readonly id: UUID,
-        private roomSettings: RoomSettings
-        // private storyChunks: StoryChunk[] = [];
+        private roomSettings: RoomSettings,
+        private storyChunks: StoryChunk[] = []
         // private broadcast: Chat;
         // private chats: Map<(UUID, UUID), Chat>; ???
     ) {
@@ -41,6 +47,7 @@ export class Room {
 
     validateName(name: string) {
         if (name.length <= 0 || name.length > MAX_ROOM_NAME_LENGTH) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             throw new QuasmError(
                 QuasmComponent.ROOM,
                 400,
@@ -134,15 +141,21 @@ export class Room {
         this.characters.push(character);
     }
 
-    // getStoryChunks(): StoryChunk[] {
-    //     return this.storyChunks;
-    // }
+    fetchStory(range: Range): Promise<StoryChunk[]> {
+        return this.roomRepository.fetchStory(this.id, range);
+    }
 
-    // addStoryChunk(chunk: StoryChunk) {
-    //     if (this.storyChunks.length < MAX_STORY_CHUNKS) {
-    //         this.storyChunks.push(chunk);
-    //     }
-    // }
+    addStoryChunk(chunk: StoryChunk): Promise<StoryChunk> {
+        if (chunk.content.length > MAX_STORY_CHUNKS) {
+            throw new QuasmError(
+                QuasmComponent.ROOM,
+                400,
+                ErrorCode.MaxRoomName, //change this to a new error code
+                'Exceeded StoryChunk length'
+            );
+        }
+        return this.roomRepository.addStoryChunk(this.id, chunk);
+    }
 
     // getBroadcast(): Chat {
     //     return this.broadcast;
