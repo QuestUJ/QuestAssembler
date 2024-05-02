@@ -10,8 +10,8 @@
     --background: 0 0% 5%;
     --foreground: 0 0% 100%;
     --supporting: 0 3% 75%;
-    --card: 0 0% 7%;
-    --card-foreground: 240 4% 16%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
     --popover: 0 0% 5%;
     --popover-foreground: 240 4% 16%;
     --primary: 41 99% 72%;
@@ -54,6 +54,19 @@
     --ring: 240 4.9% 83.9%;
     --radius: 0.5em;
   }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(41 99% 72%);
+  border-radius: 20px;
 }
 
 @layer base {

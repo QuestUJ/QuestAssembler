@@ -38,7 +38,7 @@ function RoomLayout() {
   return (
     <>
       {width >= 1024 ? (
-        <div className='grid h-screen w-screen grid-cols-5 grid-rows-8 bg-gradient-to-b from-[#222] to-[#111]'>
+        <div className='grid h-screen w-screen grid-cols-5 grid-rows-8 overflow-x-auto bg-gradient-to-b from-[#222] to-[#111]'>
           <div className='row-span-8'>
             <SidebarFixed isOnDashboard={false} />
           </div>

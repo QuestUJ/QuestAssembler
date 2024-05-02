@@ -1,6 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import diceImg from '@/assets/dice.png';
 import LogoWithText from '@/components/LogoWithText';
@@ -8,10 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 
 function LandingPage() {
-  useEffect(() => {
-    document.querySelector('html')?.classList.add('dark');
-  }, []);
-
   const { loginWithRedirect, isLoading, isAuthenticated } = useAuth0();
 
   const navigate = useNavigate();
