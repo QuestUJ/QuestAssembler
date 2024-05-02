@@ -1,8 +1,11 @@
 import { AccordionHeader, AccordionItem } from '@radix-ui/react-accordion';
+import { CircleCheck, Crown, Reply, Scroll } from 'lucide-react';
+
+import { useRoomStore } from '@/lib/roomStore';
+
+import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
 import LogoWithText from '../LogoWithText';
 import { Accordion, AccordionContent, AccordionTrigger } from '../ui/accordion';
-import { useRoomStore } from '@/lib/roomStore';
-import { CircleCheck, Crown, Reply, Scroll } from 'lucide-react';
 
 function Player({
   imgURL,
@@ -86,17 +89,17 @@ export function SidebarContentRoom() {
           </AccordionItem>
         </Accordion>
       </div>
-      <div>
-        <div className='flex h-10 flex-row items-center'>
-          <img
-            src={currentPlayerUrlImage}
-            className='mr-2 aspect-square h-full rounded-full'
-            alt='current player character picture'
-          />
-          <h1 className='text-2xl'>{currentPlayerName}</h1>
-          {/**
-           * TODO: Add character customization
-           */}
+      <div className='w-full'>
+        <div className='flex h-10 flex-row items-center justify-between'>
+          <div className='flex h-full items-center'>
+            <img
+              src={currentPlayerUrlImage}
+              className='mr-2 aspect-square h-full rounded-full'
+              alt='current player character picture'
+            />
+            <h1 className='text-2xl'>{currentPlayerName}</h1>
+          </div>
+          <CharacterSettingsDialog />
         </div>
       </div>
     </div>
