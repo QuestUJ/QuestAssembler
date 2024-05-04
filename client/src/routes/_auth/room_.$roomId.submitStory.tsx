@@ -1,21 +1,18 @@
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsList } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
-import { useRoomStore } from '@/lib/roomStore';
-import { createFileRoute } from '@tanstack/react-router';
-import { Bot, CheckCircle, ChevronDown } from 'lucide-react';
-import defaultProfilePic from '@/assets/defaultProfilePicture.jpg';
-import { TabsContent, TabsTrigger } from '@radix-ui/react-tabs';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { useWindowSize } from '@/hooks/windowSize';
-import { Accordion, AccordionContent } from '@/components/ui/accordion';
 import {
   AccordionHeader,
   AccordionItem,
   AccordionTrigger
 } from '@radix-ui/react-accordion';
+import { TabsContent, TabsTrigger } from '@radix-ui/react-tabs';
+import { createFileRoute } from '@tanstack/react-router';
+import { Bot, CheckCircle, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
+
+import defaultProfilePic from '@/assets/defaultProfilePicture.jpg';
+import { Accordion, AccordionContent } from '@/components/ui/accordion';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { useWindowSize } from '@/hooks/windowSize';
 import { CharacterDetails } from '%/src/DataInterface';
 
 function TabNavigation({ characterInfo }: { characterInfo: CharacterDetails }) {
@@ -191,6 +188,6 @@ function SubmitStory() {
   );
 }
 
-export const Route = createFileRoute('/_room_layout/room/$roomId/submitStory')({
+export const Route = createFileRoute('/_auth/room/$roomId/submitStory')({
   component: SubmitStory
 });

@@ -2,10 +2,12 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { FetchRoomsResponse } from '@quasm/common';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
+import { useEffect } from 'react';
 
 import { RoomCard } from '@/components/RoomCard';
 import { Button } from '@/components/ui/button';
 import { config } from '@/config';
+import { useQuasmStore } from '@/lib/quasmStore';
 
 const { API_BASE_URL } = config.pick(['API_BASE_URL']);
 
@@ -75,15 +77,19 @@ function RoomOverview() {
 }
 
 function Dashboard() {
+  const { setRoomName } = useQuasmStore();
+  useEffect(() => {
+    setRoomName(undefined);
+  }, [setRoomName]);
   return (
     <div className='flex w-full'>
-      <div className='flex-grow overflow-auto'>
+      <div className='flex-grow overflow-auto p-10'>
         <RoomOverview />
       </div>
     </div>
   );
 }
 
-export const Route = createFileRoute('/_dashboard_layout/dashboard')({
+export const Route = createFileRoute('/_auth/dashboard')({
   component: Dashboard
 });

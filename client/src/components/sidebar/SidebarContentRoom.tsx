@@ -1,12 +1,16 @@
-import { AccordionHeader, AccordionItem } from '@radix-ui/react-accordion';
 import { CircleCheck, Crown, Reply, Scroll } from 'lucide-react';
 
-import { useRoomStore } from '@/lib/roomStore';
+import { useQuasmStore } from '@/lib/quasmStore';
 import { CharacterDetails } from '%/src/DataInterface';
 
 import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
 import LogoWithText from '../LogoWithText';
-import { Accordion, AccordionContent, AccordionTrigger } from '../ui/accordion';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from '../ui/accordion';
 
 function Character({ characterInfo }: { characterInfo: CharacterDetails }) {
   const { pictureURL, name } = characterInfo;
@@ -19,16 +23,14 @@ function Character({ characterInfo }: { characterInfo: CharacterDetails }) {
 }
 
 function ToolsAccordion() {
-  const isCurrentUserGameMaster = useRoomStore(
+  const isCurrentUserGameMaster = useQuasmStore(
     state => state.isCurrentPlayerGameMaster
   );
   return (
     <AccordionItem value='tools'>
-      <AccordionHeader>
-        <AccordionTrigger className='w-full text-2xl text-primary'>
-          Tools
-        </AccordionTrigger>
-      </AccordionHeader>
+      <AccordionTrigger className='w-full text-2xl text-primary'>
+        Tools
+      </AccordionTrigger>
       <AccordionContent className='[&>div]:flex [&>div]:h-10 [&>div]:items-center [&>h1]:text-lg'>
         <div>
           <Scroll className='mr-2 h-full text-primary' />
@@ -61,14 +63,12 @@ function ToolsAccordion() {
 }
 
 function CharactersAccordion() {
-  const roomCharacters = useRoomStore(state => state.roomCharacters);
+  const roomCharacters = useQuasmStore(state => state.roomCharacters);
   return (
     <AccordionItem value='players'>
-      <AccordionHeader>
-        <AccordionTrigger className='w-full text-2xl text-primary'>
-          Players
-        </AccordionTrigger>
-      </AccordionHeader>
+      <AccordionTrigger className='w-full text-2xl text-primary'>
+        Players
+      </AccordionTrigger>
       <AccordionContent>
         {roomCharacters.map(character => (
           <Character characterInfo={character} key={character.id} />
@@ -79,10 +79,10 @@ function CharactersAccordion() {
 }
 
 export function SidebarContentRoom() {
-  const currentPlayerUrlImage = useRoomStore(
+  const currentPlayerUrlImage = useQuasmStore(
     state => state.currentPlayerURLImage
   );
-  const currentPlayerName = useRoomStore(state => state.currentPlayerName);
+  const currentPlayerName = useQuasmStore(state => state.currentPlayerName);
   return (
     <div className='flex h-full flex-col justify-between p-4'>
       <div>
