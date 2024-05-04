@@ -1,36 +1,52 @@
-import { test as base, Browser, BrowserContext, Page } from '@playwright/test';
+import {
+    test as base,
+    Browser,
+    BrowserContext,
+    expect,
+    Page
+} from '@playwright/test';
 
 const AuthFile = {
-    Alice: '../../.auth/alice.json',
-    Bob: '../../.auth/bob.json',
-    Josh: '../../.auth/josh.json',
-    User: '../../.auth/avg_user.json'
+    Alice: '.auth/alice.json',
+    Bob: '.auth/bob.json',
+    Josh: '.auth/josh.json',
+    User: '.auth/avg_user.json'
 };
 
 export type FakeUser = keyof typeof AuthFile;
 
+export function getAuth(user: FakeUser) {
+    return AuthFile[user]
+}
+
 export class Auth {
-    private _ctx: BrowserContext;
+    private ctx: BrowserContext;
 
     constructor(
-        private readonly _page: Page,
-        private readonly _browser: Browser
-    ) {}
+        private readonly page: Page,
+        private readonly browser: Browser
+    ) { }
 
     async authenticate(email: string, password: string, user: FakeUser) {
-        await this._page.goto('http://localhost:3000/');
-        await this._page.getByText('Join the game').click();
+        await this.page.goto('http://localhost:3000/');
+        await this.page.getByText('Join the game').click();
 
-        await this._page.waitForLoadState('domcontentloaded');
+        await this.page.waitForLoadState('domcontentloaded');
 
-        await this._page.getByLabel('Email address*').fill(email);
-        await this._page.getByLabel('Password*').fill(password);
+        await this.page.getByLabel('Email address*').fill(email);
+        await this.page.getByLabel('Password*').fill(password);
 
-        await this._page
+        await this.page
             .getByRole('button', { name: 'Continue', exact: true })
             .click();
 
-        await this._page.context().storageState({ path: AuthFile[user] });
+        const logout = this.page.getByRole('button', {
+            name: 'Log Out'
+        });
+
+        await expect(logout).toBeVisible();
+
+        await this.page.context().storageState({ path: AuthFile[user] });
     }
 
     /**
@@ -39,11 +55,11 @@ export class Auth {
      * @returns page with authenticated as {user} page
      */
     async useAuth(user: FakeUser): Promise<Page> {
-        this._ctx = await this._browser.newContext({
+        this.ctx = await this.browser.newContext({
             storageState: AuthFile[user]
         });
 
-        const page = await this._ctx.newPage();
+        const page = await this.ctx.newPage();
         await page.goto('http://localhost:3000');
 
         await page.getByText('Join the game').click();
@@ -53,7 +69,9 @@ export class Auth {
     }
 
     async cleanCtx() {
-        await this._ctx.close();
+        if (!!this.ctx) {
+            await this.ctx.close();
+        }
     }
 }
 
@@ -66,6 +84,6 @@ export const testWithAuth = base.extend<{
     auth: async ({ page, browser }, use) => {
         const auth = new Auth(page, browser);
         await use(auth);
-        auth.cleanCtx();
+        await auth.cleanCtx();
     }
 });

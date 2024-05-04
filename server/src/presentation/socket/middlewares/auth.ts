@@ -1,4 +1,5 @@
-import { ErrorLocation, QuasmError } from '@quasm/common';
+import { ErrorCode,  QuasmError } from '@quasm/common';
+import { QuasmComponent } from '@quasm/common';
 
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
 
@@ -11,9 +12,10 @@ export function auth(authProvider: IAuthProvider) {
         if (!token || typeof token !== 'string') {
             next(
                 new QuasmError(
-                    ErrorLocation.AUTH,
+                    QuasmComponent.AUTH,
                     401,
-                    'Unauthorized missing token'
+                    ErrorCode.MissingAccessToken,
+                    `token: ${token}`
                 )
             );
         }

@@ -62,8 +62,13 @@ export async function startHTTPServer(
             : {}
     );
 
+    const staticPath =
+        NODE_ENV === 'development'
+            ? path.join(__dirname, '..', '..', '..', 'static')
+            : path.join(__dirname, '..', 'static');
+
     await app.register(fastifyStatic, {
-        root: path.join(__dirname, '..', 'static')
+        root: staticPath
     });
 
     await app.register(apiRoutes(authProvider, roomRepository), {
