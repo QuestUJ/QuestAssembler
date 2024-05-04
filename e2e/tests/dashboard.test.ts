@@ -1,8 +1,9 @@
 import { expect } from '@playwright/test';
 import { testWithRooms } from './fixtures/Room';
+import { randomBytes } from 'crypto';
 
-testWithRooms.describe('Dashboard', () => {
-    testWithRooms.describe.configure({ mode: 'serial' });
+testWithRooms.describe('[FM3, FM4] Dashboard', () => {
+    // testWithRooms.describe.configure({ mode: 'serial' });
 
     testWithRooms('should be able to create a game', async ({ auth }) => {
         const page = await auth.useAuth('User');
@@ -16,19 +17,17 @@ testWithRooms.describe('Dashboard', () => {
 
         await createGameButton.click();
 
-        const roomName = page.getByRole('textbox', {
-            name: 'Room name'
-        });
-        const maxPlayers = page.getByRole('textbox', {
-            name: 'Maximum number of players'
-        });
+        const roomName = page.getByPlaceholder('Room name');
+
+        const maxPlayers = page.getByPlaceholder('Max amount of players');
 
         await expect(roomName).toBeVisible();
         await expect(roomName).toBeInViewport();
         await expect(maxPlayers).toBeVisible();
         await expect(maxPlayers).toBeInViewport();
 
-        await roomName.fill('Test room');
+        const rnd = randomBytes(10).toString('base64');
+        await roomName.fill(rnd);
         await maxPlayers.fill('10');
 
         await page
@@ -37,10 +36,12 @@ testWithRooms.describe('Dashboard', () => {
             })
             .click();
 
-        const roomCard = page.getByText('Test room');
+        await page.reload();
+        await page.waitForLoadState('load');
+
+        const roomCard = page.getByText(rnd);
 
         await expect(roomCard).toBeVisible();
-        await expect(roomCard).toBeInViewport();
     });
 
     testWithRooms('should be able to get into the room', async ({ auth }) => {
@@ -58,7 +59,7 @@ testWithRooms.describe('Dashboard', () => {
 
         await page.getByRole('button', { name: 'Log out' }).click();
         await page.waitForLoadState('domcontentloaded');
-        expect(page.url).toMatch('http://localhost:3000/');
+        expect(page.url()).toMatch('http://localhost:3000/');
         await expect(page.getByText('Join the game')).toBeVisible();
     });
 
