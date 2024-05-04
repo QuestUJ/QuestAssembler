@@ -78,9 +78,9 @@ const config = {
         'accordion-up': 'accordion-up 0.2s ease-out'
       },
       fontFamily: {
-        'sans': ['Inter', 'ui-sans-serif', 'system-ui'],
-        'medieval': ['MedievalSharp']
-      }
+        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+        medieval: ['MedievalSharp']
+      },
     }
   },
   plugins: [require('tailwindcss-animate')]

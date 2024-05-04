@@ -1,5 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react';
 
+import { SvgSpinner } from './Spinner';
 import { Button } from './ui/button';
 
 export function User() {
@@ -7,7 +8,7 @@ export function User() {
     useAuth0();
 
   if (isLoading) {
-    return <h1 className='mx-4'>Loading auth</h1>;
+    return <SvgSpinner className='mx-10 h-10 w-10' />;
   }
 
   if (!isAuthenticated) {

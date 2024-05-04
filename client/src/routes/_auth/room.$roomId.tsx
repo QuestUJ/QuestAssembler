@@ -26,5 +26,5 @@ function Room() {
 }
 
 export const Route = createFileRoute('/_auth/room/$roomId')({
-  component: Room
+  component: Room,
 });

@@ -4,7 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
+import spinnerSVG from '@/assets/spinner.svg';
 import { RoomCard } from '@/components/RoomCard';
+import { SvgSpinner } from '@/components/Spinner';
 import { Button } from '@/components/ui/button';
 import { config } from '@/config';
 import { useQuasmStore } from '@/lib/quasmStore';
@@ -63,16 +65,19 @@ function RoomOverview() {
       </div>
     );
   }
+
   return (
-    <div>
+    <>
       {isPending ? (
-        <div>Loading, please wait...</div>
+        <div className='flex w-full items-center justify-center'>
+          <SvgSpinner className='h-20 w-20' />
+        </div>
       ) : (
         <div>
           {data && data.map(room => <RoomCard room={room} key={room.id} />)}
         </div>
       )}
-    </div>
+    </>
   );
 }
 
@@ -82,10 +87,8 @@ function Dashboard() {
     setRoomName(undefined);
   }, [setRoomName]);
   return (
-    <div className='flex w-full'>
-      <div className='flex-grow overflow-auto p-10'>
-        <RoomOverview />
-      </div>
+    <div className='flex w-full flex-wrap p-10'>
+      <RoomOverview />
     </div>
   );
 }
