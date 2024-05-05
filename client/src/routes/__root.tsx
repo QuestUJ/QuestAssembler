@@ -1,10 +1,10 @@
 import { Auth0Provider } from '@auth0/auth0-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 
 import { Toaster } from '@/components/ui/toaster';
 import { config } from '@/config';
-import { SocketIOProvider } from '@/providers/SocketIOProvider';
 
 function RootLayout() {
   const { AUTH0_DOMAIN, AUTH0_CLIENTID, AUTH0_AUDIENCE } = config.pick([
@@ -27,10 +27,9 @@ function RootLayout() {
           }}
           cacheLocation='localstorage'
         >
-          <SocketIOProvider>
-            <Outlet />
-            <Toaster />
-          </SocketIOProvider>
+          <Outlet />
+          <Toaster />
+          <ReactQueryDevtools />
         </Auth0Provider>
       </QueryClientProvider>
     </>

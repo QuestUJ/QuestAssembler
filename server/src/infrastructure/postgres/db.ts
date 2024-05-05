@@ -36,6 +36,7 @@ export interface CharactersTable {
     roomID: string;
     isGameMaster: boolean;
     userID: string;
+    profileIMG: string | null;
     submitContent: string | null;
     submitTimestamp: ColumnType<
         Date | null,

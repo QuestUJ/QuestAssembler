@@ -1,16 +1,17 @@
 import { RoomPayload } from '@quasm/common';
 import { Link } from '@tanstack/react-router';
 import { Crown, Swords } from 'lucide-react';
+import shortUUID from 'short-uuid';
 
 export function RoomCard({ room }: { room: RoomPayload }) {
   return (
     <Link
       to='/room/$roomId'
       params={{
-        roomId: room.id
+        roomId: shortUUID().fromUUID(room.id)
       }}
     >
-      <div className='my-2 grid h-40 w-[450px] grid-cols-10 grid-rows-3 gap-0 rounded-xl border-2 bg-card transition-colors hover:border-primary lg:h-48 lg:w-[600px] [&>div]:border-zinc-800 [&>div]:p-1'>
+      <div className='my-2 mx-4 grid h-40 w-[450px] grid-cols-10 grid-rows-3 gap-0 rounded-xl border-2 bg-card transition-colors hover:border-primary lg:h-48 lg:w-[600px] [&>div]:border-zinc-800 [&>div]:p-1'>
         <div className='col-span-1 row-span-1 border-r-2'>
           {room.isCurrentUserGameMaster ? (
             <Crown className='h-full w-full p-1 text-primary lg:p-2' />

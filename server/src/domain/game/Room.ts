@@ -127,7 +127,6 @@ export class Room {
     }
 
     getGameMaster(): Character {
-        console.log(this.characters)
         return this.characters.find(ch => ch.isGameMaster)!;
     }
 

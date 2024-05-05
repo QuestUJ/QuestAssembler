@@ -42,6 +42,7 @@ export async function up(db: Kysely<Database>): Promise<void> {
         )
         .addColumn('isGameMaster', 'boolean', col => col.notNull())
         .addColumn('userID', 'varchar(36)', col => col.notNull())
+        .addColumn('profileIMG', 'varchar(255)')
         .addColumn('submitContent', 'varchar')
         .addColumn('submitTimestamp', 'timestamp', col =>
             col.defaultTo(sql`NOW()`)

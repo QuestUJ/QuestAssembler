@@ -45,7 +45,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             gameMasterDetails.userID,
             gameMasterDetails.nick,
             true, // Creator is a game master by default
-            gameMasterDetails.description
+            gameMasterDetails.profileIMG
         );
 
         room.restoreCharacter(master);
@@ -72,7 +72,8 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                     description: gameMasterDetails.description,
                     isGameMaster: true,
                     roomID: roomUUID,
-                    userID: gameMasterDetails.userID
+                    userID: gameMasterDetails.userID,
+                    profileIMG: gameMasterDetails.profileIMG
                 })
                 .executeTakeFirstOrThrow();
         });
@@ -102,7 +103,8 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 'Characters.userID',
                 'Characters.nick',
                 'Characters.isGameMaster',
-                'Characters.description'
+                'Characters.description',
+                'Characters.profileIMG'
             ])
             .execute();
 
@@ -126,6 +128,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 r.userID,
                 r.nick,
                 r.isGameMaster,
+                r.profileIMG ?? undefined,
                 r.description ?? undefined
             );
             this.fetchedRooms
@@ -159,6 +162,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 r.userID,
                 r.nick,
                 r.isGameMaster,
+                r.profileIMG ?? undefined,
                 r.description ?? undefined
             );
 
@@ -194,6 +198,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             characterDetails.userID,
             characterDetails.nick,
             false,
+            characterDetails.profileIMG,
             characterDetails.description
         );
 
@@ -206,6 +211,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 description: characterDetails.description,
                 isGameMaster: false,
                 userID: characterDetails.userID,
+                profileIMG: characterDetails.profileIMG,
                 submitContent: null,
                 submitTimestamp: null
             })

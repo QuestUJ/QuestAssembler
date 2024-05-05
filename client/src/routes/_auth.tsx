@@ -1,19 +1,34 @@
 import { withAuthenticationRequired } from '@auth0/auth0-react';
-import { createFileRoute, matchPathname } from '@tanstack/react-router';
+import { createFileRoute, useParams } from '@tanstack/react-router';
 import { Outlet } from '@tanstack/react-router';
-import { Swords } from 'lucide-react';
+import { Crown, Swords } from 'lucide-react';
 
 import LogoWithText from '@/components/LogoWithText';
 import { SidebarDrawer } from '@/components/sidebar/SidebarDrawer';
 import { SidebarFixed } from '@/components/sidebar/SidebarFixed';
+import { SvgSpinner } from '@/components/Spinner';
 import { User } from '@/components/User';
 import { useWindowSize } from '@/hooks/windowSize';
-import { getIsOnDashboard, useQuasmStore } from '@/lib/quasmStore';
+import { useQuasmStore } from '@/lib/quasmStore';
 import { cn } from '@/lib/utils';
 
+function RoomIcon({ isGameMaster }: { isGameMaster: boolean }) {
+  return isGameMaster ? (
+    <Crown className='mr-4 h-10 w-10 text-primary' />
+  ) : (
+    <Swords className='mr-4 h-10 w-10 text-primary' />
+  );
+}
+
 function TopBarExpanded() {
+  const isGameMaster = useQuasmStore(state => state.isGameMaster);
   const currentRoomName = useQuasmStore(state => state.roomName);
-  const isOnDashboard = useQuasmStore(getIsOnDashboard);
+
+  const { roomId }: { roomId: string | undefined } = useParams({
+    strict: false
+  });
+  const isOnDashboard = roomId === undefined;
+
   return (
     <div
       className={cn(
@@ -23,8 +38,14 @@ function TopBarExpanded() {
     >
       {!isOnDashboard && (
         <div className='flex flex-row items-center'>
-          <Swords className='mr-1 text-primary' />
-          <h1 className='text-4xl text-primary'>{currentRoomName}</h1>
+          {!currentRoomName ? (
+            <SvgSpinner className='h-10 w-10' />
+          ) : (
+            <>
+              <RoomIcon isGameMaster={isGameMaster} />
+              <h1 className='text-4xl text-primary'>{currentRoomName}</h1>
+            </>
+          )}
         </div>
       )}
       <User />
@@ -33,11 +54,13 @@ function TopBarExpanded() {
 }
 
 function TopBar() {
-  const isOnDashboard = useQuasmStore(getIsOnDashboard);
+  const { roomId }: { roomId: string | undefined } = useParams({
+    strict: false
+  });
 
   return (
     <div className='flex h-full flex-row flex-nowrap items-center justify-between bg-background'>
-      <SidebarDrawer isOnDashboard={isOnDashboard} />
+      <SidebarDrawer isOnDashboard={roomId === undefined} />
       <LogoWithText />
       <User />
     </div>
@@ -45,14 +68,18 @@ function TopBar() {
 }
 
 function RoomLayout() {
-  const isOnDashboard = useQuasmStore(getIsOnDashboard);
   const { width } = useWindowSize();
+
+  const { roomId }: { roomId: string | undefined } = useParams({
+    strict: false
+  });
+
   return (
     <>
       {width >= 1024 ? (
-        <div className='grid h-screen w-screen grid-cols-5 grid-rows-[5em_repeat(7,1fr)] overflow-x-auto bg-gradient-to-b from-[#222] to-[#111]'>
+          <div className='grid h-screen w-screen grid-cols-[300px_repeat(4,_1fr)] grid-rows-[5em_repeat(7,1fr)] overflow-x-auto bg-gradient-to-b from-[#222] to-[#111]'>
           <div className='row-span-8'>
-            <SidebarFixed isOnDashboard={isOnDashboard} />
+            <SidebarFixed isOnDashboard={roomId === undefined} />
           </div>
           <div className='col-span-4'>
             <TopBarExpanded />
@@ -76,8 +103,5 @@ function RoomLayout() {
 }
 
 export const Route = createFileRoute('/_auth')({
-  component: withAuthenticationRequired(RoomLayout),
-  onEnter: match => {
-    console.log(match.pathname);
-  }
+  component: withAuthenticationRequired(RoomLayout)
 });

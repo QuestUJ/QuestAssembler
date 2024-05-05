@@ -1,11 +1,15 @@
-import { useQuery } from '@tanstack/react-query';
+import { useParams } from '@tanstack/react-router';
 import { CircleCheck, Crown, Reply, Scroll } from 'lucide-react';
+import { useEffect } from 'react';
+import shortUUID from 'short-uuid';
 
+import { useApiGet } from '@/lib/api';
 import { useQuasmStore } from '@/lib/quasmStore';
-import { CharacterDetails } from '%/src/DataInterface';
+import { PlayerPayload, RoomDetailsPayload } from '%/dist';
 
 import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
 import LogoWithText from '../LogoWithText';
+import { SvgSpinner } from '../Spinner';
 import {
   Accordion,
   AccordionContent,
@@ -13,20 +17,21 @@ import {
   AccordionTrigger
 } from '../ui/accordion';
 
-function Character({ characterInfo }: { characterInfo: CharacterDetails }) {
-  const { pictureURL, name } = characterInfo;
+function Character({ characterInfo }: { characterInfo: PlayerPayload }) {
+  const { nick, profilePicture } = characterInfo;
   return (
     <div className='my-1 flex h-10 flex-row items-center rounded-xl p-1 hover:cursor-pointer hover:bg-card-foreground'>
-      <img src={pictureURL} className='aspect-square h-full rounded-full' />
-      <h1 className='text-2xl'>{name}</h1>
+      <img
+        src={profilePicture}
+        className='mr-4 aspect-square h-full rounded-full'
+      />
+      <h1 className='text-2xl'>{nick}</h1>
     </div>
   );
 }
 
 function ToolsAccordion() {
-  const isCurrentUserGameMaster = useQuasmStore(
-    state => state.isCurrentPlayerGameMaster
-  );
+  const isGameMaster = useQuasmStore(state => state.isGameMaster);
   return (
     <AccordionItem value='tools'>
       <AccordionTrigger className='w-full text-2xl text-primary'>
@@ -37,7 +42,7 @@ function ToolsAccordion() {
           <Scroll className='mr-2 h-full text-primary' />
           <h1>View story</h1>
         </div>
-        {isCurrentUserGameMaster ? (
+        {isGameMaster ? (
           <>
             <div>
               <Crown className='mr-2 h-full text-primary' />
@@ -63,32 +68,49 @@ function ToolsAccordion() {
   );
 }
 
-function CharactersAccordion() {
-  const roomCharacters = useQuasmStore(state => state.roomCharacters);
+function CharactersAccordion({
+  characters
+}: {
+  characters: PlayerPayload[] | undefined;
+}) {
   return (
     <AccordionItem value='players'>
       <AccordionTrigger className='w-full text-2xl text-primary'>
         Players
       </AccordionTrigger>
       <AccordionContent>
-        {roomCharacters.map(character => (
-          <Character characterInfo={character} key={character.id} />
-        ))}
+        {!characters ? (
+          <SvgSpinner className='mx-auto h-10 w-10' />
+        ) : characters.length === 0 ? (
+          <h1 className='text-secondary'>No more players in this room :(</h1>
+        ) : (
+          characters.map(character => (
+            <Character characterInfo={character} key={character.id} />
+          ))
+        )}
       </AccordionContent>
     </AccordionItem>
   );
 }
 
 export function SidebarContentRoom() {
-  const currentPlayerUrlImage = useQuasmStore(
-    state => state.currentPlayerURLImage
-  );
-  const currentPlayerName = useQuasmStore(state => state.currentPlayerName);
-  const {} = useQuasmStore(state => state.roomName);
+  const { setRoomName, setIsGameMaster } = useQuasmStore();
 
-  const {} = useQuery({
-    queryKey: ['characters']
+  const { roomId }: { roomId: string } = useParams({
+    strict: false
   });
+
+  const roomUUID = shortUUID().toUUID(roomId);
+
+  const { data } = useApiGet<RoomDetailsPayload>({
+    path: `/getRoom/${roomUUID}`,
+    queryKey: ['getRoom', roomUUID]
+  });
+
+  useEffect(() => {
+    setRoomName(data?.roomName);
+    setIsGameMaster(data?.currentPlayer.id === data?.gameMasterID);
+  }, [data, setRoomName, setIsGameMaster]);
 
   return (
     <div className='flex h-full flex-col justify-between p-4'>
@@ -97,19 +119,25 @@ export function SidebarContentRoom() {
           <LogoWithText />
         </div>
         <Accordion type='multiple'>
-          <CharactersAccordion />
+          <CharactersAccordion characters={data?.players} />
           <ToolsAccordion />
         </Accordion>
       </div>
       <div className='w-full'>
         <div className='flex h-10 flex-row items-center justify-between'>
           <div className='flex h-full items-center'>
-            <img
-              src={currentPlayerUrlImage}
-              className='mr-2 aspect-square h-full rounded-full'
-              alt='current player character picture'
-            />
-            <h1 className='text-2xl'>{currentPlayerName}</h1>
+            {!data ? (
+              <SvgSpinner className='ml-4 h-10 w-10' />
+            ) : (
+              <>
+                <img
+                  src={data?.currentPlayer.profilePicture}
+                  className='mr-2 aspect-square h-full rounded-full'
+                  alt='current player character picture'
+                />
+                <h1 className='text-2xl'>{data?.currentPlayer.nick}</h1>
+              </>
+            )}
           </div>
           <CharacterSettingsDialog />
         </div>

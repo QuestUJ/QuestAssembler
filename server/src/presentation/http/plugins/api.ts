@@ -2,13 +2,14 @@ import {
     CreateRoomBody,
     CreateRoomResponse,
     ErrorCode,
+    FetchRoomsResponse,
+    GetRoomResponse,
     JoinRoomBody,
     JoinRoomResponse,
     QuasmComponent,
     QuasmError,
     UserDetails
 } from '@quasm/common';
-import { FetchRoomsResponse } from '@quasm/common';
 import { UUID } from 'crypto';
 import {
     type FastifyInstance,
@@ -65,10 +66,48 @@ export function apiRoutes(
                     gameMasterName: r.getGameMaster().getNick(),
                     currentPlayers: r.getCharacters().length,
                     maxPlayers: r.getMaxPlayerCount(),
-                    isCurrentUserGameMaster: false,
+                    isCurrentUserGameMaster:
+                        r.getGameMaster().userID === request.user.userID,
                     lastImageUrl: undefined,
                     lastMessages: undefined
                 }))
+            });
+        });
+
+        fastify.get<{
+            Reply: GetRoomResponse;
+
+            Params: {
+                roomID: string;
+            };
+        }>('/getRoom/:roomID', async (request, reply) => {
+            const room = await roomRepository.getRoomByID(
+                request.params.roomID as UUID
+            );
+
+            const players = [...room.getCharacters()];
+            const currentPlayer = players.splice(
+                players.findIndex(p => p.userID === request.user.userID),
+                1
+            )[0];
+
+            await reply.send({
+                success: true,
+                payload: {
+                    id: room.id,
+                    roomName: room.getName(),
+                    gameMasterID: room.getGameMaster().id,
+                    players: players.map(p => ({
+                        id: p.id,
+                        nick: p.getNick(),
+                        profilePicture: p.profileIMG
+                    })),
+                    currentPlayer: {
+                        id: currentPlayer.id,
+                        nick: currentPlayer.getNick(),
+                        profilePicture: currentPlayer.profileIMG
+                    }
+                }
             });
         });
 
@@ -86,12 +125,13 @@ export function apiRoutes(
 
             await room.addCharacter({
                 nick: request.user.nickname,
-                userID: request.user.userID
+                userID: request.user.userID,
+                profileIMG: request.user.profileImg
             });
 
             await reply.send({
                 success: true,
-                payload: 'ok'
+                payload: room.getName()
             });
         });
 
@@ -112,7 +152,8 @@ export function apiRoutes(
 
             const room = await roomRepository.createRoom(settings, {
                 userID: request.user.userID,
-                nick: request.user.nickname
+                nick: request.user.nickname,
+                profileIMG: request.user.profileImg
             });
 
             await reply.send({

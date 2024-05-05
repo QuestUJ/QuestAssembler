@@ -17,6 +17,7 @@ export interface CharacterDetails {
     nick: string;
     description?: string;
     playerTurnSubmit?: string;
+    profileIMG?: string;
 }
 
 export class Character {
@@ -26,6 +27,7 @@ export class Character {
         readonly userID: string,
         private nick: string,
         readonly isGameMaster: boolean,
+        public profileIMG?: string,
         private description?: string,
         private playerTurnSubmit?: PlayerTurnSubmit
     ) {
@@ -55,10 +57,6 @@ export class Character {
                 `Description length: ${description.length}`
             );
         }
-    }
-
-    getUserID(): string {
-        return this.userID;
     }
 
     getNick(): string {
