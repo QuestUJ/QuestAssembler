@@ -82,10 +82,6 @@ function RoomOverview() {
 }
 
 function Dashboard() {
-  const { setRoomName } = useQuasmStore();
-  useEffect(() => {
-    setRoomName(undefined);
-  }, [setRoomName]);
   return (
     <div className='flex w-full flex-wrap p-10'>
       <RoomOverview />

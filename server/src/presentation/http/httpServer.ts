@@ -41,6 +41,7 @@ export async function startHTTPServer(
                 }
             });
         } else {
+            console.log(error);
             await reply.send(error);
         }
     });

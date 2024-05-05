@@ -50,9 +50,12 @@ export interface IRoomRepository {
     ): Promise<Character>;
 
     /**
-     * Just persists some character  attributes changes
+     * Just persists some character attributes changes
      */
-    updateCharacter(id: UUID, character: CharacterDetails): Promise<void>;
+    updateCharacter(
+        id: UUID,
+        character: Partial<CharacterDetails>
+    ): Promise<void>;
 
     /**
      * Adds StoryChunk to the specified Room

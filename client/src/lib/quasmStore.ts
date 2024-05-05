@@ -14,6 +14,7 @@ import {
 
 type QuasmState = {
   roomName: string | undefined;
+  roomID: string | undefined;
   roomCharacters: CharacterDetails[];
   isCurrentPlayerGameMaster: boolean;
   currentPlayerName: string;
@@ -28,6 +29,7 @@ type QuasmActions = {
 
 export const useQuasmStore = create<QuasmState & QuasmActions>()(set => ({
   roomName: undefined,
+  roomID: undefined,
   roomCharacters: PLACEHOLDER_ROOM_PLAYERS,
   isCurrentPlayerGameMaster: true,
   currentPlayerName: 'adam',

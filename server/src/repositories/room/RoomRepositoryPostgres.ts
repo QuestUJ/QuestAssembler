@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { QuasmComponent } from '@quasm/common';
 import { randomUUID, UUID } from 'crypto';
 import { Kysely } from 'kysely';
@@ -45,8 +44,8 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             gameMasterUUID,
             gameMasterDetails.userID,
             gameMasterDetails.nick,
-            gameMasterDetails.description,
-            true
+            true, // Creator is a game master by default
+            gameMasterDetails.description
         );
 
         room.restoreCharacter(master);
@@ -60,7 +59,6 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 .insertInto('Rooms')
                 .values({
                     id: roomUUID,
-                    gameMasterID: gameMasterUUID,
                     roomName: roomDetails.roomName,
                     maxPlayerCount: roomDetails.maxPlayerCount
                 })
@@ -72,6 +70,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                     id: gameMasterUUID,
                     nick: gameMasterDetails.nick,
                     description: gameMasterDetails.description,
+                    isGameMaster: true,
                     roomID: roomUUID,
                     userID: gameMasterDetails.userID
                 })
@@ -85,34 +84,53 @@ export class RoomRepositoryPostgres implements IRoomRepository {
     async fetchRooms(userID: string): Promise<Room[]> {
         const roomsData = await this.db
             .selectFrom('Rooms')
-            .innerJoin('Characters', 'Rooms.id', 'Characters.roomID')
-            .where('Characters.userID', '=', userID)
-            .selectAll()
+            .innerJoin(
+                eb =>
+                    eb
+                        .selectFrom('Characters')
+                        .select('Characters.roomID')
+                        .where('Characters.userID', '=', userID)
+                        .as('userCharacter'),
+                join => join.onRef('userCharacter.roomID', '=', 'Rooms.id')
+            )
+            .innerJoin('Characters', 'Characters.roomID', 'Rooms.id')
+            .select([
+                'Rooms.roomName',
+                'Rooms.maxPlayerCount',
+                'Rooms.id as roomID',
+                'Characters.id as characterID',
+                'Characters.userID',
+                'Characters.nick',
+                'Characters.isGameMaster',
+                'Characters.description'
+            ])
             .execute();
 
         roomsData.forEach(r => {
-            this.fetchedRooms.delete(r.id as UUID);
+            this.fetchedRooms.delete(r.roomID as UUID);
         });
 
         const result: Room[] = [];
 
         roomsData.forEach(r => {
-            if (!this.fetchedRooms.has(r.id as UUID)) {
+            if (!this.fetchedRooms.has(r.roomID as UUID)) {
                 const settings = new RoomSettings(r.roomName, r.maxPlayerCount);
-                const room = new Room(this, r.id as UUID, settings);
-                this.fetchedRooms.set(r.id as UUID, room);
+                const room = new Room(this, r.roomID as UUID, settings);
+                this.fetchedRooms.set(r.roomID as UUID, room);
                 result.push(room);
             }
 
             const character = new Character(
                 this,
-                r.id as UUID,
+                r.characterID as UUID,
                 r.userID,
                 r.nick,
-                r.description,
-                r.gameMasterID === r.id
+                r.isGameMaster,
+                r.description ?? undefined
             );
-            this.fetchedRooms.get(r.id as UUID)?.restoreCharacter(character);
+            this.fetchedRooms
+                .get(r.roomID as UUID)
+                ?.restoreCharacter(character);
         });
 
         return result;
@@ -140,8 +158,8 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 r.id as UUID,
                 r.userID,
                 r.nick,
-                r.description,
-                r.gameMasterID === r.id
+                r.isGameMaster,
+                r.description ?? undefined
             );
 
             room.restoreCharacter(character);
@@ -175,8 +193,8 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             randomUUID(),
             characterDetails.userID,
             characterDetails.nick,
-            characterDetails.description,
-            false
+            false,
+            characterDetails.description
         );
 
         await this.db
@@ -186,6 +204,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 nick: characterDetails.nick,
                 roomID,
                 description: characterDetails.description,
+                isGameMaster: false,
                 userID: characterDetails.userID,
                 submitContent: null,
                 submitTimestamp: null
@@ -227,7 +246,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         const lowerBound = range.offset - range.count + 1;
         const upperBound = range.offset;
 
-        const storyChunkData = await this.db 
+        const storyChunkData = await this.db
             .selectFrom('StoryChunks')
             .where('roomID', '=', roomID)
             .where('id', '>=', lowerBound)
@@ -242,7 +261,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         const result: StoryChunk[] = [];
 
         storyChunkData.forEach(r => {
-            if (!this.fetchedRooms.has(r.chunkID as unknown as UUID)){
+            if (!this.fetchedRooms.has(r.chunkID as unknown as UUID)) {
                 const chunk = new StoryChunk(
                     r.chunkID,
                     r.title,
@@ -259,4 +278,9 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         });
         return result;
     }
+
+    async fetchStoryChunks(
+        roomID: string,
+        range: Range
+    ): StoryChunk[] | PromiseLike<StoryChunk[]> {}
 }

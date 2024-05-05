@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import { CircleCheck, Crown, Reply, Scroll } from 'lucide-react';
 
 import { useQuasmStore } from '@/lib/quasmStore';
@@ -83,6 +84,12 @@ export function SidebarContentRoom() {
     state => state.currentPlayerURLImage
   );
   const currentPlayerName = useQuasmStore(state => state.currentPlayerName);
+  const {} = useQuasmStore(state => state.roomName);
+
+  const {} = useQuery({
+    queryKey: ['characters']
+  });
+
   return (
     <div className='flex h-full flex-col justify-between p-4'>
       <div>

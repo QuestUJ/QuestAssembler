@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
     ErrorCode,
     MAX_ROOM_NAME_LENGTH,
@@ -30,7 +28,6 @@ export class RoomSettings {
 }
 
 export class Room {
-    private gameMaster?: UUID;
     private characters: Character[] = [];
 
     constructor(
@@ -112,7 +109,6 @@ export class Room {
                 QuasmComponent.ROOM,
                 `Game master restored: ${character.id}`
             );
-            this.gameMaster = character.id;
         }
     }
 
@@ -128,6 +124,11 @@ export class Room {
 
     getCharacters(): Character[] {
         return this.characters;
+    }
+
+    getGameMaster(): Character {
+        console.log(this.characters)
+        return this.characters.find(ch => ch.isGameMaster)!;
     }
 
     async addCharacter(characterDetails: CharacterDetails) {

@@ -62,8 +62,8 @@ export function apiRoutes(
                 payload: rooms.map(r => ({
                     id: r.id,
                     roomName: r.getName(),
-                    gameMasterName: '',
-                    currentPlayers: r.getCharacters.length,
+                    gameMasterName: r.getGameMaster().getNick(),
+                    currentPlayers: r.getCharacters().length,
                     maxPlayers: r.getMaxPlayerCount(),
                     isCurrentUserGameMaster: false,
                     lastImageUrl: undefined,
@@ -77,13 +77,15 @@ export function apiRoutes(
             Reply: JoinRoomResponse;
         }>('/joinRoom', async (request, reply) => {
             const { gameCode } = request.body;
-            logger.info(QuasmComponent.HTTP, `POST /joinRoom ${gameCode}`);
+            logger.info(
+                QuasmComponent.HTTP,
+                `POST /joinRoom ${gameCode} ${request.user.userID}`
+            );
 
             const room = await roomRepository.getRoomByID(gameCode as UUID);
 
             await room.addCharacter({
-                nick: 'Test',
-                description: 'test',
+                nick: request.user.nickname,
                 userID: request.user.userID
             });
 
@@ -110,8 +112,7 @@ export function apiRoutes(
 
             const room = await roomRepository.createRoom(settings, {
                 userID: request.user.userID,
-                description: 'test description',
-                nick: 'boss'
+                nick: request.user.nickname
             });
 
             await reply.send({

@@ -1,5 +1,5 @@
 import { withAuthenticationRequired } from '@auth0/auth0-react';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, matchPathname } from '@tanstack/react-router';
 import { Outlet } from '@tanstack/react-router';
 import { Swords } from 'lucide-react';
 
@@ -76,5 +76,8 @@ function RoomLayout() {
 }
 
 export const Route = createFileRoute('/_auth')({
-  component: withAuthenticationRequired(RoomLayout)
+  component: withAuthenticationRequired(RoomLayout),
+  onEnter: match => {
+    console.log(match.pathname);
+  }
 });
