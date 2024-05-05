@@ -19,6 +19,6 @@ function Room() {
   );
 }
 
-export const Route = createFileRoute('/_auth/room/$roomId')({
+export const Route = createFileRoute('/_auth/room/$roomId/tmp')({
   component: Room
 });

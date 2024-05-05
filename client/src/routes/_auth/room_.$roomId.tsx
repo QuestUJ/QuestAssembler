@@ -17,6 +17,6 @@ function Story() {
   );
 }
 
-export const Route = createFileRoute('/_auth/room/$roomId/story')({
+export const Route = createFileRoute('/_auth/room/$roomId')({
   component: Story
 });

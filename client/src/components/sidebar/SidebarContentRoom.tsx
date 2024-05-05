@@ -1,6 +1,6 @@
-import { useParams } from '@tanstack/react-router';
+import { Link, useParams, useRouterState } from '@tanstack/react-router';
 import { CircleCheck, Crown, Reply, Scroll } from 'lucide-react';
-import { useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 import shortUUID from 'short-uuid';
 
 import { useApiGet } from '@/lib/api';
@@ -30,38 +30,66 @@ function Character({ characterInfo }: { characterInfo: PlayerPayload }) {
   );
 }
 
+function ToolLink({ children }: { children: ReactNode }) {
+  return (
+    <div className='my-2 flex h-10 items-center hover:bg-card-foreground'>
+      {children}
+    </div>
+  );
+}
+
 function ToolsAccordion() {
   const isGameMaster = useQuasmStore(state => state.isGameMaster);
+  const { roomId }: { roomId: string } = useParams({ strict: false });
+
   return (
     <AccordionItem value='tools'>
       <AccordionTrigger className='w-full text-2xl text-primary'>
         Tools
       </AccordionTrigger>
-      <AccordionContent className='[&>div]:flex [&>div]:h-10 [&>div]:items-center [&>h1]:text-lg'>
-        <div>
-          <Scroll className='mr-2 h-full text-primary' />
-          <h1>View story</h1>
-        </div>
+      <AccordionContent className='[&>div]:my-2 [&>div]:flex [&>div]:h-10 [&>div]:items-center'>
+        <Link
+          to='/room/$roomId'
+          params={{
+            roomId
+          }}
+        >
+          <ToolLink>
+            <Scroll className='mr-2 h-8 w-8 text-primary' />
+            <h1 className='text-xl'>View story</h1>
+          </ToolLink>
+        </Link>
         {isGameMaster ? (
           <>
-            <div>
-              <Crown className='mr-2 h-full text-primary' />
-              <h1>AI support</h1>
-            </div>
-            <div>
-              <Reply className='mr-2 h-full text-primary' />
-              <h1>Submit story chunk</h1>
-            </div>
-            <div>
-              <CircleCheck className='mr-2 h-full text-primary' />
-              <h1>Players' submits</h1>
-            </div>
+            <Link
+              to='/room/$roomId/'
+              params={{
+                roomId
+              }}
+            >
+              <ToolLink>
+                <Crown className='mr-2 h-8 w-8 text-primary' />
+                <h1 className='text-xl'>AI support</h1>
+              </ToolLink>
+            </Link>
+
+            <Link
+              to='/room/$roomId/submitStory'
+              params={{
+                roomId
+              }}
+            >
+              <ToolLink>
+                <Reply className='mr-2 h-8 w-8 text-primary' />
+                <h1 className='text-xl'>Submit story chunk</h1>
+              </ToolLink>
+            </Link>
           </>
         ) : (
-          <div>
-            <Crown className='mr-2 h-full text-primary' />
-            <h1>Contact game master</h1>
-          </div>
+          <ToolLink>
+            <Crown className='mr-2 h-8 w-8 text-primary' />
+            <h1 className='text-xl'>Contact game master</h1>
+          </ToolLink>
         )}
       </AccordionContent>
     </AccordionItem>
