@@ -32,7 +32,7 @@ function Character({ characterInfo }: { characterInfo: PlayerPayload }) {
 
 function ToolLink({ children }: { children: ReactNode }) {
   return (
-    <div className='my-2 flex h-10 items-center hover:bg-card-foreground'>
+    <div className='my-2 flex h-10 items-center rounded-xl hover:bg-card-foreground'>
       {children}
     </div>
   );
@@ -52,6 +52,12 @@ function ToolsAccordion() {
           to='/room/$roomId'
           params={{
             roomId
+          }}
+          activeProps={{
+            className: '[&>div]:bg-card-foreground'
+          }}
+          activeOptions={{
+            exact: true
           }}
         >
           <ToolLink>
@@ -77,6 +83,12 @@ function ToolsAccordion() {
               to='/room/$roomId/submitStory'
               params={{
                 roomId
+              }}
+              activeProps={{
+                className: '[&>div]:bg-card-foreground'
+              }}
+              activeOptions={{
+                exact: true
               }}
             >
               <ToolLink>
