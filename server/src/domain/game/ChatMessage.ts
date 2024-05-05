@@ -1,13 +1,21 @@
 import { randomUUID, UUID } from 'crypto';
 
-export class ChatMessage {
-    readonly author: UUID = randomUUID();
-    readonly content: string = '';
-    readonly timestamp: Date = new Date();
+export type Chatter = UUID | 'all';
 
-    constructor(author: UUID, content: string, timestamp: Date) {
-        this.author = author;
-        this.content = content;
-        this.timestamp = timestamp;
-    }
+export class ChatMessageDetails {
+    constructor(
+        public from: UUID,
+        public to: Chatter,
+        public content: string
+    ) {}
+}
+
+export class ChatMessage {
+    constructor(
+        public id: number,
+        public from: UUID,
+        public to: Chatter,
+        public content: string,
+        public timestamp: Date
+    ) {}
 }

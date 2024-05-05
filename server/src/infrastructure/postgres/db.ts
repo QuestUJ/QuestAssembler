@@ -45,11 +45,11 @@ export interface CharactersTable {
 }
 
 export interface ChatMessagesTable {
-    roomID: string;
-    messageID: number;
+    id: number;
     from: string; // Characters.ihttps://vitest.dev/guide/mocking.htmld
     to: string; // Characters.id
     content: string;
+    timestamp: ColumnType<Date, string | undefined, never>;
 }
 
 const dialect = new PostgresDialect({

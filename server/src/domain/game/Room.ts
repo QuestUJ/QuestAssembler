@@ -3,7 +3,9 @@ import { UUID } from 'crypto';
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { Character, CharacterDetails } from './Character';
-// import { ChatMessage } from './ChatMessage';
+import { ChatMessage, ChatMessageDetails, Chatter } from './ChatMessage';
+import { Chat } from './Chat';
+import { FromNode } from 'kysely';
 // import { StoryChunk } from './StoryChunk';
 
 const MAX_ROOM_NAME_LENGTH: number = 128;
@@ -23,15 +25,18 @@ export class RoomSettings {
 export class Room {
     private gameMaster?: UUID;
     private characters: Character[] = [];
+    private broadcast: Chat;
+    private chats: Map<{ from: UUID, to: Chatter }, Chat>;
 
     constructor(
         readonly roomRepository: IRoomRepository,
         readonly id: UUID,
-        private roomSettings: RoomSettings
+        private roomSettings: RoomSettings,
         // private storyChunks: StoryChunk[] = [];
-        // private broadcast: Chat;
-        // private chats: Map<(UUID, UUID), Chat>; ???
-    ) {}
+    ) {
+        this.broadcast = new Chat(roomRepository);
+        this.chats = new Map();
+    }
 
     restoreCharacter(character: Character) {
         if (this.characters.length < this.roomSettings.maxPlayerCount) {
@@ -77,13 +82,27 @@ export class Room {
     //     }
     // }
 
-    // getBroadcast(): Chat {
-    //     return this.broadcast;
-    // }
+    getBroadcast(): Chat {
+        return this.broadcast;
+    }
+    
+    async addBrodcastMessage(message: ChatMessage): Promise<void> {
+        await this.broadcast.addMessage(message);
+    }
 
-    // addBrodcastMessage(message: ChatMessage) {
-    //     message;
-    // }
+    getChat(from: UUID, to: Chatter): Chat {
+        return this.chats.get({
+            from,
+            to
+        })!;
+    }
+
+    async addChatMessage(chatMessageDetails: ChatMessageDetails): Promise<void> {
+        await this.chats.get({
+            from: chatMessageDetails.from,
+            to: chatMessageDetails.to
+        })!.addMessage(chatMessageDetails);
+    }
 
     getName(): string {
         return this.roomSettings.roomName;
@@ -91,7 +110,7 @@ export class Room {
 
     async setName(newName: string) {
         if (newName.length >= 1 && newName.length <= MAX_ROOM_NAME_LENGTH) {
-            await this.roomRepository.updateRoom({
+            await this.roomRepository.updateRoom(this.id, {
                 ...this.roomSettings,
                 roomName: newName
             });

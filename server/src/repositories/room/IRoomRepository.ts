@@ -2,6 +2,8 @@ import { UUID } from 'crypto';
 
 import { Character, CharacterDetails } from '@/domain/game/Character';
 import { Room, RoomSettings } from '@/domain/game/Room';
+import { ChatMessage, ChatMessageDetails, Chatter } from '@/domain/game/ChatMessage';
+import { Range } from '@/domain/game/Chat';
 
 export interface IRoomRepository {
     createRoom(
@@ -22,5 +24,12 @@ export interface IRoomRepository {
         characterDetails: CharacterDetails
     ): Promise<Character>;
 
-    updateCharacter(id: UUID, character: CharacterDetails): Promise<void>;
+    updateCharacter(
+        characterID: UUID,
+        character: CharacterDetails
+    ): Promise<void>;
+
+    addMessage(chatMessageDetails: ChatMessageDetails): Promise<ChatMessage>;
+
+    fetchMessages(from: UUID, to: Chatter, range: Range): Promise<ChatMessage[]>;
 }

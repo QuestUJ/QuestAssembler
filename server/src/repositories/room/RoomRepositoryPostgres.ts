@@ -2,6 +2,8 @@ import { randomUUID, UUID } from 'crypto';
 import { Kysely } from 'kysely';
 
 import { Character, CharacterDetails } from '@/domain/game/Character';
+import { ChatMessage, ChatMessageDetails, Chatter } from '@/domain/game/ChatMessage';
+import { Chat, Range } from '@/domain/game/Chat';
 import { Room, RoomSettings } from '@/domain/game/Room';
 import { Database } from '@/infrastructure/postgres/db';
 
@@ -66,10 +68,6 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             .where('Characters.userID', '=', userID)
             .selectAll()
             .execute();
-
-        roomsData.forEach(r => {
-            this.fetchedRooms.delete(r.id as UUID);
-        });
 
         const result: Room[] = [];
 
@@ -183,5 +181,54 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             .set(characterDetails)
             .where('id', '=', id)
             .execute();
+    }
+
+    async addMessage(chatMessageDetails: ChatMessageDetails): Promise<ChatMessage> {
+        const result = await this.db
+            .insertInto('ChatMessages')
+            .values({
+                from: chatMessageDetails.from,
+                to: chatMessageDetails.to,
+                content: chatMessageDetails.content,
+            })
+            .returning(['id', 'timestamp'])
+            .executeTakeFirstOrThrow();
+
+        const newChatMessage = new ChatMessage(
+            result.id,
+            chatMessageDetails.from,
+            chatMessageDetails.to,
+            chatMessageDetails.content,
+            result.timestamp
+        )
+
+        return newChatMessage;
+    }
+
+    async fetchMessages(from: UUID, to: Chatter, range: Range): Promise<ChatMessage[]> {
+        const fetchedChatMessages = await this.db
+            .selectFrom('ChatMessages')
+            .where('from', '=', from)
+            .where('to', '=', to)
+            .where('id', '<=', range.offset!)
+            .selectAll()
+            .orderBy('id', 'desc')
+            .limit(range.count)
+            .execute();
+
+        const chatMessages: ChatMessage[] = [];
+        fetchedChatMessages.forEach(m => {
+            const chatMessage = new ChatMessage(
+                m.id,
+                m.from as UUID,
+                m.to as Chatter,
+                m.content,
+                m.timestamp
+            )
+
+            chatMessages.push(chatMessage);
+        })
+
+        return chatMessages;
     }
 }
