@@ -5,34 +5,43 @@ import {
   MessageDetails,
   MessageTypes
 } from '%/src/DataInterface.ts';
+
 import {
-  PLACEHOLDER_ROOM_PLAYERS,
   PLACEHOLDER_DUMMY_MESSAGES,
-  PLACEHOLDER_DUMMY_STORY
+  PLACEHOLDER_DUMMY_STORY,
+  PLACEHOLDER_ROOM_PLAYERS
 } from './dummyData';
 
-type RoomState = {
+type QuasmState = {
   roomName: string | undefined;
+  roomID: string | undefined;
   roomCharacters: CharacterDetails[];
-  isCurrentPlayerGameMaster: boolean;
+  isGameMaster: boolean;
   currentPlayerName: string;
   currentPlayerURLImage: string | undefined;
   messages: MessageDetails[];
   story: MessageTypes[];
 };
 
-type RoomActions = {
-  setRoomName: (name: string) => void;
+type QuasmActions = {
+  setRoomName: (name: string | undefined) => void;
+  setIsGameMaster: (val: boolean) => void;
 };
 
-export const useRoomStore = create<RoomState & RoomActions>()(set => ({
-  roomName: 'test room name',
+export const useQuasmStore = create<QuasmState & QuasmActions>()(set => ({
+  roomName: undefined,
+  isGameMaster: true,
+
+  roomID: undefined,
   roomCharacters: PLACEHOLDER_ROOM_PLAYERS,
-  isCurrentPlayerGameMaster: true,
   currentPlayerName: 'adam',
   messages: PLACEHOLDER_DUMMY_MESSAGES,
   story: PLACEHOLDER_DUMMY_STORY,
   currentPlayerURLImage:
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRY3q3HgtsmQrYhiCava6te52P-YM6roY_m1-u4vyR_vQ&s',
-  setRoomName: (name: string) => set(_state => ({ roomName: name }))
+  setRoomName: (name: string | undefined) => set(() => ({ roomName: name })),
+  setIsGameMaster: (val: boolean) => set(() => ({ isGameMaster: val }))
 }));
+
+export const getIsOnDashboard = (state: QuasmState) =>
+  state.roomName === undefined;

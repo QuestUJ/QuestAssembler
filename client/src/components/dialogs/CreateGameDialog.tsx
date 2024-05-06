@@ -1,7 +1,4 @@
-import { useAuth0 } from '@auth0/auth0-react';
-import { CreateRoomResponse } from '@quasm/common';
 import { DialogClose } from '@radix-ui/react-dialog';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -16,70 +13,25 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { config } from '@/config';
-
-const { API_BASE_URL } = config.pick(['API_BASE_URL']);
+import { useApiPost } from '@/lib/api';
 
 export function CreateGameDialog() {
   const [name, setName] = useState('');
   const [maxPlayers, setMaxPlayers] = useState(0);
-  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
-  const createGameMutation = useMutation({
-    mutationFn: async ({
-      name,
-      maxPlayers
-    }: {
-      name: string;
-      maxPlayers: number;
-    }) => {
-      // input related validation
-      if (name === '') {
-        toast({
-          variant: 'destructive',
-          title: 'Invalid input!',
-          description: 'You must set non-empty name'
-        });
-        throw new Error('BAD_INPUT_ERROR');
-      }
-      // maxPlayer input validation handled by min prop in input
+  const { mutate: createGame } = useApiPost<
+    string,
+    { name: string; maxPlayers: number }
+  >({
+    path: '/createRoom',
+    invalidate: ['roomFetch'],
 
-      // auth related validation
-      if (!isAuthenticated) {
-        throw new Error('NOT_AUTHENTICATED_ERROR');
-      }
-      const token = await getAccessTokenSilently();
-
-      // API call
-      const response = (await fetch(`${API_BASE_URL}/api/v1/createRoom`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name, maxPlayers }),
-        signal: AbortSignal.timeout(10000)
-      }).then(res => res.json())) as CreateRoomResponse;
-
-      // response handling
-      if (!response.success) {
-        toast({
-          variant: 'destructive',
-          title: 'Something went wrong',
-          description: response.error?.message
-        });
-        throw new Error(`Something went wrong ${response.error?.message}`);
-      } else {
-        toast({
-          title: 'Room created succcessfully',
-          description: `Your room game code is ${response.payload} `
-        });
-        await queryClient.invalidateQueries({ queryKey: ['roomFetch'] });
-      }
-
-      return response.success;
+    onSuccess: code => {
+      toast({
+        title: 'Room created succcessfully',
+        description: `Your room game code is ${code} `
+      });
     }
   });
 
@@ -115,7 +67,7 @@ export function CreateGameDialog() {
           <DialogClose asChild>
             <Button
               type='submit'
-              onClick={() => createGameMutation.mutate({ name, maxPlayers })}
+              onClick={() => createGame({ name, maxPlayers })}
             >
               Create game
             </Button>

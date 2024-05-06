@@ -15,8 +15,9 @@ const MAX_PLAYER_SUBMIT_LENGTH = 280;
 export interface CharacterDetails {
     userID: string;
     nick: string;
-    description: string;
-    playerTurnSubmit: PlayerTurnSubmit;
+    description?: string;
+    playerTurnSubmit?: string;
+    profileIMG?: string;
 }
 
 export class Character {
@@ -25,8 +26,9 @@ export class Character {
         readonly id: UUID,
         readonly userID: string,
         private nick: string,
-        private description: string,
         readonly isGameMaster: boolean,
+        public profileIMG?: string,
+        private description?: string,
         private playerTurnSubmit?: PlayerTurnSubmit
     ) {
         this.validateNick(this.nick);
@@ -44,7 +46,9 @@ export class Character {
         }
     }
 
-    validateDescription(description: string) {
+    validateDescription(description: string | undefined) {
+        if (!description) return;
+
         if (description.length > MAX_CHARACTER_DESCRIPTION_LENGTH) {
             throw new QuasmError(
                 QuasmComponent.CHARACTER,
@@ -53,10 +57,6 @@ export class Character {
                 `Description length: ${description.length}`
             );
         }
-    }
-
-    getUserID(): string {
-        return this.userID;
     }
 
     getNick(): string {
@@ -73,7 +73,7 @@ export class Character {
         this.nick = newNick;
     }
 
-    getDescription(): string {
+    getDescription(): string | undefined {
         return this.description;
     }
 
@@ -92,9 +92,8 @@ export class Character {
         return this.playerTurnSubmit;
     }
 
-    async setPlayerTurnSubmit(submit: PlayerTurnSubmit) {
-        //is there a point of setting to undefined (submit undefined)?
-        if (submit.content.length > MAX_PLAYER_SUBMIT_LENGTH) {
+    async setPlayerTurnSubmit(submit: string | undefined) {
+        if (submit && submit.length > MAX_PLAYER_SUBMIT_LENGTH) {
             throw new QuasmError(
                 QuasmComponent.CHARACTER,
                 400,
@@ -103,13 +102,8 @@ export class Character {
             );
         }
 
-        const characterDetails: CharacterDetails = {
-            userID: this.id,
-            nick: this.nick,
-            description: this.description,
+        return this.roomRepository.updateCharacter(this.id, {
             playerTurnSubmit: submit
-        };
-
-        return this.roomRepository.updateCharacter(this.id, characterDetails);
+        });
     }
 }

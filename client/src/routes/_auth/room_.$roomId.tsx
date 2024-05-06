@@ -1,9 +1,11 @@
-import { InputBar } from '@/components/InputBar';
-import { MessageContainer } from '@/components/chatUtilities/Messages';
-import { useRoomStore } from '@/lib/roomStore';
 import { createFileRoute } from '@tanstack/react-router';
+
+import { MessageContainer } from '@/components/chatUtilities/Messages';
+import { InputBar } from '@/components/InputBar';
+import { useQuasmStore } from '@/lib/quasmStore';
+
 function Story() {
-  const story = useRoomStore(state => state.story);
+  const story = useQuasmStore(state => state.story);
   return (
     <div className='flex h-full flex-col justify-end'>
       <MessageContainer messages={story} />
@@ -15,6 +17,6 @@ function Story() {
   );
 }
 
-export const Route = createFileRoute('/_room_layout/room/$roomId/story')({
+export const Route = createFileRoute('/_auth/room/$roomId')({
   component: Story
 });

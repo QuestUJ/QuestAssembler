@@ -1,6 +1,6 @@
 import { QuasmComponent } from './Structure';
 
-interface ApiResponse<Payload> {
+export interface ApiResponse<Payload> {
     success: boolean;
     payload?: Payload;
     error?: {
@@ -27,6 +27,25 @@ export interface RoomPayload {
 }
 
 export type FetchRoomsResponse = ApiResponse<RoomPayload[]>;
+
+// =======================
+// /getRoom/
+// =======================
+export interface PlayerPayload {
+    id: string;
+    nick: string;
+    profilePicture?: string;
+}
+
+export interface RoomDetailsPayload {
+    id: string;
+    roomName: string;
+    gameMasterID: string;
+    players: PlayerPayload[];
+    currentPlayer: PlayerPayload;
+}
+
+export type GetRoomResponse = ApiResponse<RoomDetailsPayload>;
 
 // =======================
 // /joinRoom/

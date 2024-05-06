@@ -1,21 +1,21 @@
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsList } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
-import { useRoomStore } from '@/lib/roomStore';
 import { createFileRoute } from '@tanstack/react-router';
-import { Bot, CheckCircle, ChevronDown } from 'lucide-react';
+import { Bot, CheckCircle} from 'lucide-react';
+import { useState } from 'react';
+
 import defaultProfilePic from '@/assets/defaultProfilePicture.jpg';
-import { TabsContent, TabsTrigger } from '@radix-ui/react-tabs';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { useWindowSize } from '@/hooks/windowSize';
-import { Accordion, AccordionContent } from '@/components/ui/accordion';
 import {
-  AccordionHeader,
+  Accordion,
+  AccordionContent,
   AccordionItem,
   AccordionTrigger
-} from '@radix-ui/react-accordion';
-import { useState } from 'react';
+} from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { useWindowSize } from '@/hooks/windowSize';
+import { useQuasmStore } from '@/lib/quasmStore';
 import { CharacterDetails } from '%/src/DataInterface';
 
 function TabNavigation({ characterInfo }: { characterInfo: CharacterDetails }) {
@@ -75,12 +75,9 @@ function ActionsAccordion({
   return (
     <Accordion type='multiple' className='w-4/5'>
       <AccordionItem value='story'>
-        <AccordionHeader>
-          <AccordionTrigger className='my-1 flex flex-row items-center text-2xl text-primary'>
-            Story
-            <ChevronDown className='h-6 w-6' />
-          </AccordionTrigger>
-        </AccordionHeader>
+        <AccordionTrigger className='my-1 flex w-full flex-row items-center text-2xl text-primary'>
+          Story
+        </AccordionTrigger>
         <AccordionContent className='my-1'>
           <Textarea
             placeholder='Type your story here...'
@@ -95,12 +92,9 @@ function ActionsAccordion({
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value='image'>
-        <AccordionHeader>
-          <AccordionTrigger className='my-1 flex flex-row items-center text-2xl text-primary'>
-            Image
-            <ChevronDown className='h-6 w-6' />
-          </AccordionTrigger>
-        </AccordionHeader>
+        <AccordionTrigger className='my-1 flex w-full flex-row items-center text-2xl text-primary'>
+          Image
+        </AccordionTrigger>
         <AccordionContent className='my-1'>
           <ImageHandler />
         </AccordionContent>
@@ -131,7 +125,7 @@ function CharacterSubmitTab({
 }
 
 function SubmitStory() {
-  const roomCharacters = useRoomStore(state => state.roomCharacters);
+  const roomCharacters = useQuasmStore(state => state.roomCharacters);
   const [story, setStory] = useState('');
   const { width } = useWindowSize();
 
@@ -191,6 +185,6 @@ function SubmitStory() {
   );
 }
 
-export const Route = createFileRoute('/_room_layout/room/$roomId/submitStory')({
+export const Route = createFileRoute('/_auth/room/$roomId/submitStory')({
   component: SubmitStory
 });
