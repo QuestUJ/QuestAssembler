@@ -1,43 +1,82 @@
-import { UserDetails } from '@quasm/common';
+import { Ack, ErrorMap, QuasmComponent, QuasmError } from '@quasm/common';
+import { UUID } from 'crypto';
 
+import { logger } from '@/infrastructure/logger/Logger';
 import { QuasmSocket } from '@/presentation/socket/socketServer';
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
-import { Character } from './Character';
+import { IAuthProvider } from '../tools/auth-provider/IAuthProvider';
 import { Room } from './Room';
+
+function withErrorHandling(
+    respond: (res: Ack) => void,
+    handler: () => void | Promise<void>
+) {
+    const err = (error: unknown) => {
+        if (error instanceof QuasmError) {
+            logger.error(
+                error.errorLocation,
+                `ErrorCode: ${error.errorCode}, Context: ${error.message}`
+            );
+
+            respond({
+                error: ErrorMap[error.errorCode],
+                success: false
+            });
+        } else {
+            console.log(error);
+            respond({
+                success: false,
+                error: 'Unexpected error!'
+            });
+        }
+    };
+
+    try {
+        const result = handler();
+        if (result instanceof Promise) {
+            result.catch(err);
+        }
+    } catch (e) {
+        err(e);
+    }
+}
 
 export class User {
     constructor(
         private socket: QuasmSocket,
-        private readonly userDetails: UserDetails,
-        private readonly roomRepository: IRoomRepository
+        private readonly roomRepository: IRoomRepository,
+        private readonly authProvider: IAuthProvider
     ) {
-        // Separate joining and subscribing, client should now if he needs to join or subbscribe based on REST API info
+        this.socket.on('joinRoom', (roomID, respond) => {
+            withErrorHandling(respond, async () => {
+                const room = await this.roomRepository.getRoomByID(
+                    roomID as UUID
+                );
 
-        // One event for adding user to room,
-        this.socket.on('joinRoom', async (id, character, respond) => {
-            const room = await this.roomRepository.getRoom(id);
+                const { nickname, profileImg } =
+                    await this.authProvider.fetchUserDetails(
+                        this.socket.data.token
+                    );
 
-            if (this.isMemberOf(room)) {
+                const character = {
+                    userID: socket.data.userID,
+                    nick: nickname,
+                    profileIMG: profileImg
+                };
+
+                await room.addCharacter(character);
+
                 respond({
-                    success: false,
-                    error: 'You already are in that room'
+                    success: true
                 });
-                return;
-            }
 
-            // handle adding character here
-
-            character;
-            room.addCharacter(new Character());
-
-            respond({
-                success: true
+                this.socket.to(room.id).emit('newPlayer', character);
             });
         });
 
         this.socket.on('subscribeToRoom', async (id, respond) => {
-            const room = await this.roomRepository.getRoom(id);
+            const room = await this.roomRepository.getRoomByID(id as UUID);
 
             if (!this.isMemberOf(room)) {
                 respond({
@@ -49,15 +88,17 @@ export class User {
             }
 
             // Subsribe to room events
-            await this.socket.join('room channel');
-            await this.socket.join('me - player1 channel');
-            await this.socket.join('me - player2 channel');
+            await this.socket.join(room.id);
+            logger.info(
+                QuasmComponent.SOCKET,
+                `Socket ${this.socket.id} subscribed to ${room.id}`
+            );
         });
     }
 
     isMemberOf(room: Room): boolean {
         return !!room
             .getCharacters()
-            .find(ch => ch.getUserID() === this.userDetails.userID);
+            .find(ch => ch.userID === this.socket.data.userID);
     }
 }

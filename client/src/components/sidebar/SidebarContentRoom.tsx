@@ -1,11 +1,18 @@
-import { Link, useParams, useRouterState } from '@tanstack/react-router';
-import { CircleCheck, Crown, Reply, Scroll } from 'lucide-react';
-import { ReactNode, useEffect } from 'react';
+import {
+  NewPlayerDetails,
+  PlayerPayload,
+  RoomDetailsPayload
+} from '@quasm/common';
+import { useQueryClient } from '@tanstack/react-query';
+import { Link, useParams, useScrollRestoration } from '@tanstack/react-router';
+import { Crown, Reply, Scroll } from 'lucide-react';
+import { title } from 'process';
+import { ReactNode, useEffect, useState } from 'react';
 import shortUUID from 'short-uuid';
 
 import { useApiGet } from '@/lib/api';
 import { useQuasmStore } from '@/lib/quasmStore';
-import { PlayerPayload, RoomDetailsPayload } from '%/dist';
+import { useSocketIO } from '@/lib/socketIOStore';
 
 import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
 import LogoWithText from '../LogoWithText';
@@ -16,6 +23,7 @@ import {
   AccordionItem,
   AccordionTrigger
 } from '../ui/accordion';
+import { useToast } from '../ui/use-toast';
 
 function Character({ characterInfo }: { characterInfo: PlayerPayload }) {
   const { nick, profilePicture } = characterInfo;
@@ -147,10 +155,49 @@ export function SidebarContentRoom() {
     queryKey: ['getRoom', roomUUID]
   });
 
+  const { toast } = useToast();
+
   useEffect(() => {
     setRoomName(data?.roomName);
     setIsGameMaster(data?.currentPlayer.id === data?.gameMasterID);
   }, [data, setRoomName, setIsGameMaster]);
+
+  const socket = useSocketIO(state => state.socket);
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handler = (character: NewPlayerDetails) => {
+      console.log('hi mark');
+      console.log(data);
+      if (!data) return;
+
+      queryClient.setQueryData(['getRoom', roomUUID], {
+        ...data,
+        players: [
+          { ...character, profilePicture: character.profileIMG },
+          ...data.players
+        ]
+      });
+
+      toast({
+        title: character.nick,
+        description: 'has joined the game!'
+      });
+    };
+
+    socket.on('newPlayer', handler);
+
+    socket.emit('subscribeToRoom', roomUUID, res => {
+      console.log(res);
+    });
+
+    return () => {
+      socket.off('newPlayer', handler);
+    };
+  }, [socket, roomUUID, queryClient, data]);
 
   return (
     <div className='flex h-full flex-col justify-between p-4'>

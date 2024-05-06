@@ -1,4 +1,4 @@
-import { ErrorCode,  QuasmError } from '@quasm/common';
+import { ErrorCode, QuasmError } from '@quasm/common';
 import { QuasmComponent } from '@quasm/common';
 
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
@@ -18,12 +18,15 @@ export function auth(authProvider: IAuthProvider) {
                     `token: ${token}`
                 )
             );
+
+            return;
         }
 
         authProvider
-            .verify(token as string)
-            .then(details => {
-                socket.data.user = details;
+            .verify(token)
+            .then(id => {
+                socket.data.userID = id;
+                socket.data.token = token;
                 next();
             })
             .catch((e: Error) => next(e));

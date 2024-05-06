@@ -1,8 +1,4 @@
-import {
-  CharacterDetails,
-  MessageDetails,
-  MessageTypes
-} from '%/src/DataInterface';
+import { CharacterDetails, MessageDetails, MessageTypes } from '@quasm/common';
 
 export const PLACEHOLDER_ROOM_PLAYERS: CharacterDetails[] = [
   {

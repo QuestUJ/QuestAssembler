@@ -15,12 +15,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { useApiPost } from '@/lib/api';
+import { useSocketIO } from '@/lib/socketIOStore';
 
 export function JoinGameDialog() {
   const [gameCode, setGameCode] = useState('');
   const { toast } = useToast();
 
-  const { mutate: joinRoom } = useApiPost<string, { gameCode: string }>({
+  const { mutate } = useApiPost<string, { gameCode: string }>({
     path: '/joinRoom',
     invalidate: ['roomFetch'],
     onSuccess: name => {
@@ -30,6 +31,33 @@ export function JoinGameDialog() {
       });
     }
   });
+
+  const socket = useSocketIO(state => state.socket);
+
+  const joinRoom = () => {
+    if (!socket) {
+      toast({
+        title: 'Connection error!',
+        variant: 'destructive'
+      });
+
+      return;
+    }
+
+    socket.emit('joinRoom', shortUUID().toUUID(gameCode), res => {
+      if (res.success) {
+        toast({
+          title: 'You have joined the room!'
+        });
+      } else {
+        toast({
+          title: 'Something went wrong!',
+          variant: 'destructive',
+          description: res.error
+        });
+      }
+    });
+  };
 
   return (
     <Dialog>
@@ -51,12 +79,7 @@ export function JoinGameDialog() {
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button
-              type='submit'
-              onClick={() =>
-                joinRoom({ gameCode: shortUUID().toUUID(gameCode) })
-              }
-            >
+            <Button type='submit' onClick={() => joinRoom()}>
               Join game
             </Button>
           </DialogClose>

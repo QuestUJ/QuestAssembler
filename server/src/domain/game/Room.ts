@@ -2,6 +2,7 @@ import {
     ErrorCode,
     MAX_ROOM_NAME_LENGTH,
     MAX_ROOM_PLAYERS,
+    MAX_STORY_CHUNKS,
     QuasmComponent,
     QuasmError
 } from '@quasm/common';
@@ -13,8 +14,6 @@ import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 import { Character, CharacterDetails } from './Character';
 // import { ChatMessage } from './ChatMessage';
 import { StoryChunk } from './StoryChunk';
-
-const MAX_STORY_CHUNKS: number = 2000;
 
 export interface Range {
     offset: number | undefined; // id of the last message (undefined when we only want 'count')

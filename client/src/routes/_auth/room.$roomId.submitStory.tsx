@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { Bot, CheckCircle} from 'lucide-react';
+import { Bot, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
 
 import defaultProfilePic from '@/assets/defaultProfilePicture.jpg';
