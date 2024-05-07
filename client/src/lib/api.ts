@@ -1,9 +1,9 @@
 import { useAuth0 } from '@auth0/auth0-react';
+import { ApiResponse } from '@quasm/common';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '@/components/ui/use-toast';
 import { config } from '@/config';
-import { ApiResponse } from '%/dist';
 
 interface ApiCall {
   path: string;
@@ -92,7 +92,9 @@ export function useApiPost<Payload, Body>({
       } else {
         onSuccess(response.payload! as Payload);
 
+        console.log(invalidate);
         await queryClient.invalidateQueries({ queryKey: invalidate });
+        console.log('invalidated');
       }
 
       return response.payload! as Payload;
