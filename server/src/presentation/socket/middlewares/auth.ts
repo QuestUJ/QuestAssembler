@@ -1,4 +1,4 @@
-import { ErrorCode,  QuasmError } from '@quasm/common';
+import { ErrorCode, QuasmError } from '@quasm/common';
 import { QuasmComponent } from '@quasm/common';
 
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';

@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '@/components/ui/use-toast';
 import { config } from '@/config';
-import { ApiResponse } from '%/dist';
+import { ApiResponse } from '@quasm/common';
 
 interface ApiCall {
   path: string;

@@ -1,10 +1,6 @@
 import { create } from 'zustand';
 
-import {
-  CharacterDetails,
-  MessageDetails,
-  MessageTypes
-} from '%/src/DataInterface.ts';
+import { CharacterDetails, MessageDetails, MessageTypes } from '@quasm/common';
 
 import {
   PLACEHOLDER_DUMMY_MESSAGES,
