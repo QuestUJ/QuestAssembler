@@ -1,3 +1,4 @@
+import { CharacterDetails } from '@quasm/common';
 import { createFileRoute } from '@tanstack/react-router';
 import { Bot, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
@@ -16,7 +17,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useWindowSize } from '@/hooks/windowSize';
 import { useQuasmStore } from '@/lib/quasmStore';
-import { CharacterDetails } from '%/src/DataInterface';
 
 function TabNavigation({ characterInfo }: { characterInfo: CharacterDetails }) {
   const { id, pictureURL } = characterInfo;

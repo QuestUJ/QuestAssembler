@@ -12,7 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { User } from '@/components/User';
 import { useWindowSize } from '@/hooks/windowSize';
 import { useQuasmStore } from '@/lib/quasmStore';
-import { useSocketIO } from '@/lib/socketIOStore';
+import { useIOStore } from '@/lib/socketIOStore';
 import { cn } from '@/lib/utils';
 
 function RoomIcon({ isGameMaster }: { isGameMaster: boolean }) {
@@ -77,7 +77,7 @@ function AuthLayout() {
     strict: false
   });
 
-  const connectSocket = useSocketIO(state => state.connectSocket);
+  const connectSocket = useIOStore(state => state.connectSocket);
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   const { toast } = useToast();

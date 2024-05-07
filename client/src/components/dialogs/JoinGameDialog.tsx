@@ -1,4 +1,5 @@
 import { DialogClose } from '@radix-ui/react-dialog';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import shortUUID from 'short-uuid';
 
@@ -14,40 +15,31 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { useApiPost } from '@/lib/api';
-import { useSocketIO } from '@/lib/socketIOStore';
+import { useSocket } from '@/lib/socketIOStore';
 
 export function JoinGameDialog() {
   const [gameCode, setGameCode] = useState('');
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const { mutate } = useApiPost<string, { gameCode: string }>({
-    path: '/joinRoom',
-    invalidate: ['roomFetch'],
-    onSuccess: name => {
-      toast({
-        title: name,
-        description: 'You have joined the room!'
-      });
-    }
-  });
-
-  const socket = useSocketIO(state => state.socket);
+  const socket = useSocket();
 
   const joinRoom = () => {
     if (!socket) {
       toast({
-        title: 'Connection error!',
-        variant: 'destructive'
+        title: 'Connection error! Try again.'
       });
-
       return;
     }
 
-    socket.emit('joinRoom', shortUUID().toUUID(gameCode), res => {
+    socket.emit('joinRoom', shortUUID().toUUID(gameCode), async res => {
       if (res.success) {
         toast({
           title: 'You have joined the room!'
+        });
+
+        await queryClient.invalidateQueries({
+          queryKey: ['roomFetch']
         });
       } else {
         toast({

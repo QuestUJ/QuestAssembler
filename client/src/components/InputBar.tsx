@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Textarea } from './ui/textarea';
+
 import { Button } from './ui/button';
+import { Textarea } from './ui/textarea';
 
 export function InputBar({
   handleSend,
