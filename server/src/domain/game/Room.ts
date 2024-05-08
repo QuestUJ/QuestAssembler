@@ -1,4 +1,5 @@
 import {
+    ChunkRange,
     ErrorCode,
     MAX_ROOM_NAME_LENGTH,
     MAX_ROOM_PLAYERS,
@@ -138,7 +139,7 @@ export class Room {
         this.characters.push(character);
     }
 
-    fetchStory(range: Range): Promise<StoryChunk[]> {
+    fetchStory(range: ChunkRange): Promise<StoryChunk[]> {
         return this.roomRepository.fetchStory(this.id, range);
     }
 

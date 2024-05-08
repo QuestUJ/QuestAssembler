@@ -1,3 +1,4 @@
+import { ChunkRange } from '@quasm/common';
 import { randomUUID, UUID } from 'crypto';
 
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
@@ -28,7 +29,11 @@ export class Chat {
         this.messages.push(newMessage);
     }
 
-    async fetchMessages(from: UUID, to: Chatter, range: Range): Promise<void> {
+    async fetchMessages(
+        from: UUID,
+        to: Chatter,
+        range: ChunkRange
+    ): Promise<void> {
         const fetchedMessages = await this.roomRepository.fetchMessages(
             from,
             to,

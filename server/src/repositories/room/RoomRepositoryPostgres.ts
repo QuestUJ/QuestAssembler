@@ -1,9 +1,8 @@
-import { QuasmComponent, Range } from '@quasm/common';
+import { ChunkRange, QuasmComponent } from '@quasm/common';
 import { randomUUID, UUID } from 'crypto';
 import { Kysely } from 'kysely';
 
 import { Character, CharacterDetails } from '@/domain/game/Character';
-import { Chat } from '@/domain/game/Chat';
 import {
     ChatMessage,
     ChatMessageDetails,
@@ -259,7 +258,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
     async fetchMessages(
         from: UUID,
         to: Chatter,
-        range: Range
+        range: ChunkRange
     ): Promise<ChatMessage[]> {
         const fetchedChatMessages = await this.db
             .selectFrom('ChatMessages')
@@ -300,7 +299,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         return chunk;
     }
 
-    async fetchStory(roomID: UUID, range: Range): Promise<StoryChunk[]> {
+    async fetchStory(roomID: UUID, range: ChunkRange): Promise<StoryChunk[]> {
         if (typeof range.offset == 'undefined')
             range.offset = DEFAULT_FETCHED_STORYCHUNKS;
 
@@ -340,8 +339,5 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         return result;
     }
 
-    async fetchStoryChunks(
-        roomID: string,
-        range: Range
-    ): StoryChunk[] | PromiseLike<StoryChunk[]> {}
+    async fetchStoryChunks(roomID: string, range: ChunkRange): {};
 }
