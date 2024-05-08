@@ -339,5 +339,8 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         return result;
     }
 
-    async fetchStoryChunks(roomID: string, range: ChunkRange): {};
+    async fetchStoryChunks(
+        roomID: string,
+        range: ChunkRange
+    ): Promise<StoryChunk[]> {}
 }
