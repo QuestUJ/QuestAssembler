@@ -1,7 +1,6 @@
 import * as ScrollArea from '@radix-ui/react-scroll-area';
 import React, { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import {
   Collapsible,
   CollapsibleContent,

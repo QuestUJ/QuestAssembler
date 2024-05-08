@@ -1,11 +1,11 @@
 import { useAuth0 } from '@auth0/auth0-react';
+import { RoomPayload } from '@quasm/common';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { RoomCard } from '@/components/RoomCard';
 import { SvgSpinner } from '@/components/Spinner';
 import { Button } from '@/components/ui/button';
 import { useApiGet } from '@/lib/api';
-import { RoomPayload } from '%/dist';
 
 function RoomOverview() {
   const { loginWithRedirect } = useAuth0();

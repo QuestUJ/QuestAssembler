@@ -1,11 +1,13 @@
-import { Link, useParams, useRouterState } from '@tanstack/react-router';
-import { CircleCheck, Crown, Reply, Scroll } from 'lucide-react';
+import { PlayerPayload, RoomDetailsPayload } from '@quasm/common';
+import { useQueryClient } from '@tanstack/react-query';
+import { Link, useParams } from '@tanstack/react-router';
+import { Crown, Reply, Scroll } from 'lucide-react';
 import { ReactNode, useEffect } from 'react';
 import shortUUID from 'short-uuid';
 
 import { useApiGet } from '@/lib/api';
 import { useQuasmStore } from '@/lib/quasmStore';
-import { PlayerPayload, RoomDetailsPayload } from '%/dist';
+import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
 
 import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
 import LogoWithText from '../LogoWithText';
@@ -16,6 +18,7 @@ import {
   AccordionItem,
   AccordionTrigger
 } from '../ui/accordion';
+import { useToast } from '../ui/use-toast';
 
 function Character({ characterInfo }: { characterInfo: PlayerPayload }) {
   const { nick, profilePicture } = characterInfo;
@@ -147,10 +150,45 @@ export function SidebarContentRoom() {
     queryKey: ['getRoom', roomUUID]
   });
 
+  const { toast } = useToast();
+
   useEffect(() => {
     setRoomName(data?.roomName);
     setIsGameMaster(data?.currentPlayer.id === data?.gameMasterID);
   }, [data, setRoomName, setIsGameMaster]);
+
+  const queryClient = useQueryClient();
+  const socket = useSocket();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.emit('subscribeToRoom', roomUUID, res => {
+      console.log('called');
+      if (!res.success) {
+        toast({
+          title: 'Connection error! Try refreshing site!'
+        });
+      }
+    });
+  }, [socket, roomUUID, toast]);
+
+  useSocketEvent('newPlayer', player => {
+    if (!data) return;
+
+    queryClient.setQueryData(['getRoom', roomUUID], {
+      ...data,
+      players: [
+        { ...player, profilePicture: player.profileIMG },
+        ...data.players
+      ]
+    });
+
+    toast({
+      title: player.nick,
+      description: 'has joined the game!'
+    });
+  });
 
   return (
     <div className='flex h-full flex-col justify-between p-4'>

@@ -24,7 +24,7 @@ export class Auth0Provider implements IAuthProvider {
         this.issuer = `https://${this.config.domain}/`;
     }
 
-    async verify(token: string): Promise<UserDetails> {
+    async verify(token: string): Promise<string> {
         try {
             const jwks = createRemoteJWKSet(
                 new URL(`${this.issuer}.well-known/jwks.json`)
@@ -46,8 +46,28 @@ export class Auth0Provider implements IAuthProvider {
                 );
             }
 
+            return payload.sub;
+        } catch (e) {
+            // If error is already of proper format we don't have to process it'
+            if (e instanceof QuasmError) {
+                throw e;
+            }
+
+            // Rethrow an instance of our Erorr indicating location and status code
+            const err = extractMessage(e);
+            throw new QuasmError(
+                QuasmComponent.AUTH,
+                401,
+                ErrorCode.Unexpected,
+                `Unauthorized, ${err}`
+            );
+        }
+    }
+
+    async fetchUserDetails(token: string): Promise<UserDetails> {
+        try {
             // Fetch user details from external endpoint
-            const { nickname, picture, email } = (await fetch(
+            const { sub, nickname, picture, email } = (await fetch(
                 `${this.issuer}userinfo/`,
                 {
                     headers: {
@@ -62,7 +82,7 @@ export class Auth0Provider implements IAuthProvider {
             };
 
             return {
-                userID: payload.sub,
+                userID: sub,
                 nickname,
                 email,
                 profileImg: picture

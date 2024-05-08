@@ -69,7 +69,7 @@ describe('Auth0Provider', async () => {
     });
 
     it('should return UserDetails based on valid access token', async () => {
-        const { userID: returnedID } = await auth.verify(validToken);
+        const returnedID = await auth.verify(validToken);
 
         expect(userID).toEqual(returnedID);
     });
