@@ -1,4 +1,5 @@
-import { ErrorLocation, QuasmError } from './QuasmError';
+import { ErrorCode, QuasmError } from './QuasmError';
+import { QuasmComponent } from './Structure';
 
 type ConfigField = number | string | boolean | undefined;
 
@@ -33,8 +34,9 @@ export class Config<ConfigMap extends Record<string, ConfigField>> {
 
         if (missingKeys.length > 0) {
             throw new QuasmError(
-                ErrorLocation.CONFIG,
+                QuasmComponent.CONFIG,
                 -1,
+                ErrorCode.MissingConfig,
                 `Expected configuration not found: ${missingKeys.join(',')}`
             );
         }

@@ -26,7 +26,8 @@ const config = {
         foreground: 'hsl(var(--foreground))',
         primary: {
           DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))'
+          foreground: 'hsl(var(--primary-foreground))',
+          shaded: 'hsl(var(--primary-shaded))'
         },
         supporting: {
           DEFAULT: 'hsl(var(--supporting))',
@@ -55,6 +56,10 @@ const config = {
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
+        },
+        highlight: {
+          DEFAULT: 'hsl(var(--highlight))',
+          foreground: 'hsl(var(--highlight))'
         }
       },
       borderRadius: {
@@ -77,9 +82,9 @@ const config = {
         'accordion-up': 'accordion-up 0.2s ease-out'
       },
       fontFamily: {
-        'sans': ['Inter', 'ui-sans-serif', 'system-ui'],
-        'medieval': ['MedievalSharp']
-      }
+        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+        medieval: ['MedievalSharp']
+      },
     }
   },
   plugins: [require('tailwindcss-animate')]

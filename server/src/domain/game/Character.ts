@@ -1,16 +1,23 @@
+import {
+    ErrorCode,
+    MAX_CHARACTER_DESCRIPTION_LENGTH,
+    MAX_CHARACTER_NICK_LENGTH,
+    MAX_PLAYER_SUBMIT_LENGTH,
+    QuasmComponent,
+    QuasmError
+} from '@quasm/common';
 import { UUID } from 'crypto';
 
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { PlayerTurnSubmit } from './PlayerTurnSubmit';
 
-const MAX_CHARACTER_NICK_LENGTH = 64;
-const MAX_CHARACTER_DESCRIPTION_LENGTH = 256;
-
 export interface CharacterDetails {
     userID: string;
     nick: string;
-    description: string;
+    description?: string;
+    playerTurnSubmit?: string;
+    profileIMG?: string;
 }
 
 export class Character {
@@ -19,13 +26,37 @@ export class Character {
         readonly id: UUID,
         readonly userID: string,
         private nick: string,
-        private description: string,
         readonly isGameMaster: boolean,
+        public profileIMG?: string,
+        private description?: string,
         private playerTurnSubmit?: PlayerTurnSubmit
-    ) {}
+    ) {
+        this.validateNick(this.nick);
+        this.validateDescription(this.description);
+    }
 
-    getUserID(): string {
-        return this.userID;
+    validateNick(nick: string) {
+        if (nick.length <= 0 || nick.length > MAX_CHARACTER_NICK_LENGTH) {
+            throw new QuasmError(
+                QuasmComponent.CHARACTER,
+                400,
+                ErrorCode.NickLength,
+                nick
+            );
+        }
+    }
+
+    validateDescription(description: string | undefined) {
+        if (!description) return;
+
+        if (description.length > MAX_CHARACTER_DESCRIPTION_LENGTH) {
+            throw new QuasmError(
+                QuasmComponent.CHARACTER,
+                400,
+                ErrorCode.DescriptionLength,
+                `Description length: ${description.length}`
+            );
+        }
     }
 
     getNick(): string {
@@ -33,40 +64,46 @@ export class Character {
     }
 
     async setNick(newNick: string) {
-        if (newNick.length <= MAX_CHARACTER_NICK_LENGTH) {
-            await this.roomRepository.updateCharacter(this.id, {
-                ...this,
-                nick: newNick
-            });
-            this.nick = newNick;
-        }
+        this.validateNick(newNick);
+
+        await this.roomRepository.updateCharacter(this.id, {
+            ...this,
+            nick: newNick
+        });
+        this.nick = newNick;
     }
 
-    getDescription(): string {
+    getDescription(): string | undefined {
         return this.description;
     }
 
     async setDescription(newDescription: string) {
-        if (newDescription.length <= MAX_CHARACTER_DESCRIPTION_LENGTH) {
-            await this.roomRepository.updateCharacter(this.id, {
-                ...this,
-                description: newDescription
-            });
+        this.validateDescription(newDescription);
 
-            this.description = newDescription;
-        }
+        await this.roomRepository.updateCharacter(this.id, {
+            ...this,
+            description: newDescription
+        });
+
+        this.description = newDescription;
     }
 
     getPlayerTurnSubmit(): PlayerTurnSubmit | undefined {
         return this.playerTurnSubmit;
     }
 
-    async setPlayerTurnSubmit(submit: PlayerTurnSubmit | undefined) {
-        await this.roomRepository.updateCharacter(this.id, {
-            ...this,
+    async setPlayerTurnSubmit(submit: string | undefined) {
+        if (submit && submit.length > MAX_PLAYER_SUBMIT_LENGTH) {
+            throw new QuasmError(
+                QuasmComponent.CHARACTER,
+                400,
+                ErrorCode.MaxRoomName, //change this to a new error code
+                'Exceeded PlayerTurnSubmit max length'
+            );
+        }
+
+        return this.roomRepository.updateCharacter(this.id, {
             playerTurnSubmit: submit
         });
-
-        this.playerTurnSubmit = submit;
     }
 }

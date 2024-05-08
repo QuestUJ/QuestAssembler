@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/unbound-method */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { randomUUID } from 'crypto';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -6,7 +8,7 @@ import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 import { CharacterDetails } from './Character';
 // import { ChatMessage } from './ChatMessage';
 import { Room, RoomSettings } from './Room';
-// import { StoryChunk } from './StoryChunk';
+import { StoryChunk } from './StoryChunk';
 
 describe('Basic room actions', () => {
     const fakeRepo: IRoomRepository = {
@@ -29,7 +31,7 @@ describe('Basic room actions', () => {
         );
 
         const newName = 'Random name';
-        room.setName(newName);
+        void room.setName(newName);
         expect(room.getName()).toEqual(newName);
 
         const otherName = 'Another random name';
@@ -264,4 +266,42 @@ describe('Basic room actions', () => {
 
     //     expect(room.getStoryChunks()[0].imageUrl).toBeUndefined();
     // });
+});
+
+describe('Story Chunk tests', () => {
+    const fakeRepo: IRoomRepository = {
+        getRoomByID: vi.fn().mockReturnValue({}),
+        fetchRooms: vi.fn().mockReturnValue({}),
+        updateRoom: vi.fn().mockReturnValue({}),
+        createRoom: vi.fn().mockReturnValue({}),
+        deleteRoom: vi.fn().mockReturnValue({}),
+        addCharacter: vi.fn().mockReturnValue({}),
+        updateCharacter: vi.fn().mockReturnValue({}),
+        fetchStory: vi.fn().mockResolvedValue([]),
+        addStoryChunk: vi
+            .fn()
+            .mockImplementation((id, chunk) => Promise.resolve(chunk))
+    };
+
+    it('Can add and fetch StoryChunks', async () => {
+        const roomID = randomUUID();
+        const roomSettings = new RoomSettings('Example Room', 4);
+        const room = new Room(fakeRepo, roomID, roomSettings, []);
+
+        const newChunk = new StoryChunk(
+            -1,
+            'Story Title',
+            'Story content here',
+            'exampleURL',
+            new Date()
+        );
+        await room.addStoryChunk(newChunk);
+
+        const range = { offset: 5, count: 10 };
+        const retrievedChunks = await room.fetchStory(range);
+
+        expect(fakeRepo.addStoryChunk).toHaveBeenCalledTimes(1);
+        expect(fakeRepo.fetchStory).toHaveBeenCalledTimes(1);
+        expect(retrievedChunks).toEqual([newChunk]);
+    });
 });

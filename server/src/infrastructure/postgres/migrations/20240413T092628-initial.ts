@@ -6,7 +6,6 @@ export async function up(db: Kysely<Database>): Promise<void> {
     await db.schema
         .createTable('Rooms')
         .addColumn('id', 'varchar(36)', col => col.primaryKey())
-        .addColumn('gameMasterID', 'varchar(36)', col => col.notNull())
         .addColumn('roomName', 'varchar(256)', col => col.notNull())
         .addColumn('maxPlayerCount', 'integer', col => col.notNull())
         .execute();
@@ -41,7 +40,9 @@ export async function up(db: Kysely<Database>): Promise<void> {
                 .onUpdate('cascade')
                 .onDelete('cascade')
         )
+        .addColumn('isGameMaster', 'boolean', col => col.notNull())
         .addColumn('userID', 'varchar(36)', col => col.notNull())
+        .addColumn('profileIMG', 'varchar(255)')
         .addColumn('submitContent', 'varchar')
         .addColumn('submitTimestamp', 'timestamp', col =>
             col.defaultTo(sql`NOW()`)
@@ -51,6 +52,13 @@ export async function up(db: Kysely<Database>): Promise<void> {
     await db.schema
         .createTable('ChatMessages')
         .addColumn('messageID', 'serial', col => col.primaryKey())
+        .addColumn('roomID', 'varchar(36)', col =>
+            col
+                .notNull()
+                .references('Rooms.id')
+                .onUpdate('cascade')
+                .onDelete('cascade')
+        )
         .addColumn('from', 'varchar(36)', col =>
             col.notNull().references('Characters.id')
         )

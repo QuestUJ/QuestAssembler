@@ -1,3 +1,6 @@
+import { useRouterState } from '@tanstack/react-router';
+import { useEffect, useState } from 'react';
+
 import hamburgerIcon from '@/assets/hamburger.svg';
 
 import {
@@ -7,13 +10,22 @@ import {
   DrawerPortal,
   DrawerTrigger
 } from '../ui/drawer';
-import { SidebarContent } from './SidebarContent';
+import { SidebarContentDashboard } from './SidebarContentDashboard';
+import { SidebarContentRoom } from './SidebarContentRoom';
 
-export function SidebarDrawer() {
+export function SidebarDrawer({ isOnDashboard }: { isOnDashboard: boolean }) {
+  const { isTransitioning } = useRouterState();
+
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [isTransitioning]);
+
   return (
-    <Drawer direction='left'>
+    <Drawer direction='left' open={open} onOpenChange={open => setOpen(open)}>
       <DrawerTrigger asChild>
-        <div className='fixed left-5 top-5'>
+        <div className='h-10'>
           <button>
             <img src={hamburgerIcon} alt='Open nav' />
           </button>
@@ -21,8 +33,8 @@ export function SidebarDrawer() {
       </DrawerTrigger>
       <DrawerPortal>
         <DrawerOverlay />
-        <DrawerContent className='h-screen w-96'>
-          <SidebarContent />
+        <DrawerContent className='h-screen w-72 overflow-y-auto'>
+          {isOnDashboard ? <SidebarContentDashboard /> : <SidebarContentRoom />}
         </DrawerContent>
       </DrawerPortal>
     </Drawer>

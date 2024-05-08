@@ -1,6 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { createFileRoute, redirect } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import diceImg from '@/assets/dice.png';
 import LogoWithText from '@/components/LogoWithText';
@@ -8,11 +7,22 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 
 function LandingPage() {
-  useEffect(() => {
-    document.querySelector('html')?.classList.add('dark');
-  }, []);
+  const { loginWithRedirect, isLoading, isAuthenticated } = useAuth0();
 
-  const { loginWithRedirect } = useAuth0();
+  const navigate = useNavigate();
+
+  const redirect = async () => {
+    if (isLoading) return;
+
+    if (isAuthenticated) {
+      await navigate({
+        to: '/dashboard'
+      });
+      return;
+    }
+
+    await loginWithRedirect();
+  };
 
   return (
     <div className='flex h-screen w-screen flex-col content-between bg-background p-2 md:p-4'>
@@ -29,10 +39,7 @@ function LandingPage() {
               The best story is your story
             </h3>
             <div className='my-3 flex flex-row justify-center md:justify-normal'>
-              <Button
-                onClick={() => void loginWithRedirect()}
-                className='w-52 text-xl'
-              >
+              <Button onClick={() => void redirect()} className='w-52 text-xl'>
                 Join the game
               </Button>
             </div>

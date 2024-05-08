@@ -1,49 +1,113 @@
+import {
+    ErrorCode,
+    MAX_ROOM_NAME_LENGTH,
+    MAX_ROOM_PLAYERS,
+    MAX_STORY_CHUNKS,
+    QuasmComponent,
+    QuasmError
+} from '@quasm/common';
 import { UUID } from 'crypto';
 
+import { logger } from '@/infrastructure/logger/Logger';
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { Character, CharacterDetails } from './Character';
-import { ChatMessage, ChatMessageDetails, Chatter } from './ChatMessage';
 import { Chat } from './Chat';
-import { FromNode } from 'kysely';
-// import { StoryChunk } from './StoryChunk';
-
-const MAX_ROOM_NAME_LENGTH: number = 128;
-const MAX_ROOM_PLAYERS: number = 10;
-// const MAX_STORY_CHUNKS: number = 2000;
+import { ChatMessage, ChatMessageDetails, Chatter } from './ChatMessage';
+// import { ChatMessage } from './ChatMessage';
+import { StoryChunk } from './StoryChunk';
 
 export class RoomSettings {
     constructor(
         public roomName: string = '',
         public maxPlayerCount: number = 1
-    ) {
-        this.roomName = roomName;
-        this.maxPlayerCount = maxPlayerCount;
-    }
+    ) {}
 }
 
 export class Room {
-    private gameMaster?: UUID;
     private characters: Character[] = [];
     private broadcast: Chat;
-    private chats: Map<{ from: UUID, to: Chatter }, Chat>;
+    private chats: Map<{ from: UUID; to: Chatter }, Chat>;
 
     constructor(
         readonly roomRepository: IRoomRepository,
         readonly id: UUID,
         private roomSettings: RoomSettings,
-        // private storyChunks: StoryChunk[] = [];
+        private storyChunks: StoryChunk[] = []
     ) {
-        this.broadcast = new Chat(roomRepository);
+        this.validateName(this.getName());
+        this.validateMaxPlayerCount(this.getMaxPlayerCount());
+        this.broadcast = new Chat(this.roomRepository);
         this.chats = new Map();
     }
 
+    validateName(name: string) {
+        if (name.length <= 0 || name.length > MAX_ROOM_NAME_LENGTH) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            throw new QuasmError(
+                QuasmComponent.ROOM,
+                400,
+                ErrorCode.MaxRoomName,
+                'Incorrect name'
+            );
+        }
+    }
+
+    validateMaxPlayerCount(count: number) {
+        if (count < 2 || count > MAX_ROOM_PLAYERS) {
+            throw new QuasmError(
+                QuasmComponent.ROOM,
+                400,
+                ErrorCode.IncorrectMaxPlayers,
+                'Incorrect max players'
+            );
+        }
+    }
+
+    validateCharacter(character: CharacterDetails) {
+        if (this.characters.length >= this.roomSettings.maxPlayerCount) {
+            throw new QuasmError(
+                QuasmComponent.ROOM,
+                500,
+                ErrorCode.MaxPlayersExceeded,
+                'Too many characters restored'
+            );
+        }
+
+        if (this.characters.find(({ userID }) => userID === character.userID)) {
+            throw new QuasmError(
+                QuasmComponent.ROOM,
+                400,
+                ErrorCode.UserExists,
+                `Room: ${this.id} User: ${character.userID}`
+            );
+        }
+    }
+
+    /**
+     * Helper method for reassigning character to the Room, for adding new character to the room use {@link addCharacter}
+     */
     restoreCharacter(character: Character) {
-        if (this.characters.length < this.roomSettings.maxPlayerCount) {
-            this.characters.push(character);
-            if (character.isGameMaster) {
-                this.gameMaster = character.id;
-            }
+        if (this.characters.length >= this.roomSettings.maxPlayerCount) {
+            throw new QuasmError(
+                QuasmComponent.ROOM,
+                500,
+                ErrorCode.MaxPlayersExceeded,
+                'Too many characters restored'
+            );
+        }
+
+        logger.info(
+            QuasmComponent.ROOM,
+            `Restoring character: ${character.id}`
+        );
+
+        this.characters.push(character);
+        if (character.isGameMaster) {
+            logger.info(
+                QuasmComponent.ROOM,
+                `Game master restored: ${character.id}`
+            );
         }
     }
 
@@ -52,40 +116,48 @@ export class Room {
     }
 
     hasUser(userId: UUID): boolean {
-        return !!this.characters.find(
-            character => character.getUserID() === userId
-        );
+        return !!this.characters.find(character => character.userID === userId);
     }
 
     getCharacters(): Character[] {
         return this.characters;
     }
 
-    async addCharacter(characterDetails: CharacterDetails) {
-        if (this.characters.length < this.roomSettings.maxPlayerCount) {
-            const character = await this.roomRepository.addCharacter(
-                this.id,
-                characterDetails
-            );
-
-            this.characters.push(character);
-        }
+    getGameMaster(): Character {
+        return this.characters.find(ch => ch.isGameMaster)!;
     }
 
-    // getStoryChunks(): StoryChunk[] {
-    //     return this.storyChunks;
-    // }
+    async addCharacter(characterDetails: CharacterDetails) {
+        this.validateCharacter(characterDetails);
 
-    // addStoryChunk(chunk: StoryChunk) {
-    //     if (this.storyChunks.length < MAX_STORY_CHUNKS) {
-    //         this.storyChunks.push(chunk);
-    //     }
-    // }
+        const character = await this.roomRepository.addCharacter(
+            this.id,
+            characterDetails
+        );
+
+        this.characters.push(character);
+    }
+
+    fetchStory(range: Range): Promise<StoryChunk[]> {
+        return this.roomRepository.fetchStory(this.id, range);
+    }
+
+    addStoryChunk(chunk: StoryChunk): Promise<StoryChunk> {
+        if (chunk.content.length > MAX_STORY_CHUNKS) {
+            throw new QuasmError(
+                QuasmComponent.ROOM,
+                400,
+                ErrorCode.MaxRoomName, //change this to a new error code
+                'Exceeded StoryChunk length'
+            );
+        }
+        return this.roomRepository.addStoryChunk(this.id, chunk);
+    }
 
     getBroadcast(): Chat {
         return this.broadcast;
     }
-    
+
     async addBrodcastMessage(message: ChatMessage): Promise<void> {
         await this.broadcast.addMessage(message);
     }
@@ -97,11 +169,15 @@ export class Room {
         })!;
     }
 
-    async addChatMessage(chatMessageDetails: ChatMessageDetails): Promise<void> {
-        await this.chats.get({
-            from: chatMessageDetails.from,
-            to: chatMessageDetails.to
-        })!.addMessage(chatMessageDetails);
+    async addChatMessage(
+        chatMessageDetails: ChatMessageDetails
+    ): Promise<void> {
+        this.chats
+            .get({
+                from: chatMessageDetails.from,
+                to: chatMessageDetails.to
+            })!
+            .addMessage(chatMessageDetails);
     }
 
     getName(): string {
@@ -109,14 +185,14 @@ export class Room {
     }
 
     async setName(newName: string) {
-        if (newName.length >= 1 && newName.length <= MAX_ROOM_NAME_LENGTH) {
-            await this.roomRepository.updateRoom(this.id, {
-                ...this.roomSettings,
-                roomName: newName
-            });
+        this.validateName(newName);
 
-            this.roomSettings.roomName = newName;
-        }
+        await this.roomRepository.updateRoom(this.id, {
+            ...this.roomSettings,
+            roomName: newName
+        });
+
+        this.roomSettings.roomName = newName;
     }
 
     getMaxPlayerCount(): number {
@@ -124,14 +200,14 @@ export class Room {
     }
 
     async setMaxPlayerCount(newMaxPlayerCount: number) {
-        if (newMaxPlayerCount >= 2 && newMaxPlayerCount <= MAX_ROOM_PLAYERS) {
-            await this.roomRepository.updateRoom(this.id, {
-                ...this.roomSettings,
-                maxPlayerCount: newMaxPlayerCount
-            });
+        this.validateMaxPlayerCount(newMaxPlayerCount);
 
-            this.roomSettings.maxPlayerCount = newMaxPlayerCount;
-        }
+        await this.roomRepository.updateRoom(this.id, {
+            ...this.roomSettings,
+            maxPlayerCount: newMaxPlayerCount
+        });
+
+        this.roomSettings.maxPlayerCount = newMaxPlayerCount;
     }
 
     hasEmptySlot(): boolean {
