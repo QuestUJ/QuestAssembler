@@ -32,6 +32,6 @@ export type StoryChunkDetails = {
 export type MessageTypes = MessageDetails | StoryChunkDetails;
 
 export interface ChunkRange {
-    offset: number | undefined; // numer id ostatniej wiadomości jaką mamy (zwróci nam te które są przed nią) albo undefined kiedy chcemy dostać po prostu `count` ostatnich wiadomości/chunków
-    count: number; // Ile kolejnych wiadomości/chunków chcemy
+    offset: number | undefined; // id of last received message, or undefined if we want the most fresh ones
+    count: number; // How many next messages
 }

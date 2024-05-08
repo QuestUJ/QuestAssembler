@@ -119,21 +119,22 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 const settings = new RoomSettings(r.roomName, r.maxPlayerCount);
                 const room = new Room(this, r.roomID as UUID, settings);
                 this.fetchedRooms.set(r.roomID as UUID, room);
-                result.push(room);
+
+                const character = new Character(
+                    this,
+                    r.characterID as UUID,
+                    r.userID,
+                    r.nick,
+                    r.isGameMaster,
+                    r.profileIMG ?? undefined,
+                    r.description ?? undefined
+                );
+                this.fetchedRooms
+                    .get(r.roomID as UUID)
+                    ?.restoreCharacter(character);
             }
 
-            const character = new Character(
-                this,
-                r.characterID as UUID,
-                r.userID,
-                r.nick,
-                r.isGameMaster,
-                r.profileIMG ?? undefined,
-                r.description ?? undefined
-            );
-            this.fetchedRooms
-                .get(r.roomID as UUID)
-                ?.restoreCharacter(character);
+            result.push(this.fetchedRooms.get(r.roomID as UUID)!);
         });
 
         return result;
