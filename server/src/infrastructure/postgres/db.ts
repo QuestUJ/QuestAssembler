@@ -51,6 +51,7 @@ export interface ChatMessagesTable {
     from: string;
     to: string;
     content: string;
+    timestamp: ColumnType<Date, string | undefined, never>;
 }
 
 const dialect = new PostgresDialect({

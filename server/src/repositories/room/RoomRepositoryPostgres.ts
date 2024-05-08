@@ -1,10 +1,14 @@
-import { QuasmComponent } from '@quasm/common';
+import { ChunkRange, QuasmComponent } from '@quasm/common';
 import { randomUUID, UUID } from 'crypto';
 import { Kysely } from 'kysely';
 
 import { Character, CharacterDetails } from '@/domain/game/Character';
+import {
+    ChatMessage,
+    ChatMessageDetails,
+    Chatter
+} from '@/domain/game/ChatMessage';
 import { Room, RoomSettings } from '@/domain/game/Room';
-import { Range } from '@/domain/game/Room';
 import { StoryChunk } from '@/domain/game/StoryChunk';
 import { logger } from '@/infrastructure/logger/Logger';
 import { Database } from '@/infrastructure/postgres/db';
@@ -107,10 +111,6 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 'Characters.profileIMG'
             ])
             .execute();
-
-        roomsData.forEach(r => {
-            this.fetchedRooms.delete(r.roomID as UUID);
-        });
 
         const result: Room[] = [];
 
@@ -231,6 +231,60 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             .execute();
     }
 
+    async addMessage(
+        chatMessageDetails: ChatMessageDetails
+    ): Promise<ChatMessage> {
+        const result = await this.db
+            .insertInto('ChatMessages')
+            .values({
+                from: chatMessageDetails.from,
+                to: chatMessageDetails.to,
+                content: chatMessageDetails.content
+            })
+            .returning(['id', 'timestamp'])
+            .executeTakeFirstOrThrow();
+
+        const newChatMessage = new ChatMessage(
+            result.id,
+            chatMessageDetails.from,
+            chatMessageDetails.to,
+            chatMessageDetails.content,
+            result.timestamp
+        );
+
+        return newChatMessage;
+    }
+
+    async fetchMessages(
+        from: UUID,
+        to: Chatter,
+        range: ChunkRange
+    ): Promise<ChatMessage[]> {
+        const fetchedChatMessages = await this.db
+            .selectFrom('ChatMessages')
+            .where('from', '=', from)
+            .where('to', '=', to)
+            .where('id', '<=', range.offset)
+            .selectAll()
+            .orderBy('id', 'desc')
+            .limit(range.count)
+            .execute();
+
+        const chatMessages: ChatMessage[] = [];
+        fetchedChatMessages.forEach(m => {
+            const chatMessage = new ChatMessage(
+                m.id,
+                m.from as UUID,
+                m.to as Chatter,
+                m.content,
+                m.timestamp
+            );
+
+            chatMessages.push(chatMessage);
+        });
+
+        return chatMessages;
+    }
     async addStoryChunk(roomID: UUID, chunk: StoryChunk): Promise<StoryChunk> {
         await this.db
             .insertInto('StoryChunks')
@@ -245,7 +299,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         return chunk;
     }
 
-    async fetchStory(roomID: UUID, range: Range): Promise<StoryChunk[]> {
+    async fetchStory(roomID: UUID, range: ChunkRange): Promise<StoryChunk[]> {
         if (typeof range.offset == 'undefined')
             range.offset = DEFAULT_FETCHED_STORYCHUNKS;
 
@@ -287,6 +341,6 @@ export class RoomRepositoryPostgres implements IRoomRepository {
 
     async fetchStoryChunks(
         roomID: string,
-        range: Range
-    ): StoryChunk[] | PromiseLike<StoryChunk[]> {}
+        range: ChunkRange
+    ): Promise<StoryChunk[]> {}
 }

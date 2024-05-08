@@ -52,6 +52,13 @@ export async function up(db: Kysely<Database>): Promise<void> {
     await db.schema
         .createTable('ChatMessages')
         .addColumn('messageID', 'serial', col => col.primaryKey())
+        .addColumn('roomID', 'varchar(36)', col =>
+            col
+                .notNull()
+                .references('Rooms.id')
+                .onUpdate('cascade')
+                .onDelete('cascade')
+        )
         .addColumn('from', 'varchar(36)', col =>
             col.notNull().references('Characters.id')
         )

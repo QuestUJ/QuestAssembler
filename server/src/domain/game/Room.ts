@@ -1,4 +1,5 @@
 import {
+    ChunkRange,
     ErrorCode,
     MAX_ROOM_NAME_LENGTH,
     MAX_ROOM_PLAYERS,
@@ -12,13 +13,11 @@ import { logger } from '@/infrastructure/logger/Logger';
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { Character, CharacterDetails } from './Character';
+import { Chat } from './Chat';
+import { ChatMessage, ChatMessageDetails, Chatter } from './ChatMessage';
 // import { ChatMessage } from './ChatMessage';
 import { StoryChunk } from './StoryChunk';
 
-export interface Range {
-    offset: number | undefined; // id of the last message (undefined when we only want 'count')
-    count: number; // how many messages/story chunks preceding that ID we want
-}
 export class RoomSettings {
     constructor(
         public roomName: string = '',
@@ -28,17 +27,19 @@ export class RoomSettings {
 
 export class Room {
     private characters: Character[] = [];
+    private broadcast: Chat;
+    private chats: Map<{ from: UUID; to: Chatter }, Chat>;
 
     constructor(
         readonly roomRepository: IRoomRepository,
         readonly id: UUID,
         private roomSettings: RoomSettings,
         private storyChunks: StoryChunk[] = []
-        // private broadcast: Chat;
-        // private chats: Map<(UUID, UUID), Chat>; ???
     ) {
         this.validateName(this.getName());
         this.validateMaxPlayerCount(this.getMaxPlayerCount());
+        this.broadcast = new Chat(this.roomRepository);
+        this.chats = new Map();
     }
 
     validateName(name: string) {
@@ -116,9 +117,7 @@ export class Room {
     }
 
     hasUser(userId: UUID): boolean {
-        return !!this.characters.find(
-            character => character.getUserID() === userId
-        );
+        return !!this.characters.find(character => character.userID === userId);
     }
 
     getCharacters(): Character[] {
@@ -140,7 +139,7 @@ export class Room {
         this.characters.push(character);
     }
 
-    fetchStory(range: Range): Promise<StoryChunk[]> {
+    fetchStory(range: ChunkRange): Promise<StoryChunk[]> {
         return this.roomRepository.fetchStory(this.id, range);
     }
 
@@ -156,13 +155,31 @@ export class Room {
         return this.roomRepository.addStoryChunk(this.id, chunk);
     }
 
-    // getBroadcast(): Chat {
-    //     return this.broadcast;
-    // }
+    getBroadcast(): Chat {
+        return this.broadcast;
+    }
 
-    // addBrodcastMessage(message: ChatMessage) {
-    //     message;
-    // }
+    async addBrodcastMessage(message: ChatMessage): Promise<void> {
+        await this.broadcast.addMessage(message);
+    }
+
+    getChat(from: UUID, to: Chatter): Chat {
+        return this.chats.get({
+            from,
+            to
+        })!;
+    }
+
+    async addChatMessage(
+        chatMessageDetails: ChatMessageDetails
+    ): Promise<void> {
+        this.chats
+            .get({
+                from: chatMessageDetails.from,
+                to: chatMessageDetails.to
+            })!
+            .addMessage(chatMessageDetails);
+    }
 
     getName(): string {
         return this.roomSettings.roomName;

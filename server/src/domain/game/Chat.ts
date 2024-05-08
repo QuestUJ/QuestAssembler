@@ -1,30 +1,44 @@
-import { IChatRepository } from '@/repositories/chat/IChatRepository';
+import { ChunkRange } from '@quasm/common';
+import { randomUUID, UUID } from 'crypto';
 
-import { ChatMessage } from './ChatMessage';
+import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
-type Range = { start: number; end: number };
+import { ChatMessage, ChatMessageDetails, Chatter } from './ChatMessage';
+
+const MAX_CHAT_MESSAGES: number = 500;
+const MAX_CHAT_MESSAGE_LENGTH: number = 280;
 
 export class Chat {
-    messages: ChatMessage[] = [];
+    private messages: ChatMessage[] = [];
 
-    constructor(chatRepository: IChatRepository) {
-        chatRepository;
+    constructor(readonly roomRepository: IRoomRepository) {}
+
+    async addMessage(chatMessageDetails: ChatMessageDetails): Promise<void> {
+        if (this.messages.length == MAX_CHAT_MESSAGES) {
+            throw QuasmError();
+            // throw error
+        }
+
+        if (chatMessageDetails.content.length > MAX_CHAT_MESSAGE_LENGTH) {
+            throw QuasmError();
+            // throw error
+        }
+
+        const newMessage =
+            await this.roomRepository.addMessage(chatMessageDetails);
+        this.messages.push(newMessage);
     }
 
-    /**
-     * Appends a message to the chat history
-     */
-    addMessage(message: ChatMessage): void {
-        message;
-    }
-
-    /**
-     *
-     * @param {Range} range A range of messages to fetch counting from the newest
-     */
-    fetchMessages(range: Range): ChatMessage[] {
-        range.start;
-        range.end;
-        return this.messages;
+    async fetchMessages(
+        from: UUID,
+        to: Chatter,
+        range: ChunkRange
+    ): Promise<void> {
+        const fetchedMessages = await this.roomRepository.fetchMessages(
+            from,
+            to,
+            range
+        );
+        this.messages.concat(fetchedMessages);
     }
 }

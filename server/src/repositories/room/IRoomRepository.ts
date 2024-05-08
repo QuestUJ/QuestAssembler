@@ -1,18 +1,20 @@
+import { ChunkRange } from '@quasm/common';
 import { UUID } from 'crypto';
 
 import { Character, CharacterDetails } from '@/domain/game/Character';
+import {
+    ChatMessage,
+    ChatMessageDetails,
+    Chatter
+} from '@/domain/game/ChatMessage';
 import { Room, RoomSettings } from '@/domain/game/Room';
-import { Range } from '@/domain/game/Room';
 import { StoryChunk } from '@/domain/game/StoryChunk';
 
 /**
  * Main repository that manages instances of Rooms and their persistence
  */
 export interface IRoomRepository {
-    fetchStoryChunks(
-        roomID: string,
-        range: Range
-    ): StoryChunk[] | PromiseLike<StoryChunk[]>;
+    fetchStoryChunks(roomID: string, range: ChunkRange): Promise<StoryChunk[]>;
     /**
      * Creates Room with single character (Game master) in it and returns created instance
      */
@@ -49,6 +51,13 @@ export interface IRoomRepository {
         characterDetails: CharacterDetails
     ): Promise<Character>;
 
+    addMessage(chatMessageDetails: ChatMessageDetails): Promise<ChatMessage>;
+
+    fetchMessages(
+        from: UUID,
+        to: Chatter,
+        range: ChunkRange
+    ): Promise<ChatMessage[]>;
     /**
      * Just persists some character attributes changes
      */
@@ -63,7 +72,7 @@ export interface IRoomRepository {
     addStoryChunk(roomID: UUID, storyChunk: StoryChunk): Promise<StoryChunk>;
 
     /**
-     * Returns the requested part of the story - the StoryChunks specified in Range
+     * Returns the requested part of the story - the StoryChunks specified in ChunkRange
      */
-    fetchStory(roomID: UUID, range: Range): Promise<StoryChunk[]>;
+    fetchStory(roomID: UUID, range: ChunkRange): Promise<StoryChunk[]>;
 }
