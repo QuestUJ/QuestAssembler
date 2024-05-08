@@ -1,6 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { MessageContainer } from '@/components/chatUtilities/Messages';
+import {
+  MessageContainer,
+  OutletWrapper
+} from '@/components/chatUtilities/Messages';
 import { InputBar } from '@/components/InputBar';
 import { useQuasmStore } from '@/lib/quasmStore';
 
@@ -10,7 +13,9 @@ function Room() {
   return (
     <div className='flex h-full flex-col justify-end'>
       {/**TODO: replace for actual room data */}
-      <MessageContainer messages={messages} />
+      <OutletWrapper>
+        <MessageContainer messages={messages} />
+      </OutletWrapper>
       <InputBar
         handleSend={() => console.log('send handled')}
         sendButtonText='Send'

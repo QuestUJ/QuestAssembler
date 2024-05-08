@@ -7,6 +7,7 @@ import shortUUID from 'short-uuid';
 
 import { useApiGet } from '@/lib/api';
 import { useQuasmStore } from '@/lib/quasmStore';
+
 import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
 
 import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
@@ -23,7 +24,7 @@ import { useToast } from '../ui/use-toast';
 function Character({ characterInfo }: { characterInfo: PlayerPayload }) {
   const { nick, profilePicture } = characterInfo;
   return (
-    <div className='my-1 flex h-10 flex-row items-center rounded-xl p-1 hover:cursor-pointer hover:bg-card-foreground'>
+    <div className='my-1 flex h-10 flex-row items-center rounded-xl p-1 hover:cursor-pointer hover:bg-highlight'>
       <img
         src={profilePicture}
         className='mr-4 aspect-square h-full rounded-full'
@@ -35,7 +36,7 @@ function Character({ characterInfo }: { characterInfo: PlayerPayload }) {
 
 function ToolLink({ children }: { children: ReactNode }) {
   return (
-    <div className='my-2 flex h-10 items-center rounded-xl hover:bg-card-foreground'>
+    <div className='my-2 flex h-10 items-center rounded-xl hover:bg-highlight-foreground'>
       {children}
     </div>
   );
@@ -47,17 +48,14 @@ function ToolsAccordion() {
 
   return (
     <AccordionItem value='tools'>
-      <AccordionTrigger className='w-full text-2xl text-primary'>
+      <AccordionTrigger className='w-full text-2xl text-primary hover:text-primary-shaded'>
         Tools
       </AccordionTrigger>
-      <AccordionContent className='[&>div]:my-2 [&>div]:flex [&>div]:h-10 [&>div]:items-center'>
+      <AccordionContent className=''>
         <Link
           to='/room/$roomId'
           params={{
             roomId
-          }}
-          activeProps={{
-            className: '[&>div]:bg-card-foreground'
           }}
           activeOptions={{
             exact: true
@@ -87,9 +85,6 @@ function ToolsAccordion() {
               params={{
                 roomId
               }}
-              activeProps={{
-                className: '[&>div]:bg-card-foreground'
-              }}
               activeOptions={{
                 exact: true
               }}
@@ -118,7 +113,7 @@ function CharactersAccordion({
 }) {
   return (
     <AccordionItem value='players'>
-      <AccordionTrigger className='w-full text-2xl text-primary'>
+      <AccordionTrigger className='w-full text-2xl text-primary hover:text-primary-shaded'>
         Players
       </AccordionTrigger>
       <AccordionContent>

@@ -22,11 +22,16 @@ export enum ErrorCode {
     // Room related
     MaxPlayersExceeded = 'max.players.exceeded',
     MaxRoomName = 'max.room.name',
+    RoomNameEmpty = 'room.name.empty',
     IncorrectMaxPlayers = 'incorrect.max.players',
+    MaxPlayersNotInteger = 'max.players.not.integer',
+    MaxPlayersTooMany = 'max.players.too.many',
+    MaxPlayersTooFew = 'max.players.too.few',
     UserExists = 'user.exists',
 
     // Character related
-    NickLength = 'nick.length',
+    NickLengthTooLong = 'nick.length.too.long',
+    NickLengthEmpty = 'nick.length.empty',
     DescriptionLength = 'description.length'
 }
 
@@ -46,11 +51,16 @@ export const ErrorMap: Record<ErrorCode, string> = {
 
     [ErrorCode.MaxPlayersExceeded]:
         'The room reached maximum number of players',
-    [ErrorCode.MaxRoomName]: `Name of the room cannot be empty or longer than ${MAX_ROOM_NAME_LENGTH}`,
+    [ErrorCode.MaxRoomName]: `Name of the room cannot be longer than ${MAX_ROOM_NAME_LENGTH}`,
+    [ErrorCode.RoomNameEmpty]: `Name of the room cannot be empty`,
     [ErrorCode.IncorrectMaxPlayers]: `Player limit cannot be less than 2 or bigger than ${MAX_ROOM_PLAYERS}`,
+    [ErrorCode.MaxPlayersNotInteger]: `Player limit must be an integer`,
+    [ErrorCode.MaxPlayersTooMany]: `Player limit must be under ${MAX_ROOM_PLAYERS}`,
+    [ErrorCode.MaxPlayersTooFew]: `Player limit must be bigger or equal to 2`,
     [ErrorCode.UserExists]: `You have already joined this room`,
 
-    [ErrorCode.NickLength]: `Player nick cannot be empty or longer than ${MAX_CHARACTER_NICK_LENGTH}`,
+    [ErrorCode.NickLengthEmpty]: `Player nick cannot be empty`,
+    [ErrorCode.NickLengthTooLong]: `Player nick cannot be longer than ${MAX_CHARACTER_NICK_LENGTH}`,
     [ErrorCode.DescriptionLength]: `Player description cannot be longer than ${MAX_CHARACTER_DESCRIPTION_LENGTH}`
 };
 

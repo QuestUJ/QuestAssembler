@@ -11,11 +11,10 @@
     --foreground: 0 0% 100%;
     --supporting: 0 3% 75%;
     --card: 0 0% 5%;
-    --card-foreground: 0 0% 20%;
+    --card-foreground: 0 0% 100%;
     --popover: 0 0% 5%;
     --popover-foreground: 240 4% 16%;
     --primary: 41 99% 72%;
-    --primary-shaded: 41 96% 55%;
     --primary-foreground: 240 4% 16%;
     --secondary: 190 27% 50%;
     --secondary-foreground: 0 0% 98%;
@@ -29,6 +28,7 @@
     --input: 0 0% 100%;
     --ring: 240 4.9% 83.9%;
     --radius: 0.5em;
+    --highlight: 240 4% 16%;
   }
 
   .dark {

@@ -1,8 +1,11 @@
+import type { MessageDetails, StoryChunkDetails } from '@quasm/common';
 import {
-  MessageDetails,
-  MessageTypes,
-  StoryChunkDetails
-} from '%/src/DataInterface';
+  Accordion,
+  AccordionContent,
+  AccordionItem
+} from '@radix-ui/react-accordion';
+import { ReactNode } from 'react';
+import { AccordionTrigger } from '../ui/accordion';
 
 export function Message({ message }: { message: MessageDetails }) {
   const { authorName, characterPictureURL, content, timestamp } = message;
@@ -39,18 +42,45 @@ export function StoryChunk({ storyChunk }: { storyChunk: StoryChunkDetails }) {
   );
 }
 
-export function MessageContainer({ messages }: { messages: MessageTypes[] }) {
+export function StoryChunkContainer({ story }: { story: StoryChunkDetails[] }) {
+  return (
+    <div className='flex flex-col'>
+      {story.map(storyChunk => (
+        <StoryChunk storyChunk={storyChunk} />
+      ))}
+    </div>
+  );
+}
+
+export function MessageContainer({ messages }: { messages: MessageDetails[] }) {
+  return (
+    <div className='flex flex-col'>
+      {messages.map(message => (
+        <Message message={message} />
+      ))}
+    </div>
+  );
+}
+
+export function BroadcastChat({ messages }: { messages: MessageDetails[] }) {
+  return (
+    <Accordion type='single' collapsible>
+      <AccordionItem value='chat'>
+        <AccordionContent>
+          <MessageContainer messages={messages} />
+        </AccordionContent>
+        <AccordionTrigger className='text-2xl text-primary'>
+          Chat
+        </AccordionTrigger>
+      </AccordionItem>
+    </Accordion>
+  );
+}
+// Outlet wrapper is used to display children correctly (not overflow the site)
+export function OutletWrapper({ children }: { children: ReactNode }) {
   return (
     <div className='h-full overflow-y-auto p-3'>
-      <div className='flex h-fit min-h-full flex-col'>
-        {messages.map((message: MessageTypes) => {
-          if (message.type === 'message') {
-            return <Message message={message} />;
-          } else {
-            return <StoryChunk storyChunk={message} />;
-          }
-        })}
-      </div>
+      <div className='flex h-fit min-h-full flex-col'>{children}</div>
     </div>
   );
 }
