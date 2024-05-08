@@ -112,6 +112,10 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             ])
             .execute();
 
+        roomsData.forEach(r => {
+            this.fetchedRooms.delete(r.roomID as UUID);
+        });
+
         const result: Room[] = [];
 
         roomsData.forEach(r => {
@@ -119,22 +123,21 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 const settings = new RoomSettings(r.roomName, r.maxPlayerCount);
                 const room = new Room(this, r.roomID as UUID, settings);
                 this.fetchedRooms.set(r.roomID as UUID, room);
-
-                const character = new Character(
-                    this,
-                    r.characterID as UUID,
-                    r.userID,
-                    r.nick,
-                    r.isGameMaster,
-                    r.profileIMG ?? undefined,
-                    r.description ?? undefined
-                );
-                this.fetchedRooms
-                    .get(r.roomID as UUID)
-                    ?.restoreCharacter(character);
+                result.push(room);
             }
 
-            result.push(this.fetchedRooms.get(r.roomID as UUID)!);
+            const character = new Character(
+                this,
+                r.characterID as UUID,
+                r.userID,
+                r.nick,
+                r.isGameMaster,
+                r.profileIMG ?? undefined,
+                r.description ?? undefined
+            );
+            this.fetchedRooms
+                .get(r.roomID as UUID)
+                ?.restoreCharacter(character);
         });
 
         return result;

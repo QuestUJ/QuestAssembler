@@ -1,4 +1,13 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  ErrorCode,
+  ErrorMap,
+  MAX_ROOM_NAME_LENGTH,
+  MAX_ROOM_PLAYERS
+} from '@quasm/common';
 import { useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -13,21 +22,12 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { useApiPost } from '@/lib/api';
 
-import { z } from 'zod';
 import {
-  ErrorCode,
-  ErrorMap,
-  MAX_ROOM_NAME_LENGTH,
-  MAX_ROOM_PLAYERS
-} from '@quasm/common';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
+  Form,
   FormControl,
   FormField,
   FormItem,
-  FormMessage,
-  Form
+  FormMessage
 } from '../ui/form';
 
 const formSchema = z.object({
@@ -48,7 +48,7 @@ const formSchema = z.object({
       message: ErrorMap[ErrorCode.MaxPlayersTooFew]
     })
     .max(MAX_ROOM_PLAYERS, {
-      message: ErrorMap[ErrorCode.MaxPlayersTooMuch]
+      message: ErrorMap[ErrorCode.MaxPlayersTooMany]
     })
 });
 
@@ -80,6 +80,12 @@ export function CreateGameDialog() {
     }
   });
 
+  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = data => {
+    form.reset(undefined, { keepDirtyValues: true });
+    createGame(data);
+    setOpen(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -94,11 +100,8 @@ export function CreateGameDialog() {
         </DialogHeader>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((data: z.infer<typeof formSchema>) => {
-              form.reset(undefined, { keepDirtyValues: true });
-              createGame(data);
-              setOpen(false);
-            })}
+            className='text-right'
+            onSubmit={e => void form.handleSubmit(onSubmit)(e)}
           >
             <FormField
               control={form.control}
