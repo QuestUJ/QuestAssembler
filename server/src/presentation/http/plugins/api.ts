@@ -34,8 +34,8 @@ export function apiRoutes(
         fastify.decorateRequest('user', null);
 
         fastify.addHook('preHandler', async (req: FastifyRequest) => {
-            const token = req.headers.authorization;
-            if (token === undefined) {
+            const tokenString = req.headers.authorization;
+            if (tokenString === undefined) {
                 throw new QuasmError(
                     QuasmComponent.SOCKET,
                     401,
@@ -44,9 +44,19 @@ export function apiRoutes(
                 );
             }
 
-            const userDetails = await authProvider.verify(token.split(' ')[1]);
+            const token = tokenString.split(' ')[1];
 
-            req.user = userDetails;
+            const [userID, details] = await Promise.all([
+                authProvider.verify(token),
+                authProvider.fetchUserDetails(token)
+            ]);
+
+            req.user = {
+                userID,
+                email: details.email,
+                nickname: details.nickname,
+                profileImg: details.profileImg
+            };
 
             done();
         });

@@ -1,15 +1,18 @@
-import { withAuthenticationRequired } from '@auth0/auth0-react';
+import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
 import { createFileRoute, useParams } from '@tanstack/react-router';
 import { Outlet } from '@tanstack/react-router';
 import { Crown, Swords } from 'lucide-react';
+import { useEffect } from 'react';
 
 import LogoWithText from '@/components/LogoWithText';
 import { SidebarDrawer } from '@/components/sidebar/SidebarDrawer';
 import { SidebarFixed } from '@/components/sidebar/SidebarFixed';
 import { SvgSpinner } from '@/components/Spinner';
+import { useToast } from '@/components/ui/use-toast';
 import { User } from '@/components/User';
 import { useWindowSize } from '@/hooks/windowSize';
 import { useQuasmStore } from '@/lib/quasmStore';
+import { useIOStore } from '@/lib/socketIOStore';
 import { cn } from '@/lib/utils';
 
 function RoomIcon({ isGameMaster }: { isGameMaster: boolean }) {
@@ -67,12 +70,41 @@ function TopBar() {
   );
 }
 
-function RoomLayout() {
+function AuthLayout() {
   const { width } = useWindowSize();
 
   const { roomId }: { roomId: string | undefined } = useParams({
     strict: false
   });
+
+  const connectSocket = useIOStore(state => state.connectSocket);
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    (async () => {
+      const token = await getAccessTokenSilently();
+
+      connectSocket(token, err => {
+        toast({
+          title: 'Server connection problem',
+          variant: 'destructive',
+          description: err
+        });
+      });
+    })().catch(err => {
+      const msg = err instanceof Error ? err.message : (err as string);
+
+      toast({
+        title: 'Server connection problem',
+        variant: 'destructive',
+        description: msg
+      });
+    });
+  }, [connectSocket, getAccessTokenSilently, toast, isAuthenticated]);
 
   return (
     <>
@@ -103,5 +135,5 @@ function RoomLayout() {
 }
 
 export const Route = createFileRoute('/_auth')({
-  component: withAuthenticationRequired(RoomLayout)
+  component: withAuthenticationRequired(AuthLayout)
 });

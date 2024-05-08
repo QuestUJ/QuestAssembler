@@ -2,6 +2,7 @@ import {
     ErrorCode,
     MAX_CHARACTER_DESCRIPTION_LENGTH,
     MAX_CHARACTER_NICK_LENGTH,
+    MAX_PLAYER_SUBMIT_LENGTH,
     QuasmComponent,
     QuasmError
 } from '@quasm/common';
@@ -11,7 +12,6 @@ import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { PlayerTurnSubmit } from './PlayerTurnSubmit';
 
-const MAX_PLAYER_SUBMIT_LENGTH = 280;
 export interface CharacterDetails {
     userID: string;
     nick: string;
