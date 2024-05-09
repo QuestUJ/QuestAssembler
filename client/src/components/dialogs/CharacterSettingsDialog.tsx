@@ -44,7 +44,12 @@ const formSchema = z.object({
   }) // empty description is allowed, can be changed if needed
 });
 
-export function CharacterSettingsDialog() {
+export interface CharacterSettingsProps {
+  nick: string;
+  profilePicture?: string;
+}
+
+export function CharacterSettingsDialog(props: CharacterSettingsProps) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
@@ -64,9 +69,14 @@ export function CharacterSettingsDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className='m-0 h-10 w-10 rounded p-0'>
-          <Settings className='h-full text-background' />
-        </Button>
+        <div className='flex h-full items-center rounded-md p-2 hover:bg-highlight'>
+          <img
+            src={props.profilePicture}
+            className='mr-2 aspect-square h-full rounded-full'
+            alt='current player character picture'
+          />
+          <h1 className='text-2xl'>{props.nick}</h1>
+        </div>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
@@ -101,13 +111,24 @@ export function CharacterSettingsDialog() {
               render={({ field }) => (
                 <FormItem className='mb-4'>
                   <FormControl>
-                    <Input {...field} placeholder='Max amount of players' />
+                    <Input {...field} placeholder='Character description' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type='submit'>Apply</Button>
+            <div className='flex justify-between'>
+              <Button
+                className='bg-supporting'
+                type='button'
+                onClick={() => {
+                  setOpen(false);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type='submit'>Apply</Button>
+            </div>
           </form>
         </Form>
       </DialogContent>

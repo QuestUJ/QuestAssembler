@@ -7,10 +7,10 @@ import shortUUID from 'short-uuid';
 
 import { useApiGet } from '@/lib/api';
 import { useQuasmStore } from '@/lib/quasmStore';
-
 import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
 
 import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
+import { RoomSettingsDialog } from '../dialogs/RoomSettingsDialog';
 import LogoWithText from '../LogoWithText';
 import { SvgSpinner } from '../Spinner';
 import {
@@ -197,22 +197,18 @@ export function SidebarContentRoom() {
         </Accordion>
       </div>
       <div className='w-full'>
-        <div className='flex h-10 flex-row items-center justify-between'>
+        <div className='flex h-12 flex-row items-center justify-between'>
           <div className='flex h-full items-center'>
             {!data ? (
               <SvgSpinner className='ml-4 h-10 w-10' />
             ) : (
-              <>
-                <img
-                  src={data?.currentPlayer.profilePicture}
-                  className='mr-2 aspect-square h-full rounded-full'
-                  alt='current player character picture'
-                />
-                <h1 className='text-2xl'>{data?.currentPlayer.nick}</h1>
-              </>
+              <CharacterSettingsDialog
+                nick={data?.currentPlayer.nick}
+                profilePicture={data.currentPlayer.profilePicture}
+              />
             )}
           </div>
-          <CharacterSettingsDialog />
+          <RoomSettingsDialog />
         </div>
       </div>
     </div>
