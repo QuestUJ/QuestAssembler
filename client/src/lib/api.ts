@@ -5,7 +5,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/ui/use-toast';
 import { config } from '@/config';
 
-
 interface ApiCall {
   path: string;
   queryKey: string[];
@@ -93,9 +92,7 @@ export function useApiPost<Payload, Body>({
       } else {
         onSuccess(response.payload! as Payload);
 
-        console.log(invalidate);
         await queryClient.invalidateQueries({ queryKey: invalidate });
-        console.log('invalidated');
       }
 
       return response.payload! as Payload;
