@@ -24,9 +24,6 @@ import { IRoomRepository } from './IRoomRepository';
  * Main repository providing access to PostgreSQL based database
  */
 export class RoomRepositoryPostgres implements IRoomRepository {
-    setPlayerTurnSubmit(id: string, newDetails: any) {
-        throw new Error('Method not implemented.');
-    }
     private fetchedRooms: Map<UUID, Room>;
     private fetchedStoryChunks: Map<UUID, StoryChunk>;
 
@@ -237,7 +234,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             .execute();
     }
 
-    async setPlayerturnSubmit(
+    async setPlayerTurnSubmit(
         id: UUID,
         submit: PlayerTurnSubmit
     ): Promise<void> {
