@@ -1,5 +1,3 @@
-import { UUID } from 'crypto';
-
 import {
     ErrorCode,
     MAX_CHARACTER_DESCRIPTION_LENGTH,
@@ -8,6 +6,8 @@ import {
     QuasmComponent,
     QuasmError
 } from '@quasm/common';
+import { UUID } from 'crypto';
+
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { PlayerTurnSubmit } from './PlayerTurnSubmit';
@@ -16,7 +16,6 @@ export interface CharacterDetails {
     userID: string;
     nick: string;
     description?: string;
-    playerTurnSubmit?: string;
     profileIMG?: string;
 }
 
@@ -93,7 +92,7 @@ export class Character {
     }
 
     async setPlayerTurnSubmit(submit: PlayerTurnSubmit | undefined) {
-        if (submit && submit.length > MAX_PLAYER_SUBMIT_LENGTH) {
+        if (submit && submit.length() > MAX_PLAYER_SUBMIT_LENGTH) {
             throw new QuasmError(
                 QuasmComponent.CHARACTER,
                 400,

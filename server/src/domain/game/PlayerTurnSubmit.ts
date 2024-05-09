@@ -5,4 +5,8 @@ export class PlayerTurnSubmit {
     constructor(content: string) {
         this.content = content;
     }
+
+    length() {
+        return this.content.length;
+    }
 }
