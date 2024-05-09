@@ -3,7 +3,9 @@ import {
   ErrorCode,
   ErrorMap,
   MAX_CHARACTER_DESCRIPTION_LENGTH,
-  MAX_CHARACTER_NICK_LENGTH
+  MAX_CHARACTER_NICK_LENGTH,
+  MAX_ROOM_NAME_LENGTH,
+  MAX_ROOM_PLAYERS
 } from '@quasm/common';
 import { Settings } from 'lucide-react';
 import { useState } from 'react';
@@ -34,30 +36,33 @@ const formSchema = z.object({
   nick: z
     .string()
     .min(1, {
-      message: ErrorMap[ErrorCode.NickLengthEmpty]
+      message: ErrorMap[ErrorCode.RoomNameEmpty]
     })
-    .max(MAX_CHARACTER_NICK_LENGTH, {
-      message: ErrorMap[ErrorCode.NickLengthTooLong]
+    .max(MAX_ROOM_NAME_LENGTH, {
+      message: ErrorMap[ErrorCode.MaxRoomName]
     }),
-  description: z.string().max(MAX_CHARACTER_DESCRIPTION_LENGTH, {
-    message: ErrorMap[ErrorCode.DescriptionLength]
-  }) // empty description is allowed, can be changed if needed
+  description: z.coerce
+    .number()
+    .int({
+      message: ErrorMap[ErrorCode.MaxPlayersNotInteger]
+    })
+    .min(2, {
+      message: ErrorMap[ErrorCode.MaxPlayersTooFew]
+    })
+    .max(MAX_ROOM_PLAYERS, {
+      message: ErrorMap[ErrorCode.MaxPlayersTooMany]
+    })
 });
 
-export interface CharacterSettingsProps {
-  nick: string;
-  profilePicture?: string;
-}
-
-export function CharacterSettingsDialog(props: CharacterSettingsProps) {
+export function RoomSettingsDialog() {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      nick: '',
-      description: ''
+      name: '',
+      maxPlayers: ''
     }
   });
 
@@ -69,21 +74,14 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className='flex h-full items-center rounded-md p-2 hover:bg-highlight'>
-          <img
-            src={props.profilePicture}
-            className='mr-2 aspect-square h-full rounded-full'
-            alt='current player character picture'
-          />
-          <h1 className='text-2xl'>{props.nick}</h1>
-        </div>
+        <Button className='m-0 h-12 w-12 rounded p-0'>
+          <Settings className='h-full text-background' />
+        </Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
-          <DialogTitle>Character settings</DialogTitle>
-          <DialogDescription>
-            Customize your character nick and descreption
-          </DialogDescription>
+          <DialogTitle>Room settings</DialogTitle>
+          <DialogDescription>Change your room settings</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -99,7 +97,7 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
               render={({ field }) => (
                 <FormItem className='mb-4'>
                   <FormControl>
-                    <Input {...field} placeholder='Character nick' />
+                    <Input {...field} placeholder='Room name' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -111,7 +109,7 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
               render={({ field }) => (
                 <FormItem className='mb-4'>
                   <FormControl>
-                    <Input {...field} placeholder='Character description' />
+                    <Input {...field} placeholder='Max amount of players' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
