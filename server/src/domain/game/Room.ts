@@ -26,6 +26,9 @@ export class RoomSettings {
 }
 
 export class Room {
+    gameMaster(gameMaster: any) {
+        throw new Error('Method not implemented.');
+    }
     private characters: Character[] = [];
     private broadcast: Chat;
     private chats: Map<{ from: UUID; to: Chatter }, Chat>;
