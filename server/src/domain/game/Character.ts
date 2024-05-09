@@ -16,7 +16,6 @@ export interface CharacterDetails {
     userID: string;
     nick: string;
     description?: string;
-    playerTurnSubmit?: string;
     profileIMG?: string;
 }
 
@@ -92,13 +91,13 @@ export class Character {
         return this.playerTurnSubmit;
     }
 
-    async setPlayerTurnSubmit(submit: string | undefined) {
-        if (submit && submit.length > MAX_PLAYER_SUBMIT_LENGTH) {
+    async setPlayerTurnSubmit(submit: PlayerTurnSubmit | undefined) {
+        if (submit && submit.length() > MAX_PLAYER_SUBMIT_LENGTH) {
             throw new QuasmError(
                 QuasmComponent.CHARACTER,
                 400,
-                ErrorCode.MaxRoomName, //change this to a new error code
-                'Exceeded PlayerTurnSubmit max length'
+                ErrorCode.MaxPlayerSubmitExceeded,
+                'Exceeded Player Submit max length'
             );
         }
 

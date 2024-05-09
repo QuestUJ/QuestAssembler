@@ -3,7 +3,7 @@ import {
     ErrorCode,
     MAX_ROOM_NAME_LENGTH,
     MAX_ROOM_PLAYERS,
-    MAX_STORY_CHUNKS,
+    MAX_STORY_CHUNK_LENGTH,
     QuasmComponent,
     QuasmError
 } from '@quasm/common';
@@ -44,12 +44,11 @@ export class Room {
 
     validateName(name: string) {
         if (name.length <= 0 || name.length > MAX_ROOM_NAME_LENGTH) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             throw new QuasmError(
                 QuasmComponent.ROOM,
                 400,
                 ErrorCode.MaxRoomName,
-                'Incorrect name'
+                'Room name too long'
             );
         }
     }
@@ -144,12 +143,12 @@ export class Room {
     }
 
     addStoryChunk(chunk: StoryChunk): Promise<StoryChunk> {
-        if (chunk.content.length > MAX_STORY_CHUNKS) {
+        if (chunk.content.length > MAX_STORY_CHUNK_LENGTH) {
             throw new QuasmError(
                 QuasmComponent.ROOM,
                 400,
-                ErrorCode.MaxRoomName, //change this to a new error code
-                'Exceeded StoryChunk length'
+                ErrorCode.ChunkLengthExceeded,
+                'Story Chunk length exceeded'
             );
         }
         return this.roomRepository.addStoryChunk(this.id, chunk);

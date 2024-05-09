@@ -1,8 +1,10 @@
 import {
     MAX_CHARACTER_DESCRIPTION_LENGTH,
     MAX_CHARACTER_NICK_LENGTH,
+    MAX_PLAYER_SUBMIT_LENGTH,
     MAX_ROOM_NAME_LENGTH,
-    MAX_ROOM_PLAYERS
+    MAX_ROOM_PLAYERS,
+    MAX_STORY_CHUNK_LENGTH
 } from './constant';
 import { QuasmComponent } from './Structure';
 
@@ -28,11 +30,13 @@ export enum ErrorCode {
     MaxPlayersTooMany = 'max.players.too.many',
     MaxPlayersTooFew = 'max.players.too.few',
     UserExists = 'user.exists',
+    ChunkLengthExceeded = 'chunk.length.exceeded',
 
     // Character related
     NickLengthTooLong = 'nick.length.too.long',
     NickLengthEmpty = 'nick.length.empty',
-    DescriptionLength = 'description.length'
+    DescriptionLength = 'description.length',
+    MaxPlayerSubmitExceeded = 'max.playersubmit.exceeded'
 }
 
 /**
@@ -58,10 +62,12 @@ export const ErrorMap: Record<ErrorCode, string> = {
     [ErrorCode.MaxPlayersTooMany]: `Player limit must be under ${MAX_ROOM_PLAYERS}`,
     [ErrorCode.MaxPlayersTooFew]: `Player limit must be bigger or equal to 2`,
     [ErrorCode.UserExists]: `You have already joined this room`,
+    [ErrorCode.ChunkLengthExceeded]: `Story Chunk length cannot be longer than ${MAX_STORY_CHUNK_LENGTH}`,
 
     [ErrorCode.NickLengthEmpty]: `Player nick cannot be empty`,
     [ErrorCode.NickLengthTooLong]: `Player nick cannot be longer than ${MAX_CHARACTER_NICK_LENGTH}`,
-    [ErrorCode.DescriptionLength]: `Player description cannot be longer than ${MAX_CHARACTER_DESCRIPTION_LENGTH}`
+    [ErrorCode.DescriptionLength]: `Player description cannot be longer than ${MAX_CHARACTER_DESCRIPTION_LENGTH}`,
+    [ErrorCode.MaxPlayerSubmitExceeded]: `Player Submit cannot be longer than ${MAX_PLAYER_SUBMIT_LENGTH}`
 };
 
 export class QuasmError extends Error {

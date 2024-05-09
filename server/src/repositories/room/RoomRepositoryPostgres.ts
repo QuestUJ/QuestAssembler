@@ -1,4 +1,8 @@
-import { ChunkRange, QuasmComponent } from '@quasm/common';
+import {
+    ChunkRange,
+    DEFAULT_FETCHED_STORYCHUNKS,
+    QuasmComponent
+} from '@quasm/common';
 import { randomUUID, UUID } from 'crypto';
 import { Kysely } from 'kysely';
 
@@ -8,14 +12,13 @@ import {
     ChatMessageDetails,
     Chatter
 } from '@/domain/game/ChatMessage';
+import { PlayerTurnSubmit } from '@/domain/game/PlayerTurnSubmit';
 import { Room, RoomSettings } from '@/domain/game/Room';
 import { StoryChunk } from '@/domain/game/StoryChunk';
 import { logger } from '@/infrastructure/logger/Logger';
 import { Database } from '@/infrastructure/postgres/db';
 
 import { IRoomRepository } from './IRoomRepository';
-
-const DEFAULT_FETCHED_STORYCHUNKS = 20;
 
 /**
  * Main repository providing access to PostgreSQL based database
@@ -226,11 +229,22 @@ export class RoomRepositoryPostgres implements IRoomRepository {
 
     async updateCharacter(
         id: UUID,
-        characterDetails: CharacterDetails
+        characterDetails: Partial<CharacterDetails>
     ): Promise<void> {
         await this.db
             .updateTable('Characters')
             .set(characterDetails)
+            .where('id', '=', id)
+            .execute();
+    }
+
+    async setPlayerTurnSubmit(
+        id: UUID,
+        submit: PlayerTurnSubmit
+    ): Promise<void> {
+        await this.db
+            .updateTable('Characters')
+            .set(submit)
             .where('id', '=', id)
             .execute();
     }
@@ -293,7 +307,6 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         await this.db
             .insertInto('StoryChunks')
             .values({
-                chunkID: randomUUID(), //?? there is a sequence for that, but I have problems when this is uninitialized
                 roomID: roomID,
                 title: chunk.title,
                 content: chunk.content,
@@ -342,9 +355,4 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         });
         return result;
     }
-
-    async fetchStoryChunks(
-        roomID: string,
-        range: ChunkRange
-    ): Promise<StoryChunk[]> {}
 }
