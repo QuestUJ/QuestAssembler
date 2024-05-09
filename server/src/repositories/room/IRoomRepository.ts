@@ -65,6 +65,13 @@ export interface IRoomRepository {
         id: UUID,
         character: Partial<CharacterDetails>
     ): Promise<void>;
+    /**
+     * Persists the change of the player's Submit
+     */
+    setPlayerTurnSubmit(
+        id: UUID,
+        character: Partial<CharacterDetails>
+    ): Promise<void>;
 
     /**
      * Adds StoryChunk to the specified Room
