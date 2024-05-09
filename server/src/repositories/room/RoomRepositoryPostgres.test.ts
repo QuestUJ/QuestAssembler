@@ -82,7 +82,7 @@ describe('Basic room CRUD operations', () => {
         const characters = room.getCharacters();
         const originalCharacter = characters[0];
 
-        repo.setPlayerTurnSubmit(originalCharacter.id, newSubmit);
+        await repo.setPlayerTurnSubmit(originalCharacter.id, newSubmit);
 
         const updatedRoom = await repo.getRoomByID(roomID);
         const updatedCharacters = updatedRoom.getCharacters();
@@ -93,11 +93,11 @@ describe('Basic room CRUD operations', () => {
         expect(updatedCharacter?.getPlayerTurnSubmit()).toEqual(newSubmit);
     });
 
-    it('Can add and retireve Story Chunks', async () => {
+    it('Can add and retrieve Story Chunks', async () => {
         const repo = new RoomRepositoryPostgres(db);
         const roomID = randomUUID();
 
-        const newChunk = new StoryChunk('Extremely Exciting Story');
+        const newChunk = new StoryChunk(1, 'Extremely Exciting Story');
 
         const chunkRange = {
             offset: 6,
