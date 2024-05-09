@@ -118,6 +118,10 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             ])
             .execute();
 
+        roomsData.forEach(r => {
+            this.fetchedRooms.delete(r.roomID as UUID);
+        });
+
         const result: Room[] = [];
 
         roomsData.forEach(r => {

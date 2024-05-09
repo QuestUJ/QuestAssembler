@@ -1,4 +1,14 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  ErrorCode,
+  ErrorMap,
+  MAX_CHARACTER_DESCRIPTION_LENGTH,
+  MAX_CHARACTER_NICK_LENGTH
+} from '@quasm/common';
+import { Settings } from 'lucide-react';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -12,23 +22,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 
-import { z } from 'zod';
 import {
-  ErrorCode,
-  ErrorMap,
-  MAX_CHARACTER_DESCRIPTION_LENGTH,
-  MAX_CHARACTER_NICK_LENGTH
-} from '@quasm/common';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
+  Form,
   FormControl,
   FormField,
   FormItem,
-  FormMessage,
-  Form
+  FormMessage
 } from '../ui/form';
-import { Settings } from 'lucide-react';
 
 const formSchema = z.object({
   nick: z
