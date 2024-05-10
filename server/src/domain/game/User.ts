@@ -1,4 +1,10 @@
-import { Ack, ErrorMap, QuasmComponent, QuasmError } from '@quasm/common';
+import {
+    Ack,
+    ErrorMap,
+    MsgEvent,
+    QuasmComponent,
+    QuasmError
+} from '@quasm/common';
 import { UUID } from 'crypto';
 
 import { logger } from '@/infrastructure/logger/Logger';
@@ -8,8 +14,8 @@ import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 import { IAuthProvider } from '../tools/auth-provider/IAuthProvider';
 import { Room } from './Room';
 
-function withErrorHandling(
-    respond: (res: Ack) => void,
+function withErrorHandling<T>(
+    respond: (res: Ack<T>) => void,
     handler: () => void | Promise<void>
 ) {
     const err = (error: unknown) => {
@@ -75,25 +81,96 @@ export class User {
             });
         });
 
-        this.socket.on('subscribeToRoom', async (id, respond) => {
-            const room = await this.roomRepository.getRoomByID(id as UUID);
+        this.socket.on('subscribeToRoom', (id, respond) => {
+            withErrorHandling(respond, async () => {
+                const room = await this.roomRepository.getRoomByID(id as UUID);
 
-            if (!this.isMemberOf(room)) {
-                respond({
-                    success: false,
-                    error: "You don't belong to this room"
-                });
+                if (!this.isMemberOf(room)) {
+                    respond({
+                        success: false,
+                        error: "You don't belong to this room"
+                    });
 
-                return;
-            }
+                    return;
+                }
 
-            // Subsribe to room events
-            await this.socket.join(room.id);
-            logger.info(
-                QuasmComponent.SOCKET,
-                `Socket ${this.socket.id} subscribed to ${room.id}`
-            );
+                // Subsribe to room events
+                await this.socket.join(room.id);
+                await Promise.all(
+                    room.getPrivateChats().map(async chat => {
+                        await this.socket.join(JSON.stringify(chat.chatters));
+                        await this.socket.join(
+                            JSON.stringify(
+                                (chat.chatters as [UUID, UUID]).toReversed()
+                            )
+                        );
+                    })
+                );
+
+                logger.info(
+                    QuasmComponent.SOCKET,
+                    `Socket ${this.socket.id} subscribed to ${room.id}`
+                );
+            });
         });
+
+        this.socket.on(
+            'sendMessage',
+            ({ roomID, receiver, content }, respond) => {
+                withErrorHandling(respond, async () => {
+                    logger.info(
+                        QuasmComponent.SOCKET,
+                        `EVENT: sendMessage: user: ${this.socket.data.userID} in: ${roomID} to: ${receiver}`
+                    );
+
+                    const room = await roomRepository.getRoomByID(
+                        roomID as UUID
+                    );
+                    const myCharacter = room.getCharacterByUserID(
+                        this.socket.data.userID
+                    );
+
+                    const msg = await room
+                        .getChat(
+                            receiver === 'broadcast'
+                                ? 'broadcast'
+                                : [myCharacter.id, receiver as UUID]
+                        )
+                        .addMessage({
+                            content,
+                            to: receiver as UUID,
+                            from: myCharacter.id
+                        });
+
+                    const payload: MsgEvent = {
+                        roomID: room.id,
+                        from: msg.from,
+                        authorName: myCharacter.getNick(),
+                        content: content,
+                        timestamp: msg.timestamp,
+                        characterPictureURL: myCharacter.profileIMG
+                    };
+
+                    respond({
+                        success: true,
+                        payload
+                    });
+
+                    if (msg.to === 'broadcast') {
+                        this.socket.to(room.id).emit('message', payload);
+                    } else {
+                        this.socket
+                            .to(JSON.stringify([msg.from, msg.to]))
+                            .emit('message', payload);
+                    }
+
+                    logger.info(
+                        QuasmComponent.SOCKET,
+                        `EVENT SUCCESS: sendMessage: user: ${this.socket.data.userID} in: ${roomID} to: ${receiver}`
+                    );
+                });
+            }
+        );
     }
 
     isMemberOf(room: Room): boolean {

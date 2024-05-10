@@ -5,6 +5,7 @@ import {
   AccordionItem
 } from '@radix-ui/react-accordion';
 import { ReactNode } from 'react';
+
 import { AccordionTrigger } from '../ui/accordion';
 
 export function Message({ message }: { message: MessageDetails }) {
@@ -19,7 +20,7 @@ export function Message({ message }: { message: MessageDetails }) {
         <div className='flex flex-nowrap items-center'>
           <h1 className='text-md mr-2 text-primary'>{authorName}</h1>
           <h3 className='pt-1 text-xs text-secondary'>
-            {timestamp.toDateString()}
+            {timestamp.toLocaleString()}
           </h3>
         </div>
         <p className='text-xs'>{content}</p>
@@ -56,7 +57,7 @@ export function MessageContainer({ messages }: { messages: MessageDetails[] }) {
   return (
     <div className='flex flex-col'>
       {messages.map(message => (
-        <Message message={message} />
+        <Message key={message.timestamp.toISOString()} message={message} />
       ))}
     </div>
   );

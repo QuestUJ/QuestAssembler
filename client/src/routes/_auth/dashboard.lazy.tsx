@@ -1,5 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { RoomPayload } from '@quasm/common';
+import { ApiRoomPayload } from '@quasm/common';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { RoomCard } from '@/components/RoomCard';
@@ -10,7 +10,7 @@ import { useApiGet } from '@/lib/api';
 function RoomOverview() {
   const { loginWithRedirect } = useAuth0();
 
-  const { isPending, isError, data, error } = useApiGet<RoomPayload[]>({
+  const { isPending, isError, data, error } = useApiGet<ApiRoomPayload[]>({
     path: '/fetchRooms',
     queryKey: ['roomFetch']
   });

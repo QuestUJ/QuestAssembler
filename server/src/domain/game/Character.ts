@@ -35,11 +35,19 @@ export class Character {
     }
 
     validateNick(nick: string) {
-        if (nick.length <= 0 || nick.length > MAX_CHARACTER_NICK_LENGTH) {
+        if (nick.length <= 0) {
             throw new QuasmError(
                 QuasmComponent.CHARACTER,
                 400,
-                ErrorCode.NickLength,
+                ErrorCode.NickLengthEmpty,
+                nick
+            );
+        }
+        if (nick.length > MAX_CHARACTER_NICK_LENGTH) {
+            throw new QuasmError(
+                QuasmComponent.CHARACTER,
+                400,
+                ErrorCode.NickLengthTooLong,
                 nick
             );
         }

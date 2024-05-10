@@ -15,7 +15,7 @@ export interface ApiResponse<Payload> {
 // =======================
 // /fetchRooms/
 // =======================
-export interface RoomPayload {
+export interface ApiRoomPayload {
     id: string;
     roomName: string;
     gameMasterName: string;
@@ -26,12 +26,12 @@ export interface RoomPayload {
     lastMessages: string[] | undefined;
 }
 
-export type FetchRoomsResponse = ApiResponse<RoomPayload[]>;
+export type FetchRoomsResponse = ApiResponse<ApiRoomPayload[]>;
 
 // =======================
 // /getRoom/
 // =======================
-export interface PlayerPayload {
+export interface ApiPlayerPayload {
     id: string;
     nick: string;
     profilePicture?: string;
@@ -41,8 +41,8 @@ export interface RoomDetailsPayload {
     id: string;
     roomName: string;
     gameMasterID: string;
-    players: PlayerPayload[];
-    currentPlayer: PlayerPayload;
+    players: ApiPlayerPayload[];
+    currentPlayer: ApiPlayerPayload;
 }
 
 export type GetRoomResponse = ApiResponse<RoomDetailsPayload>;
@@ -65,3 +65,15 @@ export interface CreateRoomBody {
 }
 
 export type CreateRoomResponse = ApiResponse<string>;
+
+// =======================
+// /fetchMessages/
+// =======================
+export interface ApiMessagePayload {
+    authorName: string;
+    characterPictureURL: string | undefined;
+    timestamp: Date;
+    content: string;
+}
+
+export type FetchMessagesResponse = ApiResponse<ApiMessagePayload[]>;

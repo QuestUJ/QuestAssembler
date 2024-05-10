@@ -1,4 +1,4 @@
-import { ColumnType, Kysely, PostgresDialect } from 'kysely';
+import { ColumnType, Generated, Kysely, PostgresDialect } from 'kysely';
 import { Pool } from 'pg';
 
 import { config } from '@/config';
@@ -46,8 +46,7 @@ export interface CharactersTable {
 }
 
 export interface ChatMessagesTable {
-    roomID: string;
-    messageID: number;
+    messageID: Generated<number>;
     from: string;
     to: string;
     content: string;

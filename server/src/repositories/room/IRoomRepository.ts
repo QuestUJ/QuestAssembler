@@ -5,7 +5,7 @@ import { Character, CharacterDetails } from '@/domain/game/Character';
 import {
     ChatMessage,
     ChatMessageDetails,
-    Chatter
+    ChatParticipants
 } from '@/domain/game/ChatMessage';
 import { Room, RoomSettings } from '@/domain/game/Room';
 import { StoryChunk } from '@/domain/game/StoryChunk';
@@ -14,7 +14,7 @@ import { StoryChunk } from '@/domain/game/StoryChunk';
  * Main repository that manages instances of Rooms and their persistence
  */
 export interface IRoomRepository {
-    fetchStoryChunks(roomID: string, range: ChunkRange): Promise<StoryChunk[]>;
+    // fetchStoryChunks(roomID: string, range: ChunkRange): Promise<StoryChunk[]>;
     /**
      * Creates Room with single character (Game master) in it and returns created instance
      */
@@ -53,9 +53,16 @@ export interface IRoomRepository {
 
     addMessage(chatMessageDetails: ChatMessageDetails): Promise<ChatMessage>;
 
+    /**
+     * Returns number of messages inside a given chat
+     */
+    fetchMessageCount(
+        chatParticipants: ChatParticipants,
+        roomID: UUID
+    ): Promise<number>;
+
     fetchMessages(
-        from: UUID,
-        to: Chatter,
+        chatParticipants: ChatParticipants,
         range: ChunkRange
     ): Promise<ChatMessage[]>;
     /**
@@ -68,18 +75,18 @@ export interface IRoomRepository {
     /**
      * Persists the change of the player's Submit
      */
-    setPlayerTurnSubmit(
-        id: UUID,
-        character: Partial<CharacterDetails>
-    ): Promise<void>;
+    // setPlayerTurnSubmit(
+    //     id: UUID,
+    //     character: Partial<CharacterDetails>
+    // ): Promise<void>;
 
     /**
      * Adds StoryChunk to the specified Room
      */
-    addStoryChunk(roomID: UUID, storyChunk: StoryChunk): Promise<StoryChunk>;
+    // addStoryChunk(roomID: UUID, storyChunk: StoryChunk): Promise<StoryChunk>;
 
     /**
      * Returns the requested part of the story - the StoryChunks specified in ChunkRange
      */
-    fetchStory(roomID: UUID, range: ChunkRange): Promise<StoryChunk[]>;
+    // fetchStory(roomID: UUID, range: ChunkRange): Promise<StoryChunk[]>;
 }

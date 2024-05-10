@@ -9,13 +9,11 @@ import {
 } from '@quasm/common';
 import { UUID } from 'crypto';
 
-import { logger } from '@/infrastructure/logger/Logger';
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { Character, CharacterDetails } from './Character';
 import { Chat } from './Chat';
-import { ChatMessage, ChatMessageDetails, Chatter } from './ChatMessage';
-// import { ChatMessage } from './ChatMessage';
+import { ChatMessage, ChatParticipants } from './ChatMessage';
 import { StoryChunk } from './StoryChunk';
 
 export class RoomSettings {
@@ -28,17 +26,17 @@ export class RoomSettings {
 export class Room {
     private characters: Character[] = [];
     private broadcast: Chat;
-    private chats: Map<{ from: UUID; to: Chatter }, Chat>;
+    private chats: Map<string, Chat>;
 
     constructor(
-        readonly roomRepository: IRoomRepository,
+        private readonly roomRepository: IRoomRepository,
         readonly id: UUID,
         private roomSettings: RoomSettings,
         private storyChunks: StoryChunk[] = []
     ) {
         this.validateName(this.getName());
         this.validateMaxPlayerCount(this.getMaxPlayerCount());
-        this.broadcast = new Chat(this.roomRepository);
+        this.broadcast = new Chat(this.roomRepository, 'broadcast', this.id);
         this.chats = new Map();
     }
 
@@ -97,18 +95,31 @@ export class Room {
             );
         }
 
-        logger.info(
-            QuasmComponent.ROOM,
-            `Restoring character: ${character.id}`
-        );
-
         this.characters.push(character);
-        if (character.isGameMaster) {
-            logger.info(
-                QuasmComponent.ROOM,
-                `Game master restored: ${character.id}`
-            );
+    }
+
+    /**
+     * Helper method for respawning chats, typically called after raeding from db for example
+     */
+    spawnChats() {
+        for (let i = 0; i < this.characters.length; i++) {
+            for (let j = i + 1; j < this.characters.length; j++) {
+                const chat = new Chat(
+                    this.roomRepository,
+                    [this.characters[i].id, this.characters[j].id],
+                    this.id
+                );
+                this.chats.set(
+                    JSON.stringify([
+                        this.characters[i].id,
+                        this.characters[j].id
+                    ]),
+                    chat
+                );
+            }
         }
+
+        this.broadcast = new Chat(this.roomRepository, 'broadcast', this.id);
     }
 
     getRoomSettings(): RoomSettings {
@@ -121,6 +132,34 @@ export class Room {
 
     getCharacters(): Character[] {
         return this.characters;
+    }
+
+    getCharacterByUserID(userID: string): Character {
+        const character = this.characters.find(ch => ch.userID === userID);
+        if (!character) {
+            throw new QuasmError(
+                QuasmComponent.ROOM,
+                404,
+                ErrorCode.CharacterNotFound,
+                `looked for userID: ${userID}`
+            );
+        }
+
+        return character;
+    }
+
+    getCharacterByID(id: UUID): Character {
+        const character = this.characters.find(ch => ch.id === id);
+        if (!character) {
+            throw new QuasmError(
+                QuasmComponent.ROOM,
+                404,
+                ErrorCode.CharacterNotFound,
+                id
+            );
+        }
+
+        return character;
     }
 
     getGameMaster(): Character {
@@ -136,6 +175,15 @@ export class Room {
         );
 
         this.characters.push(character);
+
+        this.characters.forEach(other => {
+            const chat = new Chat(
+                this.roomRepository,
+                [other.id, character.id],
+                this.id
+            );
+            this.chats.set(JSON.stringify([other.id, character.id]), chat);
+        });
     }
 
     fetchStory(range: ChunkRange): Promise<StoryChunk[]> {
@@ -162,22 +210,34 @@ export class Room {
         await this.broadcast.addMessage(message);
     }
 
-    getChat(from: UUID, to: Chatter): Chat {
-        return this.chats.get({
-            from,
-            to
-        })!;
+    getPrivateChats() {
+        return [...this.chats.values()];
     }
 
-    async addChatMessage(
-        chatMessageDetails: ChatMessageDetails
-    ): Promise<void> {
-        this.chats
-            .get({
-                from: chatMessageDetails.from,
-                to: chatMessageDetails.to
-            })!
-            .addMessage(chatMessageDetails);
+    getChat(participants: ChatParticipants): Chat {
+        if (participants === 'broadcast') {
+            return this.broadcast;
+        }
+        let chat = this.chats.get(JSON.stringify(participants));
+
+        if (chat) {
+            return chat;
+        }
+
+        chat = this.chats.get(
+            JSON.stringify([participants[1], participants[0]])
+        );
+
+        if (!chat) {
+            throw new QuasmError(
+                QuasmComponent.ROOM,
+                500,
+                ErrorCode.MissingChat,
+                participants.join(',')
+            );
+        }
+
+        return chat;
     }
 
     getName(): string {

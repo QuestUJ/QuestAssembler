@@ -1,44 +1,63 @@
-import { ChunkRange } from '@quasm/common';
-import { randomUUID, UUID } from 'crypto';
+import {
+    ChunkRange,
+    ErrorCode,
+    QuasmComponent,
+    QuasmError
+} from '@quasm/common';
+import { UUID } from 'crypto';
 
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
-import { ChatMessage, ChatMessageDetails, Chatter } from './ChatMessage';
+import {
+    ChatMessage,
+    ChatMessageDetails,
+    ChatParticipants
+} from './ChatMessage';
 
 const MAX_CHAT_MESSAGES: number = 500;
 const MAX_CHAT_MESSAGE_LENGTH: number = 280;
 
 export class Chat {
-    private messages: ChatMessage[] = [];
+    constructor(
+        private readonly roomRepository: IRoomRepository,
+        readonly chatters: ChatParticipants,
+        readonly roomID: UUID
+    ) {}
 
-    constructor(readonly roomRepository: IRoomRepository) {}
-
-    async addMessage(chatMessageDetails: ChatMessageDetails): Promise<void> {
-        if (this.messages.length == MAX_CHAT_MESSAGES) {
-            throw QuasmError();
-            // throw error
+    async addMessage(
+        chatMessageDetails: ChatMessageDetails
+    ): Promise<ChatMessage> {
+        const count = await this.roomRepository.fetchMessageCount(
+            this.chatters,
+            this.roomID
+        );
+        if (count === MAX_CHAT_MESSAGES) {
+            throw new QuasmError(
+                QuasmComponent.CHAT,
+                400,
+                ErrorCode.MessagesLimit,
+                `Limit: ${MAX_CHAT_MESSAGES}`
+            );
         }
 
         if (chatMessageDetails.content.length > MAX_CHAT_MESSAGE_LENGTH) {
-            throw QuasmError();
-            // throw error
+            throw new QuasmError(
+                QuasmComponent.CHAT,
+                400,
+                ErrorCode.MessageLength,
+                `Limit: ${MAX_CHAT_MESSAGE_LENGTH}`
+            );
         }
 
-        const newMessage =
-            await this.roomRepository.addMessage(chatMessageDetails);
-        this.messages.push(newMessage);
+        return this.roomRepository.addMessage(chatMessageDetails);
     }
 
-    async fetchMessages(
-        from: UUID,
-        to: Chatter,
-        range: ChunkRange
-    ): Promise<void> {
+    async fetchMessages(range: ChunkRange): Promise<ChatMessage[]> {
         const fetchedMessages = await this.roomRepository.fetchMessages(
-            from,
-            to,
+            this.chatters,
             range
         );
-        this.messages.concat(fetchedMessages);
+
+        return fetchedMessages;
     }
 }

@@ -20,7 +20,8 @@ const { SOCKET_URL } = config.pick(['SOCKET_URL']);
 export const useIOStore = create<SocketIOState & SocketIOActions>()(set => ({
   connectSocket: (token: string, onErr: (err: string) => void) => {
     const socket: QuasmSocket = io(SOCKET_URL, {
-      auth: { token }
+      auth: { token },
+      reconnectionDelay: 5000
     });
 
     socket.on('connect_error', err => {

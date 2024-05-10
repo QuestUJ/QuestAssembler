@@ -22,6 +22,7 @@ export enum ErrorCode {
     IncorrectAccessToken = 'incorrect.access.token',
 
     // Room related
+    RoomNotFound = 'room.not.found',
     MaxPlayersExceeded = 'max.players.exceeded',
     MaxRoomName = 'max.room.name',
     RoomNameEmpty = 'room.name.empty',
@@ -36,7 +37,13 @@ export enum ErrorCode {
     NickLengthTooLong = 'nick.length.too.long',
     NickLengthEmpty = 'nick.length.empty',
     DescriptionLength = 'description.length',
-    MaxPlayerSubmitExceeded = 'max.playersubmit.exceeded'
+    MaxPlayerSubmitExceeded = 'max.playersubmit.exceeded',
+    CharacterNotFound = 'character.not.found',
+
+    // Chat related,
+    MissingChat = 'missing.chat',
+    MessagesLimit = 'messages.limit',
+    MessageLength = 'message.length'
 }
 
 /**
@@ -53,6 +60,7 @@ export const ErrorMap: Record<ErrorCode, string> = {
     [ErrorCode.IncorrectAccessToken]:
         'Authorization failed! Incorrect access token',
 
+    [ErrorCode.RoomNotFound]: 'Room has not been found',
     [ErrorCode.MaxPlayersExceeded]:
         'The room reached maximum number of players',
     [ErrorCode.MaxRoomName]: `Name of the room cannot be longer than ${MAX_ROOM_NAME_LENGTH}`,
@@ -67,7 +75,12 @@ export const ErrorMap: Record<ErrorCode, string> = {
     [ErrorCode.NickLengthEmpty]: `Player nick cannot be empty`,
     [ErrorCode.NickLengthTooLong]: `Player nick cannot be longer than ${MAX_CHARACTER_NICK_LENGTH}`,
     [ErrorCode.DescriptionLength]: `Player description cannot be longer than ${MAX_CHARACTER_DESCRIPTION_LENGTH}`,
-    [ErrorCode.MaxPlayerSubmitExceeded]: `Player Submit cannot be longer than ${MAX_PLAYER_SUBMIT_LENGTH}`
+    [ErrorCode.MaxPlayerSubmitExceeded]: `Player Submit cannot be longer than ${MAX_PLAYER_SUBMIT_LENGTH}`,
+    [ErrorCode.CharacterNotFound]: `Character has not been found`,
+
+    [ErrorCode.MissingChat]: `Could not find appropriate chat`,
+    [ErrorCode.MessagesLimit]: `Limit of messages per chat has been reached`,
+    [ErrorCode.MessageLength]: `Message is too long`
 };
 
 export class QuasmError extends Error {

@@ -2,10 +2,9 @@ import {
     CreateRoomBody,
     CreateRoomResponse,
     ErrorCode,
+    FetchMessagesResponse,
     FetchRoomsResponse,
     GetRoomResponse,
-    JoinRoomBody,
-    JoinRoomResponse,
     QuasmComponent,
     QuasmError,
     UserDetails
@@ -122,30 +121,6 @@ export function apiRoutes(
         });
 
         fastify.post<{
-            Body: JoinRoomBody;
-            Reply: JoinRoomResponse;
-        }>('/joinRoom', async (request, reply) => {
-            const { gameCode } = request.body;
-            logger.info(
-                QuasmComponent.HTTP,
-                `POST /joinRoom ${gameCode} ${request.user.userID}`
-            );
-
-            const room = await roomRepository.getRoomByID(gameCode as UUID);
-
-            await room.addCharacter({
-                nick: request.user.nickname,
-                userID: request.user.userID,
-                profileIMG: request.user.profileImg
-            });
-
-            await reply.send({
-                success: true,
-                payload: room.getName()
-            });
-        });
-
-        fastify.post<{
             Body: CreateRoomBody;
             Reply: CreateRoomResponse;
         }>('/createRoom', async (request, reply) => {
@@ -178,6 +153,55 @@ export function apiRoutes(
             await reply.send({
                 success: true,
                 payload: room.id
+            });
+        });
+
+        fastify.get<{
+            Reply: FetchMessagesResponse;
+            Querystring: {
+                other: string | undefined;
+                offset: number | undefined;
+                count: number;
+            };
+            Params: {
+                roomId: string;
+            };
+        }>('/fetchMessages/:roomId', async (request, reply) => {
+            const room = await roomRepository.getRoomByID(
+                request.params.roomId as UUID
+            );
+            const { other, count, offset } = request.query;
+
+            const myCharacter = room.getCharacterByUserID(request.user.userID);
+            let result;
+
+            if (!other) {
+                result = await room.getBroadcast().fetchMessages({
+                    count,
+                    offset
+                });
+            } else {
+                result = await room
+                    .getChat([myCharacter.id, other] as [UUID, UUID])
+                    .fetchMessages({ count, offset });
+            }
+
+            const otherCharacter = room.getCharacterByID(other as UUID);
+
+            await reply.send({
+                success: true,
+                payload: result.map(m => ({
+                    content: m.content,
+                    timestamp: m.timestamp,
+                    authorName:
+                        m.from === other
+                            ? otherCharacter.getNick()
+                            : myCharacter.getNick(),
+                    characterPictureURL:
+                        m.from === other
+                            ? otherCharacter.profileIMG
+                            : myCharacter.profileIMG
+                }))
             });
         });
 

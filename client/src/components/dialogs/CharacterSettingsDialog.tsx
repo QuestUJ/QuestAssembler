@@ -20,7 +20,6 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
 
 import {
   Form,
@@ -51,7 +50,6 @@ export interface CharacterSettingsProps {
 
 export function CharacterSettingsDialog(props: CharacterSettingsProps) {
   const [open, setOpen] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -87,11 +85,13 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
         </DialogHeader>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((data: z.infer<typeof formSchema>) => {
-              form.reset(undefined, { keepDirtyValues: true }); // keepDirtyValues here, I don't feel like we should ever reset this (after unsuccessful change user probably wants to use existing input anyway)
-              changeCharacterSettingsHandler(data); // if we want to reset to default after successful change, we need to add a success handler with form.reset() in it (refer to create game dialog)
-              setOpen(false);
-            })}
+            onSubmit={e =>
+              void form.handleSubmit((data: z.infer<typeof formSchema>) => {
+                form.reset(undefined, { keepDirtyValues: true }); // keepDirtyValues here, I don't feel like we should ever reset this (after unsuccessful change user probably wants to use existing input anyway)
+                changeCharacterSettingsHandler(data); // if we want to reset to default after successful change, we need to add a success handler with form.reset() in it (refer to create game dialog)
+                setOpen(false);
+              })(e)
+            }
           >
             <FormField
               control={form.control}
