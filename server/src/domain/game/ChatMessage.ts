@@ -1,13 +1,13 @@
-import { randomUUID, UUID } from 'crypto';
+import { UUID } from 'crypto';
 
-export type Chatter = UUID | 'all';
+export type ChatParticipants = [UUID, UUID] | 'broadcast';
 
-export class ChatMessageDetails {
-    constructor(
-        public from: UUID,
-        public to: Chatter,
-        public content: string
-    ) {}
+export type Chatter = UUID | 'broadcast';
+
+export interface ChatMessageDetails {
+    from: UUID;
+    to: Chatter;
+    content: string;
 }
 
 export class ChatMessage {

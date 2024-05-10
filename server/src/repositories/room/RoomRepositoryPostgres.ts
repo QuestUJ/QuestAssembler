@@ -1,7 +1,8 @@
 import {
     ChunkRange,
-    DEFAULT_FETCHED_STORYCHUNKS,
-    QuasmComponent
+    ErrorCode,
+    QuasmComponent,
+    QuasmError
 } from '@quasm/common';
 import { randomUUID, UUID } from 'crypto';
 import { Kysely } from 'kysely';
@@ -10,7 +11,7 @@ import { Character, CharacterDetails } from '@/domain/game/Character';
 import {
     ChatMessage,
     ChatMessageDetails,
-    Chatter
+    ChatParticipants
 } from '@/domain/game/ChatMessage';
 import { PlayerTurnSubmit } from '@/domain/game/PlayerTurnSubmit';
 import { Room, RoomSettings } from '@/domain/game/Room';
@@ -56,6 +57,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         );
 
         room.restoreCharacter(master);
+        room.spawnChats();
 
         logger.info(
             QuasmComponent.DATABASE,
@@ -138,9 +140,10 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 r.profileIMG ?? undefined,
                 r.description ?? undefined
             );
-            this.fetchedRooms
-                .get(r.roomID as UUID)
-                ?.restoreCharacter(character);
+
+            const room = this.fetchedRooms.get(r.roomID as UUID);
+            room?.restoreCharacter(character);
+            room?.spawnChats();
         });
 
         return result;
@@ -158,6 +161,15 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             .selectAll()
             .execute();
 
+        if (roomData.length <= 0) {
+            throw new QuasmError(
+                QuasmComponent.DATABASE,
+                404,
+                ErrorCode.RoomNotFound,
+                `Room ${roomID} has not been found`
+            );
+        }
+
         const { roomName, maxPlayerCount } = roomData[0];
 
         const settings = new RoomSettings(roomName, maxPlayerCount);
@@ -174,6 +186,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             );
 
             room.restoreCharacter(character);
+            room.spawnChats();
         });
 
         this.fetchedRooms.set(room.id, room);
@@ -254,16 +267,12 @@ export class RoomRepositoryPostgres implements IRoomRepository {
     ): Promise<ChatMessage> {
         const result = await this.db
             .insertInto('ChatMessages')
-            .values({
-                from: chatMessageDetails.from,
-                to: chatMessageDetails.to,
-                content: chatMessageDetails.content
-            })
-            .returning(['id', 'timestamp'])
+            .values(chatMessageDetails)
+            .returning(['messageID', 'timestamp'])
             .executeTakeFirstOrThrow();
 
         const newChatMessage = new ChatMessage(
-            result.id,
+            result.messageID,
             chatMessageDetails.from,
             chatMessageDetails.to,
             chatMessageDetails.content,
@@ -273,86 +282,141 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         return newChatMessage;
     }
 
+    async fetchMessageCount(
+        chatParticipants: ChatParticipants
+    ): Promise<number> {
+        if (chatParticipants === 'broadcast') {
+            const { messageCount } = await this.db
+                .selectFrom('ChatMessages')
+                .where('ChatMessages.to', '=', 'broadcast')
+                .select(({ fn }) =>
+                    fn
+                        .count<number>('ChatMessages.messageID')
+                        .as('messageCount')
+                )
+                .executeTakeFirstOrThrow();
+
+            return messageCount;
+        }
+
+        const [x, y] = chatParticipants;
+
+        const { messageCount } = await this.db
+            .selectFrom('ChatMessages')
+            .where(eb =>
+                eb.or([
+                    eb('from', '=', x).and('to', '=', y),
+
+                    eb('from', '=', y).and('to', '=', x)
+                ])
+            )
+            .select(eb =>
+                eb.fn.count<number>('ChatMessages.messageID').as('messageCount')
+            )
+
+            .executeTakeFirstOrThrow();
+
+        return messageCount;
+    }
+
     async fetchMessages(
-        from: UUID,
-        to: Chatter,
+        chatParticipants: ChatParticipants,
         range: ChunkRange
     ): Promise<ChatMessage[]> {
-        const fetchedChatMessages = await this.db
-            .selectFrom('ChatMessages')
-            .where('from', '=', from)
-            .where('to', '=', to)
-            .where('id', '<=', range.offset)
-            .selectAll()
-            .orderBy('id', 'desc')
-            .limit(range.count)
-            .execute();
+        let query = this.db.selectFrom('ChatMessages');
+        if (chatParticipants === 'broadcast') {
+            query = query.where('ChatMessages.to', '=', 'broadcast');
+        } else {
+            const [x, y] = chatParticipants;
 
-        const chatMessages: ChatMessage[] = [];
-        fetchedChatMessages.forEach(m => {
-            const chatMessage = new ChatMessage(
-                m.id,
-                m.from as UUID,
-                m.to as Chatter,
-                m.content,
-                m.timestamp
+            query = query.where(eb =>
+                eb.or([
+                    eb('from', '=', x).and('to', '=', y),
+
+                    eb('from', '=', y).and('to', '=', x)
+                ])
             );
+        }
 
-            chatMessages.push(chatMessage);
-        });
+        if (range.offset) {
+            query = query.where('ChatMessages.messageID', '<', range.offset);
+        }
 
-        return chatMessages;
+        return (
+            await query
+                .orderBy('messageID', 'desc')
+                .limit(range.count)
+                .selectAll()
+                .execute()
+        )
+            .map(
+                m =>
+                    new ChatMessage(
+                        m.messageID,
+                        m.from as UUID,
+                        m.to as UUID,
+                        m.content,
+                        m.timestamp
+                    )
+            )
+            .toReversed();
     }
-    async addStoryChunk(roomID: UUID, chunk: StoryChunk): Promise<StoryChunk> {
-        await this.db
-            .insertInto('StoryChunks')
-            .values({
-                roomID: roomID,
-                title: chunk.title,
-                content: chunk.content,
-                imageURL: chunk.imageUrl
-            })
-            .executeTakeFirstOrThrow();
-        return chunk;
-    }
-
-    async fetchStory(roomID: UUID, range: ChunkRange): Promise<StoryChunk[]> {
-        if (typeof range.offset == 'undefined')
-            range.offset = DEFAULT_FETCHED_STORYCHUNKS;
-
-        const lowerBound = range.offset - range.count + 1;
-        const upperBound = range.offset;
-
-        const storyChunkData = await this.db
-            .selectFrom('StoryChunks')
-            .where('roomID', '=', roomID)
-            .where('id', '>=', lowerBound)
-            .where('id', '<=', upperBound)
-            .selectAll()
-            .execute();
-
-        storyChunkData.forEach(r => {
-            this.fetchedRooms.delete(r.chunkID as unknown as UUID);
-        });
-
-        const result: StoryChunk[] = [];
-
-        storyChunkData.forEach(r => {
-            if (!this.fetchedRooms.has(r.chunkID as unknown as UUID)) {
-                const chunk = new StoryChunk(
-                    r.chunkID,
-                    r.title,
-                    r.content,
-                    r.imageURL,
-                    r.timestamp
-                );
-                this.fetchedStoryChunks.set(
-                    r.chunkID as unknown as UUID,
-                    chunk
-                );
-                result.push(chunk);
-            }
-        });
-        return result;
-    }
+    //
+    // async addStoryChunk(roomID: UUID, chunk: StoryChunk): Promise<StoryChunk> {
+    //     await this.db
+    //         .insertInto('StoryChunks')
+    //         .values({
+    //             roomID: roomID,
+    //             title: chunk.title,
+    //             content: chunk.content,
+    //             imageURL: chunk.imageUrl
+    //         })
+    //         .executeTakeFirstOrThrow();
+    //     return chunk;
+    // }
+    //
+    // async fetchStory(roomID: UUID, range: ChunkRange): Promise<StoryChunk[]> {
+    //     if (typeof range.offset == 'undefined')
+    //         range.offset = DEFAULT_FETCHED_STORYCHUNKS;
+    //
+    //     const lowerBound = range.offset - range.count + 1;
+    //     const upperBound = range.offset;
+    //
+    //     const storyChunkData = await this.db
+    //         .selectFrom('StoryChunks')
+    //         .where('roomID', '=', roomID)
+    //         .where('id', '>=', lowerBound)
+    //         .where('id', '<=', upperBound)
+    //         .selectAll()
+    //         .execute();
+    //
+    //     storyChunkData.forEach(r => {
+    //         this.fetchedRooms.delete(r.chunkID as unknown as UUID);
+    //     });
+    //
+    //     const result: StoryChunk[] = [];
+    //
+    //     storyChunkData.forEach(r => {
+    //         if (!this.fetchedRooms.has(r.chunkID as unknown as UUID)) {
+    //             const chunk = new StoryChunk(
+    //                 r.chunkID,
+    //                 r.title,
+    //                 r.content,
+    //                 r.imageURL,
+    //                 r.timestamp
+    //             );
+    //             this.fetchedStoryChunks.set(
+    //                 r.chunkID as unknown as UUID,
+    //                 chunk
+    //             );
+    //             result.push(chunk);
+    //         }
+    //     });
+    //     return result;
+    // }
+    //
+    // fetchStoryChunks(
+    //     roomID: string,
+    //     range: ChunkRange
+    // ): Promise<StoryChunk[]> {}
 }

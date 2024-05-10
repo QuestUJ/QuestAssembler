@@ -1,6 +1,9 @@
-import { CharacterDetails, MessageDetails, MessageTypes } from '@quasm/common/';
+import {
+  CharacterDetails,
+  MessageDetails,
+  StoryChunkDetails
+} from '@quasm/common/';
 import { create } from 'zustand';
-
 
 import {
   PLACEHOLDER_DUMMY_MESSAGES,
@@ -16,7 +19,7 @@ type QuasmState = {
   currentPlayerName: string;
   currentPlayerURLImage: string | undefined;
   messages: MessageDetails[];
-  story: MessageTypes[];
+  story: StoryChunkDetails[];
 };
 
 type QuasmActions = {

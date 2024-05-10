@@ -1,4 +1,4 @@
-import { PlayerPayload, RoomDetailsPayload } from '@quasm/common';
+import { ApiPlayerPayload, RoomDetailsPayload } from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link, useParams } from '@tanstack/react-router';
 import { Crown, Reply, Scroll } from 'lucide-react';
@@ -21,16 +21,30 @@ import {
 } from '../ui/accordion';
 import { useToast } from '../ui/use-toast';
 
-function Character({ characterInfo }: { characterInfo: PlayerPayload }) {
+function Character({ characterInfo }: { characterInfo: ApiPlayerPayload }) {
   const { nick, profilePicture } = characterInfo;
+
+  const { roomId }: { roomId: string } = useParams({ strict: false });
+
   return (
-    <div className='my-1 flex h-10 flex-row items-center rounded-xl p-1 hover:cursor-pointer hover:bg-highlight'>
-      <img
-        src={profilePicture}
-        className='mr-4 aspect-square h-full rounded-full'
-      />
-      <h1 className='text-2xl'>{nick}</h1>
-    </div>
+    <Link
+      to='/room/$roomId/chat/$characterId'
+      activeProps={{
+        className: 'text-primary'
+      }}
+      params={{
+        roomId,
+        characterId: shortUUID().fromUUID(characterInfo.id)
+      }}
+    >
+      <div className='my-1 flex h-10 flex-row items-center rounded-xl p-1 hover:cursor-pointer hover:bg-highlight'>
+        <img
+          src={profilePicture}
+          className='mr-4 aspect-square h-full rounded-full'
+        />
+        <h1 className='text-2xl'>{nick}</h1>
+      </div>
+    </Link>
   );
 }
 
@@ -57,6 +71,9 @@ function ToolsAccordion() {
           params={{
             roomId
           }}
+          activeProps={{
+            className: 'text-primary'
+          }}
           activeOptions={{
             exact: true
           }}
@@ -73,6 +90,9 @@ function ToolsAccordion() {
               params={{
                 roomId
               }}
+              activeProps={{
+                className: 'text-primary'
+              }}
             >
               <ToolLink>
                 <Crown className='mr-2 h-8 w-8 text-primary' />
@@ -84,6 +104,9 @@ function ToolsAccordion() {
               to='/room/$roomId/submitStory'
               params={{
                 roomId
+              }}
+              activeProps={{
+                className: 'text-primary'
               }}
               activeOptions={{
                 exact: true
@@ -109,7 +132,7 @@ function ToolsAccordion() {
 function CharactersAccordion({
   characters
 }: {
-  characters: PlayerPayload[] | undefined;
+  characters: ApiPlayerPayload[] | undefined;
 }) {
   return (
     <AccordionItem value='players'>
@@ -159,7 +182,6 @@ export function SidebarContentRoom() {
     if (!socket) return;
 
     socket.emit('subscribeToRoom', roomUUID, res => {
-      console.log('called');
       if (!res.success) {
         toast({
           title: 'Connection error! Try refreshing site!'

@@ -7,10 +7,15 @@ export function InputBar({
   handleSend,
   sendButtonText
 }: {
-  handleSend: () => void;
+  handleSend: (content: string) => void;
   sendButtonText: string;
 }) {
   const [inputValue, setInputValue] = useState('');
+
+  const handleClick = () => {
+    setInputValue('');
+    handleSend(inputValue);
+  };
 
   return (
     <div className='flex h-16 flex-nowrap'>
@@ -20,7 +25,7 @@ export function InputBar({
         onChange={e => setInputValue(e.target.value)}
         className='h-16'
       />
-      <Button className='h-full' onClick={handleSend}>
+      <Button className='h-full' onClick={handleClick}>
         {sendButtonText}
       </Button>
     </div>

@@ -1,9 +1,9 @@
-import { RoomPayload } from '@quasm/common';
+import { ApiRoomPayload } from '@quasm/common';
 import { Link } from '@tanstack/react-router';
 import { Crown, Swords } from 'lucide-react';
 import shortUUID from 'short-uuid';
 
-export function RoomCard({ room }: { room: RoomPayload }) {
+export function RoomCard({ room }: { room: ApiRoomPayload }) {
   return (
     <Link
       to='/room/$roomId'
