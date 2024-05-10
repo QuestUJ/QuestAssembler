@@ -1,33 +1,54 @@
-import { type Server } from 'socket.io';
+import {
+    ClientToServerEvents,
+    InternalEvents,
+    QuasmComponent,
+    ServerToClientEvents,
+    SocketData
+} from '@quasm/common';
+import { type Server, Socket } from 'socket.io';
 
+import { User } from '@/domain/game/User';
+import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
 import { logger } from '@/infrastructure/logger/Logger';
+import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
-export function startSocketServer(io: Server) {
-    logger.info('Socket.io Server', 'Socket.io attached');
+import { auth } from './middlewares/auth';
+
+export type QuasmSocketServer = Server<
+    ClientToServerEvents,
+    ServerToClientEvents,
+    InternalEvents,
+    SocketData
+>;
+
+export type QuasmSocket = Socket<
+    ClientToServerEvents,
+    ServerToClientEvents,
+    InternalEvents,
+    SocketData
+>;
+
+export function startSocketServer(
+    io: QuasmSocketServer,
+    roomRepository: IRoomRepository,
+    authProvider: IAuthProvider
+) {
+    logger.info(QuasmComponent.SOCKET, 'Socket.io attached');
+
+    io.use(auth(authProvider));
 
     io.on('connection', socket => {
         logger.info(
-            'Socket.io Server',
+            QuasmComponent.SOCKET,
             `Received connection from : ${socket.id}`
         );
-        socket.on('msg', data => {
-            logger.info('Socket.io Server', `Received message: ${data}`);
 
-            setTimeout(() => {
-                socket.emit('msg', `Copy that!: ${data}`);
-            }, 1000);
-        });
-
-        socket.on('msg', data => {
-            console.log(data);
-        });
+        new User(socket, roomRepository, authProvider);
     });
 }
 
 declare module 'fastify' {
     interface FastifyInstance {
-        io: Server<{
-            msg: string;
-        }>;
+        io: QuasmSocketServer;
     }
 }

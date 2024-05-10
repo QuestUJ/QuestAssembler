@@ -1,4 +1,4 @@
-import { ColumnType, Kysely, PostgresDialect } from 'kysely';
+import { ColumnType, Generated, Kysely, PostgresDialect } from 'kysely';
 import { Pool } from 'pg';
 
 import { config } from '@/config';
@@ -16,7 +16,6 @@ export interface Database {
 
 export interface RoomsTable {
     id: string;
-    gameMasterID: string;
     roomName: string;
     maxPlayerCount: number;
 }
@@ -33,9 +32,11 @@ export interface StoryChunksTable {
 export interface CharactersTable {
     id: string;
     nick: string;
-    description: string;
+    description: string | null;
     roomID: string;
+    isGameMaster: boolean;
     userID: string;
+    profileIMG: string | null;
     submitContent: string | null;
     submitTimestamp: ColumnType<
         Date | null,
@@ -45,11 +46,11 @@ export interface CharactersTable {
 }
 
 export interface ChatMessagesTable {
-    roomID: string;
-    messageID: number;
-    from: string; // Characters.ihttps://vitest.dev/guide/mocking.htmld
-    to: string; // Characters.id
+    messageID: Generated<number>;
+    from: string;
+    to: string;
     content: string;
+    timestamp: ColumnType<Date, string | undefined, never>;
 }
 
 const dialect = new PostgresDialect({

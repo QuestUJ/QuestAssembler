@@ -5,6 +5,7 @@ import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { Character } from './Character';
 import { Room, RoomSettings } from './Room';
+import { PlayerTurnSubmit } from './PlayerTurnSubmit';
 
 describe('Character', () => {
     const fakeRepo: IRoomRepository = {
@@ -17,35 +18,33 @@ describe('Character', () => {
         updateCharacter: vi.fn().mockReturnValue({})
     };
 
-    const room: Room = new Room(
-        fakeRepo,
-        randomUUID(),
-        randomUUID(),
-        new RoomSettings('Room name', 5),
-        []
-    );
-
     const character = new Character(
         fakeRepo,
         randomUUID(),
         randomUUID(),
-        undefined,
-        room,
         'Nick',
+        false,
+        'Img',
         'Description',
         undefined
     );
 
     const nick = 'New nick';
     const description = 'New description';
+    const submit = new PlayerTurnSubmit('whatever');
 
-    it('should allow changing the nick', () => {
-        character.setNick(nick);
+    it('should allow changing the nick', async () => {
+        await character.setNick(nick);
         expect(character.getNick()).toBe(nick);
     });
 
-    it('should allow changing the description', () => {
-        character.setDescription(description);
+    it('should allow changing the description', async () => {
+        await character.setDescription(description);
         expect(character.getDescription()).toBe(description);
+    });
+
+    it('should allow setting PlayerTurnSubmit', async () => {
+        await character.setPlayerTurnSubmit(submit);
+        expect(character.getPlayerTurnSubmit()).toBe(submit);
     });
 });

@@ -5,6 +5,8 @@ import * as path from 'path';
 import { newDb } from 'pg-mem';
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { PlayerTurnSubmit } from '@/domain/game/PlayerTurnSubmit';
+import { StoryChunk } from '@/domain/game/StoryChunk';
 import { Database } from '@/infrastructure/postgres/db';
 import { RoomRepositoryPostgres } from '@/repositories/room/RoomRepositoryPostgres';
 
@@ -69,5 +71,43 @@ describe('Basic room CRUD operations', () => {
         const results = await repo.fetchRooms(userID);
 
         expect(results.length).toEqual(0);
+    });
+
+    it('Can set and retrieve PlayerTurnSubmit', async () => {
+        const repo = new RoomRepositoryPostgres(db);
+        const roomID = randomUUID();
+        const newSubmit = new PlayerTurnSubmit('trololo');
+
+        const room = await repo.getRoomByID(roomID);
+        const characters = room.getCharacters();
+        const originalCharacter = characters[0];
+
+        await repo.setPlayerTurnSubmit(originalCharacter.id, newSubmit);
+
+        const updatedRoom = await repo.getRoomByID(roomID);
+        const updatedCharacters = updatedRoom.getCharacters();
+        const updatedCharacter = updatedCharacters.find(
+            char => char.userID === originalCharacter.userID
+        );
+
+        expect(updatedCharacter?.getPlayerTurnSubmit()).toEqual(newSubmit);
+    });
+
+    it('Can add and retrieve Story Chunks', async () => {
+        const repo = new RoomRepositoryPostgres(db);
+        const roomID = randomUUID();
+
+        const newChunk = new StoryChunk(1, 'Extremely Exciting Story');
+
+        const chunkRange = {
+            offset: 6,
+            count: 2
+        };
+        await repo.addStoryChunk(roomID, newChunk);
+
+        const retrievedChunks = await repo.fetchStory(roomID, chunkRange);
+
+        expect(retrievedChunks.length).toBeGreaterThan(0);
+        expect(retrievedChunks[0].title).toEqual(newChunk.title);
     });
 });
