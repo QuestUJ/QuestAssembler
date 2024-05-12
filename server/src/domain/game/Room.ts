@@ -109,13 +109,7 @@ export class Room {
                     [this.characters[i].id, this.characters[j].id],
                     this.id
                 );
-                this.chats.set(
-                    JSON.stringify([
-                        this.characters[i].id,
-                        this.characters[j].id
-                    ]),
-                    chat
-                );
+                this.chats.set(JSON.stringify(chat.chatters), chat);
             }
         }
 
@@ -174,16 +168,16 @@ export class Room {
             characterDetails
         );
 
-        this.characters.push(character);
-
         this.characters.forEach(other => {
             const chat = new Chat(
                 this.roomRepository,
                 [other.id, character.id],
                 this.id
             );
-            this.chats.set(JSON.stringify([other.id, character.id]), chat);
+            this.chats.set(JSON.stringify(chat.chatters), chat);
         });
+
+        this.characters.push(character);
 
         return character;
     }
@@ -220,15 +214,7 @@ export class Room {
         if (participants === 'broadcast') {
             return this.broadcast;
         }
-        let chat = this.chats.get(JSON.stringify(participants));
-
-        if (chat) {
-            return chat;
-        }
-
-        chat = this.chats.get(
-            JSON.stringify([participants[1], participants[0]])
-        );
+        const chat = this.chats.get(JSON.stringify(Chat.toId(participants)));
 
         if (!chat) {
             throw new QuasmError(

@@ -18,11 +18,31 @@ const MAX_CHAT_MESSAGES: number = 500;
 const MAX_CHAT_MESSAGE_LENGTH: number = 280;
 
 export class Chat {
+    readonly chatters: ChatParticipants;
+
     constructor(
         private readonly roomRepository: IRoomRepository,
-        readonly chatters: ChatParticipants,
+        chatters: ChatParticipants,
         readonly roomID: UUID
-    ) {}
+    ) {
+        if (chatters === 'broadcast') {
+            this.chatters = chatters;
+        } else {
+            this.chatters = Chat.toId(chatters);
+        }
+    }
+
+    /**
+     * Returns id of chat wich specified participans
+     */
+    static toId(chatters: [UUID, UUID]): [UUID, UUID] {
+        const [c1, c2] = chatters;
+        if (c1 < c2) {
+            return [c1, c2];
+        }
+
+        return [c2, c1];
+    }
 
     async addMessage(
         chatMessageDetails: ChatMessageDetails

@@ -43,7 +43,7 @@ export function startSocketServer(
             `Received connection from : ${socket.id}`
         );
 
-        new User(socket, roomRepository, authProvider);
+        new User(socket, io, roomRepository, authProvider);
     });
 }
 

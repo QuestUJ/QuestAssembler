@@ -89,50 +89,5 @@ testWithRooms.describe('[FM3, FM4] Dashboard', () => {
         await expect(userRoom).toBeVisible();
         await userRoom.click();
         await expect(user.getByText(name)).toBeVisible();
-
-        // await page.goto(BASE_URL);
-        // await page.getByRole('button', { name: 'Join the game' }).click();
-        // await page.getByLabel('Email address*').click();
-        // await page.getByLabel('Email address*').fill('bob');
-        // await page.getByLabel('Email address*').click();
-        // await page.getByLabel('Email address*').fill('bob@xyz.com');
-        // await page.getByLabel('Email address*').press('Tab');
-        // await page.getByLabel('Password*').fill('Testing123');
-        // await page.getByLabel('Password*').press('Enter');
-        //
-        // await page.getByRole('button', { name: 'Create Game' }).click();
-        // await page.getByPlaceholder('Room name').click();
-        //
-        // const roomName = randomBytes(10).toString('base64');
-        // await page.getByPlaceholder('Room name').fill(roomName);
-        // await page.getByPlaceholder('Max amount of players').click();
-        // await page.getByPlaceholder('Max amount of players').fill('10');
-        // await page.getByRole('button', { name: 'Create game' }).click();
-        // await page.getByRole('link', { name: roomName }).click();
-        // const gameCode = page.url().split('/').pop();
-        //
-        // const userCtx = await browser.newContext();
-        // const userPage = await userCtx.newPage();
-        // await userPage.goto(BASE_URL);
-        //
-        // await userPage.goto('http://localhost:3001/');
-        // await userPage.getByRole('button', { name: 'Join the game' }).click();
-        // await userPage.getByLabel('Email address*').click();
-        // await userPage.getByLabel('Email address*').fill('user@xyz.com');
-        // await userPage.getByLabel('Email address*').press('Tab');
-        // await userPage.getByLabel('Password*').fill('Testing123');
-        // await userPage
-        //     .getByRole('button', { name: 'Continue', exact: true })
-        //     .click();
-        // await userPage.getByRole('button', { name: 'Join Game' }).click();
-        // await userPage.getByPlaceholder('Game code').click();
-        // await userPage.getByPlaceholder('Game code').fill(gameCode!);
-        // await userPage.getByRole('button', { name: 'Join game' }).click();
-        // await userPage.getByRole('link', { name: roomName }).click();
-        // await userPage.getByRole('button', { name: 'Players' }).click();
-        // await expect(userPage.getByRole('link', { name: 'bob' })).toBeVisible();
-        //
-        // await page.getByRole('button', { name: 'Players' }).click();
-        // await expect(page.getByRole('link', { name: 'user' })).toBeVisible();
     });
 });

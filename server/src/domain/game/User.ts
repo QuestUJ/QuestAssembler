@@ -8,10 +8,14 @@ import {
 import { UUID } from 'crypto';
 
 import { logger } from '@/infrastructure/logger/Logger';
-import { QuasmSocket } from '@/presentation/socket/socketServer';
+import {
+    QuasmSocket,
+    QuasmSocketServer
+} from '@/presentation/socket/socketServer';
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
 
 import { IAuthProvider } from '../tools/auth-provider/IAuthProvider';
+import { Chat } from './Chat';
 import { Room } from './Room';
 
 function withErrorHandling<T>(
@@ -51,6 +55,7 @@ function withErrorHandling<T>(
 export class User {
     constructor(
         private socket: QuasmSocket,
+        private io: QuasmSocketServer,
         private readonly roomRepository: IRoomRepository,
         private readonly authProvider: IAuthProvider
     ) {
@@ -77,6 +82,17 @@ export class User {
                     success: true
                 });
 
+                const roomSockets = await this.io.in(room.id).fetchSockets();
+
+                console.log(roomSockets.map(s => s.data.userID));
+                roomSockets.forEach(async socket => {
+                    const other = room.getCharacterByUserID(socket.data.userID);
+
+                    socket.join(
+                        JSON.stringify(Chat.toId([other.id, character.id]))
+                    );
+                });
+
                 this.socket.to(room.id).emit('newPlayer', {
                     id: character.id,
                     nick: character.getNick(),
@@ -99,15 +115,10 @@ export class User {
                 }
 
                 // Subsribe to room events
-                await this.socket.join(room.id);
+                this.socket.join(room.id);
                 await Promise.all(
                     room.getPrivateChats().map(async chat => {
-                        await this.socket.join(JSON.stringify(chat.chatters));
-                        await this.socket.join(
-                            JSON.stringify(
-                                (chat.chatters as [UUID, UUID]).toReversed()
-                            )
-                        );
+                        this.socket.join(JSON.stringify(chat.chatters));
                     })
                 );
 
@@ -164,7 +175,7 @@ export class User {
                         this.socket.to(room.id).emit('message', payload);
                     } else {
                         this.socket
-                            .to(JSON.stringify([msg.from, msg.to]))
+                            .to(JSON.stringify(Chat.toId([msg.from, msg.to])))
                             .emit('message', payload);
                     }
 
