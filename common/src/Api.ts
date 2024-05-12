@@ -70,6 +70,7 @@ export type CreateRoomResponse = ApiResponse<string>;
 // /fetchMessages/
 // =======================
 export interface ApiMessagePayload {
+    id: number;
     authorName: string;
     characterPictureURL: string | undefined;
     timestamp: Date;

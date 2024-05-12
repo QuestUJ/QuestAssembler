@@ -19,7 +19,7 @@ import { Chat } from './Chat';
 import { Room } from './Room';
 
 function withErrorHandling<T>(
-    respond: (res: Ack<T> ) => void,
+    respond: (res: Ack<T>) => void,
     handler: () => void | Promise<void>
 ) {
     const err = (error: unknown) => {
@@ -84,7 +84,7 @@ export class User {
 
                 const roomSockets = await this.io.in(room.id).fetchSockets();
 
-                roomSockets.forEach(async socket => {
+                roomSockets.forEach(socket => {
                     const other = room.getCharacterByUserID(socket.data.userID);
 
                     socket.join(
@@ -113,12 +113,20 @@ export class User {
                     return;
                 }
 
+                const character = room.getCharacterByUserID(
+                    this.socket.data.userID
+                );
+
                 // Subsribe to room events
-                this.socket.join(room.id);
+                await this.socket.join(room.id);
                 await Promise.all(
-                    room.getPrivateChats().map(async chat => {
-                        this.socket.join(JSON.stringify(chat.chatters));
-                    })
+                    room
+                        .getPrivateChatsOfCharacter(character.id)
+                        .map(async chat => {
+                            await this.socket.join(
+                                JSON.stringify(chat.chatters)
+                            );
+                        })
                 );
 
                 logger.info(

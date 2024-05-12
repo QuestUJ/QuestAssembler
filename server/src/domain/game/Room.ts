@@ -210,6 +210,12 @@ export class Room {
         return [...this.chats.values()];
     }
 
+    getPrivateChatsOfCharacter(characterId: UUID) {
+        return [...this.chats.values()].filter(
+            ({ chatters: [p1, p2] }) => p1 == characterId || p2 == characterId
+        );
+    }
+
     getChat(participants: ChatParticipants): Chat {
         if (participants === 'broadcast') {
             return this.broadcast;

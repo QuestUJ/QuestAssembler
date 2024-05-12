@@ -191,6 +191,7 @@ export function apiRoutes(
             await reply.send({
                 success: true,
                 payload: result.map(m => ({
+                    id: m.id,
                     content: m.content,
                     timestamp: m.timestamp,
                     authorName:
