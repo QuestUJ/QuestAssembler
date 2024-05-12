@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, createLazyFileRoute } from '@tanstack/react-router';
 
 import {
   BroadcastChat,
@@ -25,6 +25,6 @@ function Story() {
   );
 }
 
-export const Route = createFileRoute('/_auth/room/$roomId')({
+export const Route = createLazyFileRoute('/_auth/room/$roomId')({
   component: Story
 });

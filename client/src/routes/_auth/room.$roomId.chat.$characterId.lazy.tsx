@@ -1,6 +1,6 @@
 import { ApiMessagePayload } from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, createLazyFileRoute, createLazyRoute } from '@tanstack/react-router';
 import shortUUID from 'short-uuid';
 
 import {
@@ -98,6 +98,6 @@ function PlayerChat() {
   );
 }
 
-export const Route = createFileRoute('/_auth/room/$roomId/chat/$characterId')({
+export const Route = createLazyFileRoute('/_auth/room/$roomId/chat/$characterId')({
   component: PlayerChat
 });

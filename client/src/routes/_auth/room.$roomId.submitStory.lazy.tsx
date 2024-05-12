@@ -1,5 +1,5 @@
 import { CharacterDetails } from '@quasm/common';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, createLazyFileRoute } from '@tanstack/react-router';
 import { Bot, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
 
@@ -185,6 +185,6 @@ function SubmitStory() {
   );
 }
 
-export const Route = createFileRoute('/_auth/room/$roomId/submitStory')({
+export const Route = createLazyFileRoute('/_auth/room/$roomId/submitStory')({
   component: SubmitStory
 });

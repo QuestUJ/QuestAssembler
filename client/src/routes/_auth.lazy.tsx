@@ -1,5 +1,5 @@
 import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
-import { createFileRoute, useParams } from '@tanstack/react-router';
+import { createFileRoute, createLazyFileRoute, useParams } from '@tanstack/react-router';
 import { Outlet } from '@tanstack/react-router';
 import { Crown, Swords } from 'lucide-react';
 import { useEffect } from 'react';
@@ -134,6 +134,6 @@ function AuthLayout() {
   );
 }
 
-export const Route = createFileRoute('/_auth')({
+export const Route = createLazyFileRoute('/_auth')({
   component: withAuthenticationRequired(AuthLayout)
 });
