@@ -41,6 +41,13 @@ export class Room {
         await page.getByRole('textbox', { name: 'Game code' }).fill(gameCode!);
         await page.getByRole('button', { name: 'Join' }).click();
     }
+
+    async sendMessage(page: Page, to: string, content: string) {
+        await page.getByRole('link', { name: to }).click();
+        await page.getByPlaceholder('Type your message here...').click();
+        await page.getByPlaceholder('Type your message here...').fill(content);
+        await page.getByRole('button', { name: 'Send' }).click();
+    }
 }
 
 export const testWithRooms = testWithAuth.extend<{

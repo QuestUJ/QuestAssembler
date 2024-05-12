@@ -1,35 +1,48 @@
 import { expect } from '@playwright/test';
 import { testWithRooms } from './fixtures/Room';
-import { BASE_URL } from './const';
+import { randomBytes } from 'crypto';
 
-const testRoom = 'Room for chat testing';
-
-testWithRooms.describe('Chat in game', () => {
-    testWithRooms.beforeAll(async ({ room }) => {
-        await room.createRoom('Bob', testRoom, 30);
-        await room.joinRoom('Bob', 'Josh', testRoom);
-        await room.joinRoom('Bob', 'Alice', testRoom);
-    });
-
+testWithRooms.describe('[FM2, FS2] Chat in game', () => {
     testWithRooms(
         'should be able to communicate between players',
-        async ({ auth }) => {
-            const josh = await auth.useAuth('Josh');
-            const alice = await auth.useAuth('Alice');
+        async ({ auth, room }) => {
+            const bob = await auth.authenticate('Bob');
+            const josh = await auth.authenticate('Josh');
+            const alice = await auth.authenticate('Alice');
 
-            const msg = 'Testing message 123 123';
+            const roomName = randomBytes(10).toString('base64');
+            await room.createRoom(bob, roomName, 4);
 
-            await josh.goto(`${BASE_URL}/dashboard`);
-            await josh.getByText(testRoom).click();
-            await josh.getByText('Alice').click();
-            await josh.getByRole('textbox', { name: 'Message' }).fill(msg);
-            await josh.getByRole('button', { name: 'send' }).click();
+            await bob.getByRole('link', { name: roomName }).click();
 
-            await alice.goto(`${BASE_URL}/dashboard`);
-            await alice.getByText(testRoom).click();
-            await alice.getByText('Josh').click();
+            const gameCode = await room.getRoomCode(bob);
 
-            await expect(alice.getByText(msg)).toBeVisible();
+            await room.joinRoom(josh, gameCode);
+            await room.joinRoom(alice, gameCode);
+
+            await josh.getByRole('link', { name: roomName }).click();
+            await alice.getByRole('link', { name: roomName }).click();
+
+            await bob.getByRole('button', { name: 'Players' }).click();
+            await josh.getByRole('button', { name: 'Players' }).click();
+            await alice.getByRole('button', { name: 'Players' }).click();
+
+            await room.sendMessage(alice, 'josh', 'Hello from alice');
+            await room.sendMessage(bob, 'josh', 'Secret message to josh');
+            await room.sendMessage(josh, 'bob', 'Secret message to bob');
+
+            await expect(bob.getByText('Secret message to josh')).toBeVisible();
+            await expect(bob.locator('p:has-text("Secret message to bob")')).toBeVisible();
+
+            await expect(
+                josh.getByText('Secret message to josh')
+            ).toBeVisible();
+            await expect(josh.getByText('Secret message to bob')).toBeVisible();
+
+            await expect(alice.getByText('Hello from alice')).toBeVisible();
+            await expect(
+                alice.getByText('Secret message to josh')
+            ).not.toBeVisible();
         }
     );
 });
