@@ -1,6 +1,10 @@
 import { ApiMessagePayload } from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, createLazyFileRoute, createLazyRoute } from '@tanstack/react-router';
+import {
+  createFileRoute,
+  createLazyFileRoute,
+  createLazyRoute
+} from '@tanstack/react-router';
 import shortUUID from 'short-uuid';
 
 import {
@@ -50,20 +54,20 @@ function PlayerChat() {
 
         queryClient.setQueryData<ApiMessagePayload[]>(
           ['fetchMessages', roomUUID, characterUUID],
-          old => (old ? [...old, res.payload] : [res.payload])
+          old => (old ? [...old, res.payload!] : [res.payload!])
         );
       }
     );
   };
 
-  // TODO!: Filtering events outside active chat
   useSocketEvent('message', data => {
     toast({
       title: data.authorName,
       description: data.content
     });
+    console.log(data);
     queryClient.setQueryData<ApiMessagePayload[]>(
-      ['fetchMessages', roomUUID, characterUUID],
+      ['fetchMessages', roomUUID, data.from],
       old => (old ? [...old, data] : [data])
     );
   });
@@ -98,6 +102,8 @@ function PlayerChat() {
   );
 }
 
-export const Route = createLazyFileRoute('/_auth/room/$roomId/chat/$characterId')({
+export const Route = createLazyFileRoute(
+  '/_auth/room/$roomId/chat/$characterId'
+)({
   component: PlayerChat
 });

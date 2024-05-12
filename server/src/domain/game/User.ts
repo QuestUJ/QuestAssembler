@@ -19,7 +19,7 @@ import { Chat } from './Chat';
 import { Room } from './Room';
 
 function withErrorHandling<T>(
-    respond: (res: Ack<T>) => void,
+    respond: (res: Ack<T> ) => void,
     handler: () => void | Promise<void>
 ) {
     const err = (error: unknown) => {
@@ -84,7 +84,6 @@ export class User {
 
                 const roomSockets = await this.io.in(room.id).fetchSockets();
 
-                console.log(roomSockets.map(s => s.data.userID));
                 roomSockets.forEach(async socket => {
                     const other = room.getCharacterByUserID(socket.data.userID);
 

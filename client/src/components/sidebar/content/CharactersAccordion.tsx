@@ -41,7 +41,6 @@ export function CharactersAccordion({
 }: {
   characters: ApiPlayerPayload[] | undefined;
 }) {
-  console.log(characters);
   return (
     <AccordionItem value='players'>
       <AccordionTrigger className='w-full text-2xl text-primary hover:text-primary-shaded'>
