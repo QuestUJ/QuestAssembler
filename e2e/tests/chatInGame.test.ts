@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import { testWithRooms } from './fixtures/Room';
+import { BASE_URL } from './const';
 
 const testRoom = 'Room for chat testing';
 
@@ -18,13 +19,13 @@ testWithRooms.describe('Chat in game', () => {
 
             const msg = 'Testing message 123 123';
 
-            await josh.goto('http://localhost:3000/dashboard');
+            await josh.goto(`${BASE_URL}/dashboard`);
             await josh.getByText(testRoom).click();
             await josh.getByText('Alice').click();
             await josh.getByRole('textbox', { name: 'Message' }).fill(msg);
             await josh.getByRole('button', { name: 'send' }).click();
 
-            await alice.goto('http://localhost:3000/dashboard');
+            await alice.goto(`${BASE_URL}/dashboard`);
             await alice.getByText(testRoom).click();
             await alice.getByText('Josh').click();
 

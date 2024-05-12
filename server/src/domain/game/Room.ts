@@ -184,6 +184,8 @@ export class Room {
             );
             this.chats.set(JSON.stringify([other.id, character.id]), chat);
         });
+
+        return character;
     }
 
     fetchStory(range: ChunkRange): Promise<StoryChunk[]> {

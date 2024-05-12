@@ -1,10 +1,11 @@
 import { Page } from '@playwright/test';
 import { FakeUser, testWithAuth } from './Auth';
+import { BASE_URL } from '../const';
 
 type Pages = Record<FakeUser, Page>;
 
 export class Room {
-    constructor(private readonly _pages: Pages) { }
+    constructor(private readonly _pages: Pages) {}
 
     /**
      * helper for creating room, specify who is the owner, the name, and max players
@@ -18,9 +19,7 @@ export class Room {
         await createGameButton.click();
 
         const roomNameInput = page.getByPlaceholder('Room name');
-        const maxPlayersInput = page.getByPlaceholder(
-            'Max amount of players'
-        );
+        const maxPlayersInput = page.getByPlaceholder('Max amount of players');
 
         await roomNameInput.fill(roomName);
         await maxPlayersInput.fill(maxPlayers.toString());
@@ -39,7 +38,7 @@ export class Room {
         const ownerPage = this._pages[owner];
         const userPage = this._pages[user];
 
-        await ownerPage.goto('http://localhost:3000/dashboard');
+        await ownerPage.goto(`${BASE_URL}/dashboard`);
         await ownerPage.getByText(roomName).click();
 
         ownerPage.getByRole('button', { name: 'Invite to game' });

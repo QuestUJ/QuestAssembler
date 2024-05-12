@@ -225,13 +225,13 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         await this.db
             .insertInto('Characters')
             .values({
-                id: randomUUID(),
-                nick: characterDetails.nick,
+                id: newCharacter.id,
+                nick: newCharacter.getNick(),
                 roomID,
-                description: characterDetails.description,
+                description: newCharacter.getDescription(),
                 isGameMaster: false,
-                userID: characterDetails.userID,
-                profileIMG: characterDetails.profileIMG,
+                userID: newCharacter.userID,
+                profileIMG: newCharacter.profileIMG,
                 submitContent: null,
                 submitTimestamp: null
             })

@@ -5,6 +5,7 @@ import {
     expect,
     Page
 } from '@playwright/test';
+import { BASE_URL } from '../const';
 
 const AuthFile = {
     Alice: '.auth/alice.json',
@@ -28,7 +29,7 @@ export class Auth {
     ) { }
 
     async authenticate(email: string, password: string, user: FakeUser) {
-        await this.page.goto('http://localhost:3000/');
+        await this.page.goto(BASE_URL);
         await this.page.getByText('Join the game').click();
 
         await this.page.waitForLoadState('domcontentloaded');
@@ -60,7 +61,7 @@ export class Auth {
         });
 
         const page = await this.ctx.newPage();
-        await page.goto('http://localhost:3000');
+        await page.goto(BASE_URL);
 
         await page.getByText('Join the game').click();
         await page.waitForLoadState('domcontentloaded');

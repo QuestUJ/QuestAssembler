@@ -65,19 +65,23 @@ export class User {
                         this.socket.data.token
                     );
 
-                const character = {
+                const characterDetails = {
                     userID: socket.data.userID,
                     nick: nickname,
                     profileIMG: profileImg
                 };
 
-                await room.addCharacter(character);
+                const character = await room.addCharacter(characterDetails);
 
                 respond({
                     success: true
                 });
 
-                this.socket.to(room.id).emit('newPlayer', character);
+                this.socket.to(room.id).emit('newPlayer', {
+                    id: character.id,
+                    nick: character.getNick(),
+                    profileIMG: characterDetails.profileIMG
+                });
             });
         });
 

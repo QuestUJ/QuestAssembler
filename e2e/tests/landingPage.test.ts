@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import { testWithAuth } from './fixtures/Auth';
+import { BASE_URL } from './const';
 
 testWithAuth.describe('[FM1] Landing page', () => {
     testWithAuth(
@@ -7,7 +8,7 @@ testWithAuth.describe('[FM1] Landing page', () => {
         async ({ auth }) => {
             const page = await auth.useAuth('Josh');
 
-            await page.goto('http://localhost:3000');
+            await page.goto(BASE_URL);
             await page.getByText('Join the game').click();
             await page.waitForLoadState('domcontentloaded');
             expect(page.url()).toMatch(/\/dashboard/);
