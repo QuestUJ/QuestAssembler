@@ -13,25 +13,40 @@ import { IRoomRepository } from './IRoomRepository';
 
 export class RoomRepositoryPostgres implements IRoomRepository {
     private fetchedRooms: Map<UUID, Room>;
+    private dataAccess?: DataAccessFacade;
 
-    constructor(
-        private db: Kysely<Database>,
-        private dataAccess: DataAccessFacade
-    ) {
+    constructor(private db: Kysely<Database>) {
         this.fetchedRooms = new Map();
+    }
+
+    private checkDataAccess() {
+        if (!this.dataAccess) {
+            throw new QuasmError(
+                QuasmComponent.DATABASE,
+                500,
+                ErrorCode.Unexpected,
+                'Missing dataAccess provider in RoomRepository'
+            );
+        }
+    }
+
+    provideDataAccess(dt: DataAccessFacade) {
+        this.dataAccess = dt;
     }
 
     async createRoom(
         roomDetails: RoomSettingsDetails,
         gameMasterDetails: CharacterDetails
     ): Promise<Room> {
+        this.checkDataAccess();
+
         const gameMasterUUID = randomUUID();
         const roomUUID = randomUUID();
 
         // Instantiate - and perform validation
-        const room = new Room(this.dataAccess, roomUUID, roomDetails);
+        const room = new Room(this.dataAccess!, roomUUID, roomDetails);
         const master = new Character(
-            this.dataAccess.characterRepository,
+            this.dataAccess!.characterRepository,
             gameMasterUUID,
             gameMasterDetails.userID,
             gameMasterDetails.nick,
@@ -75,6 +90,8 @@ export class RoomRepositoryPostgres implements IRoomRepository {
     }
 
     async fetchRooms(userID: string): Promise<Room[]> {
+        this.checkDataAccess();
+
         const roomsData = await this.db
             .selectFrom('Rooms')
             .innerJoin(
@@ -108,7 +125,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
 
         roomsData.forEach(r => {
             if (!this.fetchedRooms.has(r.roomID as UUID)) {
-                const room = new Room(this.dataAccess, r.roomID as UUID, {
+                const room = new Room(this.dataAccess!, r.roomID as UUID, {
                     roomName: r.roomName,
                     maxPlayerCount: r.maxPlayerCount
                 });
@@ -117,7 +134,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             }
 
             const character = new Character(
-                this,
+                this.dataAccess!.characterRepository,
                 r.characterID as UUID,
                 r.userID,
                 r.nick,
@@ -139,6 +156,8 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             return this.fetchedRooms.get(roomID)!;
         }
 
+        this.checkDataAccess();
+
         const roomData = await this.db
             .selectFrom('Rooms')
             .innerJoin('Characters', 'Rooms.id', 'Characters.roomID')
@@ -157,13 +176,13 @@ export class RoomRepositoryPostgres implements IRoomRepository {
 
         const { roomName, maxPlayerCount } = roomData[0];
 
-        const room = new Room(this.dataAccess, roomID, {
+        const room = new Room(this.dataAccess!, roomID, {
             roomName,
             maxPlayerCount
         });
         roomData.forEach(r => {
             const character = new Character(
-                this,
+                this.dataAccess!.characterRepository,
                 r.id as UUID,
                 r.userID,
                 r.nick,

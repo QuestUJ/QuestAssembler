@@ -8,7 +8,7 @@ import { FastifyInstance } from 'fastify';
 import { logger } from '@/infrastructure/logger/Logger';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
-export function addCreateGameHandler(
+export function addCreateRoomHandler(
     fastify: FastifyInstance,
     dataAccess: DataAccessFacade
 ) {

@@ -15,7 +15,7 @@ import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 import { addCreateRoomHandler } from '../handlers/createRoom';
 import { addFetchMessagesHandler } from '../handlers/fetchMessages';
-import { addFetchRoomsHandler, fetchRooms } from '../handlers/fetchRooms';
+import { addFetchRoomsHandler } from '../handlers/fetchRooms';
 import { addGetRoomHandler } from '../handlers/getRoom';
 
 export function apiRoutes(

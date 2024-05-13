@@ -7,12 +7,12 @@ import {
 } from '@quasm/common';
 import { type Server, Socket } from 'socket.io';
 
-import { User } from '@/domain/game/User';
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
 import { logger } from '@/infrastructure/logger/Logger';
-import { IRoomRepository } from '@/repositories/room/IRoomRepository';
+import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 import { auth } from './middlewares/auth';
+import { User } from './User';
 
 export type QuasmSocketServer = Server<
     ClientToServerEvents,
@@ -30,7 +30,7 @@ export type QuasmSocket = Socket<
 
 export function startSocketServer(
     io: QuasmSocketServer,
-    roomRepository: IRoomRepository,
+    dataAccess: DataAccessFacade,
     authProvider: IAuthProvider
 ) {
     logger.info(QuasmComponent.SOCKET, 'Socket.io attached');
@@ -43,7 +43,7 @@ export function startSocketServer(
             `Received connection from : ${socket.id}`
         );
 
-        new User(socket, io, roomRepository, authProvider);
+        new User(socket, io, dataAccess, authProvider);
     });
 }
 
