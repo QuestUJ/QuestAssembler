@@ -1,4 +1,4 @@
-import { QuasmComponent } from './Structure';
+import { QuasmComponent } from './QuasmComponent';
 
 export interface ApiResponse<Payload> {
     success: boolean;

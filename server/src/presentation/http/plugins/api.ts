@@ -124,15 +124,6 @@ export function apiRoutes(
             Body: CreateRoomBody;
             Reply: CreateRoomResponse;
         }>('/createRoom', async (request, reply) => {
-            // FOR VALIDATION TESTING
-            /* await reply.send({
-                success: false,
-                error: {
-                    location: QuasmComponent.DATABASE,
-                    code: 500,
-                    message: "lol"
-                }
-            }) */
             const { name, maxPlayers } = request.body as {
                 name: string;
                 maxPlayers: number;

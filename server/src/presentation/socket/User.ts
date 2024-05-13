@@ -7,16 +7,15 @@ import {
 } from '@quasm/common';
 import { UUID } from 'crypto';
 
+import { Chat } from '@/domain/game/Chat';
+import { Room } from '@/domain/game/Room';
+import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
 import { logger } from '@/infrastructure/logger/Logger';
 import {
     QuasmSocket,
     QuasmSocketServer
 } from '@/presentation/socket/socketServer';
 import { IRoomRepository } from '@/repositories/room/IRoomRepository';
-
-import { IAuthProvider } from '../tools/auth-provider/IAuthProvider';
-import { Chat } from './Chat';
-import { Room } from './Room';
 
 function withErrorHandling<T>(
     respond: (res: Ack<T>) => void,

@@ -2,15 +2,12 @@ import {
     ErrorCode,
     MAX_CHARACTER_DESCRIPTION_LENGTH,
     MAX_CHARACTER_NICK_LENGTH,
-    MAX_PLAYER_SUBMIT_LENGTH,
     QuasmComponent,
     QuasmError
 } from '@quasm/common';
 import { UUID } from 'crypto';
 
-import { IRoomRepository } from '@/repositories/room/IRoomRepository';
-
-import { PlayerTurnSubmit } from './PlayerTurnSubmit';
+import { ICharacterRepository } from '@/repositories/character/ICharacterRepository';
 
 export interface CharacterDetails {
     userID: string;
@@ -21,14 +18,13 @@ export interface CharacterDetails {
 
 export class Character {
     constructor(
-        readonly roomRepository: IRoomRepository,
+        readonly characerRepository: ICharacterRepository,
         readonly id: UUID,
         readonly userID: string,
         private nick: string,
         readonly isGameMaster: boolean,
         public profileIMG?: string,
-        private description?: string,
-        private playerTurnSubmit?: PlayerTurnSubmit
+        private description?: string
     ) {
         this.validateNick(this.nick);
         this.validateDescription(this.description);
@@ -73,7 +69,7 @@ export class Character {
     async setNick(newNick: string) {
         this.validateNick(newNick);
 
-        await this.roomRepository.updateCharacter(this.id, {
+        await this.characerRepository.updateCharacter(this.id, {
             ...this,
             nick: newNick
         });
@@ -87,30 +83,11 @@ export class Character {
     async setDescription(newDescription: string) {
         this.validateDescription(newDescription);
 
-        await this.roomRepository.updateCharacter(this.id, {
+        await this.characerRepository.updateCharacter(this.id, {
             ...this,
             description: newDescription
         });
 
         this.description = newDescription;
-    }
-
-    getPlayerTurnSubmit(): PlayerTurnSubmit | undefined {
-        return this.playerTurnSubmit;
-    }
-
-    async setPlayerTurnSubmit(submit: PlayerTurnSubmit | undefined) {
-        if (submit && submit.length() > MAX_PLAYER_SUBMIT_LENGTH) {
-            throw new QuasmError(
-                QuasmComponent.CHARACTER,
-                400,
-                ErrorCode.MaxPlayerSubmitExceeded,
-                'Exceeded Player Submit max length'
-            );
-        }
-
-        return this.roomRepository.updateCharacter(this.id, {
-            playerTurnSubmit: submit
-        });
     }
 }

@@ -6,7 +6,7 @@ import {
 } from '@quasm/common';
 import { UUID } from 'crypto';
 
-import { IRoomRepository } from '@/repositories/room/IRoomRepository';
+import { IChatRepository } from '@/repositories/chat/IChatRepository';
 
 import {
     ChatMessage,
@@ -21,7 +21,7 @@ export class Chat {
     readonly chatters: ChatParticipants;
 
     constructor(
-        private readonly roomRepository: IRoomRepository,
+        private readonly chatRepository: IChatRepository,
         chatters: ChatParticipants,
         readonly roomID: UUID
     ) {
@@ -47,7 +47,7 @@ export class Chat {
     async addMessage(
         chatMessageDetails: ChatMessageDetails
     ): Promise<ChatMessage> {
-        const count = await this.roomRepository.fetchMessageCount(
+        const count = await this.chatRepository.fetchMessageCount(
             this.chatters,
             this.roomID
         );
@@ -69,11 +69,11 @@ export class Chat {
             );
         }
 
-        return this.roomRepository.addMessage(chatMessageDetails);
+        return this.chatRepository.addMessage(chatMessageDetails);
     }
 
     async fetchMessages(range: ChunkRange): Promise<ChatMessage[]> {
-        const fetchedMessages = await this.roomRepository.fetchMessages(
+        const fetchedMessages = await this.chatRepository.fetchMessages(
             this.chatters,
             range
         );

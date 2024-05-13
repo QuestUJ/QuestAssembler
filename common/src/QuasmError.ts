@@ -6,7 +6,7 @@ import {
     MAX_ROOM_PLAYERS,
     MAX_STORY_CHUNK_LENGTH
 } from './constant';
-import { QuasmComponent } from './Structure';
+import { QuasmComponent } from './QuasmComponent';
 
 /**
  * Indicates what type of error we'are facing'
