@@ -6,13 +6,14 @@ import { IChatRepository } from '@/repositories/chat/IChatRepository';
 import { Chat } from './Chat';
 import { ChatMessage } from './ChatMessage';
 
-describe('Basic chat actions', () => {
+describe('Basic chat actions', async () => {
     const fakeRepo: IChatRepository = {
-        createMessage: vi.fn().mockReturnValue({
+        addMessage: vi.fn().mockReturnValue({
             author: randomUUID(),
             content: 'Test message!',
             timestamp: new Date()
         }),
+        fetchMessageCount: vi.fn().mockReturnValue(3),
         fetchMessages: vi.fn().mockReturnValue([
             {
                 author: randomUUID(),
@@ -32,50 +33,40 @@ describe('Basic chat actions', () => {
         ])
     };
 
-    const testMessages: ChatMessage[] = [
-        new ChatMessage(randomUUID(), 'Hi!', new Date()),
-        new ChatMessage(randomUUID(), 'Hello!', new Date()),
-        new ChatMessage(randomUUID(), 'World!', new Date())
-    ];
+    const p1 = randomUUID();
+    const p2 = randomUUID();
 
-    const chat = new Chat(fakeRepo);
+    const chat = new Chat(fakeRepo, [p1, p2], randomUUID());
 
-    chat.addMessage(testMessages[0]);
-    chat.addMessage(testMessages[1]);
-    chat.addMessage(testMessages[2]);
-
-    it('Appends a message to its history', () => {
-        expect(chat.messages).toStrictEqual(testMessages);
+    await chat.addMessage({
+        from: p1,
+        to: p2,
+        content: 'Hi!'
+    });
+    await chat.addMessage({
+        from: p2,
+        to: p1,
+        content: 'Hi!'
+    });
+    await chat.addMessage({
+        from: p1,
+        to: p2,
+        content: 'Hi!'
     });
 
-    it('Fetches all history', () => {
-        expect(chat.fetchMessages({ start: 0, end: 2 })).toStrictEqual(
-            testMessages
-        );
+    it('Appends a message to its history', async () => {
+        expect((await chat.fetchMessages({ count: 3 })).length).toEqual(3);
     });
 
-    it('Returns undefined when invalid range is passed', () => {
-        expect(chat.fetchMessages({ start: 1, end: 0 })).toStrictEqual([]);
+    it('Returns empty when overflowing range is passed', async () => {
+        expect(
+            await chat.fetchMessages({ count: 10, offset: 4 })
+        ).toStrictEqual([]);
     });
 
-    it('Returns exactly one message when range with the same starting and ending index is passed', () => {
-        expect(chat.fetchMessages({ start: 1, end: 1 })).toStrictEqual(
-            testMessages.slice(1, 2)
-        );
-    });
-
-    it('Returns undefined when overflowing range is passed', () => {
-        expect(chat.fetchMessages({ start: 3, end: 6 })).toStrictEqual([]);
-        expect(chat.fetchMessages({ start: -2, end: 0 })).toStrictEqual([]);
-    });
-
-    it('Returns a valid slice when partially overflowing range is passed', () => {
-        expect(chat.fetchMessages({ start: -2, end: 1 })).toStrictEqual(
-            testMessages.slice(0, 2)
-        );
-
-        expect(chat.fetchMessages({ start: 1, end: 5 })).toStrictEqual(
-            testMessages.slice(1, 3)
-        );
+    it('Returns a valid slice when partially overflowing range is passed', async () => {
+        expect(
+            (await chat.fetchMessages({ count: 4, offset: 1 })).length
+        ).toEqual(1);
     });
 });
