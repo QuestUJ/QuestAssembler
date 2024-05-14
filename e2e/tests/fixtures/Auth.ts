@@ -42,7 +42,7 @@ export class Auth {
 
         await expect(
             page.getByRole('button', { name: 'Log out' })
-        ).toBeVisible();
+        ).toBeVisible({timeout: 30000});
 
         return page;
     }

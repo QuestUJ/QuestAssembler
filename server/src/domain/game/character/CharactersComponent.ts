@@ -56,7 +56,7 @@ export class CharactersComponent {
         this.characters.push(character);
     }
 
-    hasUser(userId: UUID): boolean {
+    hasUser(userId: string): boolean {
         return !!this.characters.find(character => character.userID === userId);
     }
 

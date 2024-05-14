@@ -69,6 +69,19 @@ export class Chat {
             );
         }
 
+        const { from, to } = chatMessageDetails;
+        const [p1, p2] = this.chatters;
+
+        // Message not to this chat
+        if (!((p1 == from && p2 == to) || (p1 == to && p2 == from))) {
+            throw new QuasmError(
+                QuasmComponent.CHAT,
+                400,
+                ErrorCode.IncorrectMessageDetails,
+                'Not matched chat participants'
+            );
+        }
+
         return this.chatRepository.addMessage(chatMessageDetails);
     }
 

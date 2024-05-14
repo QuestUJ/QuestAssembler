@@ -1,4 +1,9 @@
-import { GetRoomResponse, QuasmComponent } from '@quasm/common';
+import {
+    ErrorCode,
+    GetRoomResponse,
+    QuasmComponent,
+    QuasmError
+} from '@quasm/common';
 import { UUID } from 'crypto';
 import { FastifyInstance } from 'fastify';
 
@@ -24,6 +29,15 @@ export function addGetRoomHandler(
         const room = await dataAccess.roomRepository.getRoomByID(
             request.params.roomID as UUID
         );
+
+        if (!room.characters.hasUser(request.user.userID)) {
+            throw new QuasmError(
+                QuasmComponent.HTTP,
+                400,
+                ErrorCode.RoomNotFound,
+                'Player not in room'
+            );
+        }
 
         const players = [...room.characters.getCharacters()];
         const currentPlayer = players.splice(
