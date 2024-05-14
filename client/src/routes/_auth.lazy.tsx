@@ -1,5 +1,5 @@
 import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
-import { createFileRoute, createLazyFileRoute, useParams } from '@tanstack/react-router';
+import { createLazyFileRoute, useParams } from '@tanstack/react-router';
 import { Outlet } from '@tanstack/react-router';
 import { Crown, Swords } from 'lucide-react';
 import { useEffect } from 'react';

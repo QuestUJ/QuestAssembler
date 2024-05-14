@@ -1,5 +1,5 @@
 import { CharacterDetails } from '@quasm/common';
-import { createFileRoute, createLazyFileRoute } from '@tanstack/react-router';
+import { createLazyFileRoute } from '@tanstack/react-router';
 import { Bot, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
 

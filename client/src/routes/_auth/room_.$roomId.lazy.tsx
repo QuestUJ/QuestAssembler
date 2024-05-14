@@ -1,4 +1,4 @@
-import { createFileRoute, createLazyFileRoute } from '@tanstack/react-router';
+import { createLazyFileRoute } from '@tanstack/react-router';
 
 import {
   BroadcastChat,

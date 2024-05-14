@@ -4,7 +4,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { IChatRepository } from '@/repositories/chat/IChatRepository';
 
 import { Chat } from './Chat';
-import { ChatMessage } from './ChatMessage';
 
 describe('Basic chat actions', async () => {
     const fakeRepo: IChatRepository = {
