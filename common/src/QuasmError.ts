@@ -32,6 +32,8 @@ export enum ErrorCode {
     MaxPlayersTooFew = 'max.players.too.few',
     UserExists = 'user.exists',
     ChunkLengthExceeded = 'chunk.length.exceeded',
+    UnauthorizedSettingsChange = 'unauthorized.settings.change',
+    PlayerLimitTooSmallForCurrentPlayerCount = 'player.limit.too.small.for.current.player.count',
 
     // Character related
     NickLengthTooLong = 'nick.length.too.long',
@@ -72,6 +74,8 @@ export const ErrorMap: Record<ErrorCode, string> = {
     [ErrorCode.MaxPlayersTooFew]: `Player limit must be bigger or equal to 2`,
     [ErrorCode.UserExists]: `You have already joined this room`,
     [ErrorCode.ChunkLengthExceeded]: `Story Chunk length cannot be longer than ${MAX_STORY_CHUNK_LENGTH}`,
+    [ErrorCode.UnauthorizedSettingsChange]: `This user can't update room settings!`,
+    [ErrorCode.PlayerLimitTooSmallForCurrentPlayerCount]: `You can't change player limit below the current number of players!`,
 
     [ErrorCode.NickLengthEmpty]: `Player nick cannot be empty`,
     [ErrorCode.NickLengthTooLong]: `Player nick cannot be longer than ${MAX_CHARACTER_NICK_LENGTH}`,

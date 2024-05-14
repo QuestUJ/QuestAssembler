@@ -27,7 +27,8 @@ export function JoinGameDialog() {
   const joinRoom = () => {
     if (!socket) {
       toast({
-        title: 'Connection error! Try again.'
+        title: 'Connection error! Try again.',
+        variant: 'destructive'
       });
       return;
     }

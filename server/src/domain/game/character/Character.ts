@@ -18,7 +18,7 @@ export interface CharacterDetails {
 
 export class Character {
     constructor(
-        readonly characerRepository: ICharacterRepository,
+        readonly characterRepository: ICharacterRepository,
         readonly id: UUID,
         readonly userID: string,
         private nick: string,
@@ -69,8 +69,7 @@ export class Character {
     async setNick(newNick: string) {
         this.validateNick(newNick);
 
-        await this.characerRepository.updateCharacter(this.id, {
-            ...this,
+        await this.characterRepository.updateCharacter(this.id, {
             nick: newNick
         });
         this.nick = newNick;
@@ -83,8 +82,7 @@ export class Character {
     async setDescription(newDescription: string) {
         this.validateDescription(newDescription);
 
-        await this.characerRepository.updateCharacter(this.id, {
-            ...this,
+        await this.characterRepository.updateCharacter(this.id, {
             description: newDescription
         });
 

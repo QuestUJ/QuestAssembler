@@ -18,7 +18,7 @@ import { CharactersAccordion } from './content/CharactersAccordion';
 import { ToolsAccordion } from './content/ToolsAccordion';
 
 export function SidebarContentRoom() {
-  const { setRoomName, setIsGameMaster } = useQuasmStore();
+  const { setRoomName, setIsGameMaster, isGameMaster } = useQuasmStore();
 
   const { roomId }: { roomId: string } = useParams({
     strict: false
@@ -73,6 +73,32 @@ export function SidebarContentRoom() {
     });
   });
 
+  useSocketEvent('changeCharacterDetails', player => {
+    if (!data) return;
+
+    const playerQueryData: ApiPlayerPayload = {
+      id: player.id,
+      nick: player.nick,
+      profilePicture: player.profileIMG
+    };
+
+    queryClient.setQueryData<RoomDetailsPayload>(['getRoom', roomUUID], {
+      ...data,
+      currentPlayer:
+        player.id === data.currentPlayer.id
+          ? playerQueryData
+          : data.currentPlayer,
+      players: data.players.map(arrayPlayer =>
+        arrayPlayer.id === player.id ? playerQueryData : arrayPlayer
+      ) // have to destructure so that reference changes and UI reloads
+    });
+  });
+
+  useSocketEvent('changeRoomSettings', roomData => {
+    if (!data) return;
+    setRoomName(roomData.name);
+  });
+
   return (
     <div className='flex h-full flex-col justify-between p-4'>
       <div>
@@ -96,7 +122,7 @@ export function SidebarContentRoom() {
               />
             )}
           </div>
-          <RoomSettingsDialog />
+          {isGameMaster ? <RoomSettingsDialog /> : <></>}
         </div>
       </div>
     </div>

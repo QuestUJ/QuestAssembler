@@ -76,7 +76,6 @@ function AuthLayout() {
   const { roomId }: { roomId: string | undefined } = useParams({
     strict: false
   });
-
   const connectSocket = useIOStore(state => state.connectSocket);
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
