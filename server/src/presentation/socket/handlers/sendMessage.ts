@@ -12,7 +12,7 @@ export function sendMessageHandler({ socket, dataAccess }: HandlerConfig) {
         withErrorHandling(respond, async () => {
             logger.info(
                 QuasmComponent.SOCKET,
-                `EVENT: sendMessage: user: ${socket.data.userID} in: ${roomID} to: ${receiver}`
+                `${socket.data.userID} | SOCKET sendMessage RECEIVED receiver: ${receiver}`
             );
 
             const room = await dataAccess.roomRepository.getRoomByID(
@@ -58,7 +58,7 @@ export function sendMessageHandler({ socket, dataAccess }: HandlerConfig) {
 
             logger.info(
                 QuasmComponent.SOCKET,
-                `EVENT SUCCESS: sendMessage: user: ${socket.data.userID} in: ${roomID} to: ${receiver}`
+                `${socket.data.userID} | SOCKET sendMessage SUCCESS receiver: ${receiver}`
             );
         });
     });

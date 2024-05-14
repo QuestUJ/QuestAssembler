@@ -1,7 +1,8 @@
-import { FetchMessagesResponse } from '@quasm/common';
+import { FetchMessagesResponse, QuasmComponent } from '@quasm/common';
 import { UUID } from 'crypto';
 import { FastifyInstance } from 'fastify';
 
+import { logger } from '@/infrastructure/logger/Logger';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 export function addFetchMessagesHandler(
@@ -19,14 +20,25 @@ export function addFetchMessagesHandler(
             roomId: string;
         };
     }>('/fetchMessages/:roomId', async (request, reply) => {
+        logger.info(
+            QuasmComponent.HTTP,
+            `${request.user.userID} | GET /fetchMessages RECEIVED ${JSON.stringify(request.query)}`
+        );
+
         const room = await dataAccess.roomRepository.getRoomByID(
             request.params.roomId as UUID
         );
+
+        logger.info(QuasmComponent.HTTP, '/fetchMessages Room found');
+
         const { other, count, offset } = request.query;
 
         const myCharacter = room.characters.getCharacterByUserID(
             request.user.userID
         );
+
+        logger.info(QuasmComponent.HTTP, '/fetchMessages Character found');
+
         let result;
 
         if (!other) {
@@ -58,5 +70,10 @@ export function addFetchMessagesHandler(
                         : myCharacter.profileIMG
             }))
         });
+
+        logger.info(
+            QuasmComponent.HTTP,
+            `${request.user.userID} | GET /fetchMessages SUCCESS ${JSON.stringify(request.query)}`
+        );
     });
 }

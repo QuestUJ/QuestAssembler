@@ -1,7 +1,8 @@
-import { GetRoomResponse } from '@quasm/common';
+import { GetRoomResponse, QuasmComponent } from '@quasm/common';
 import { UUID } from 'crypto';
 import { FastifyInstance } from 'fastify';
 
+import { logger } from '@/infrastructure/logger/Logger';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 export function addGetRoomHandler(
@@ -15,6 +16,11 @@ export function addGetRoomHandler(
             roomID: string;
         };
     }>('/getRoom/:roomID', async (request, reply) => {
+        logger.info(
+            QuasmComponent.HTTP,
+            `${request.user.userID} | GET /getRoom RECEIVED ${request.params.roomID}`
+        );
+
         const room = await dataAccess.roomRepository.getRoomByID(
             request.params.roomID as UUID
         );
@@ -43,5 +49,10 @@ export function addGetRoomHandler(
                 }
             }
         });
+
+        logger.info(
+            QuasmComponent.HTTP,
+            `${request.user.userID} | GET /getRoom SUCCESS ${request.params.roomID}`
+        );
     });
 }

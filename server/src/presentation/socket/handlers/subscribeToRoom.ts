@@ -10,6 +10,11 @@ import { withErrorHandling } from './withErrorHandling';
 export function subscribeToRoomHandler({ socket, dataAccess }: HandlerConfig) {
     socket.on('subscribeToRoom', (id, respond) => {
         withErrorHandling(respond, async () => {
+            logger.info(
+                QuasmComponent.SOCKET,
+                `${socket.data.userID} | SOCKET subscribeToRoom RECEIVED ${id}`
+            );
+
             const room = await dataAccess.roomRepository.getRoomByID(
                 id as UUID
             );
@@ -36,10 +41,9 @@ export function subscribeToRoomHandler({ socket, dataAccess }: HandlerConfig) {
                         await socket.join(JSON.stringify(chat.chatters));
                     })
             );
-
             logger.info(
                 QuasmComponent.SOCKET,
-                `Socket ${socket.id} subscribed to ${room.id}`
+                `${socket.data.userID} | SOCKET subscribeToRoom SUCCESS ${id}`
             );
         });
     });

@@ -16,15 +16,15 @@ export function addCreateRoomHandler(
         Body: CreateRoomBody;
         Reply: CreateRoomResponse;
     }>('/createRoom', async (request, reply) => {
+        logger.info(
+            QuasmComponent.HTTP,
+            `${request.user.userID} | POST /createRoom RECEIVED ${JSON.stringify(request.body)}`
+        );
+
         const { name, maxPlayers } = request.body as {
             name: string;
             maxPlayers: number;
         };
-
-        logger.info(
-            QuasmComponent.HTTP,
-            `POST /createRoom ${JSON.stringify(request.body)}`
-        );
 
         const room = await dataAccess.roomRepository.createRoom(
             {
@@ -42,5 +42,10 @@ export function addCreateRoomHandler(
             success: true,
             payload: room.id
         });
+
+        logger.info(
+            QuasmComponent.HTTP,
+            `${request.user.userID} | POST /createRoom SUCCESS ${JSON.stringify(request.body)}`
+        );
     });
 }

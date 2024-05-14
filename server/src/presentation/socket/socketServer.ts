@@ -40,7 +40,7 @@ export function startSocketServer(
     io.on('connection', socket => {
         logger.info(
             QuasmComponent.SOCKET,
-            `Received connection from : ${socket.id}`
+            `Received connection from: ${socket.data.userID}`
         );
 
         new User(socket, io, dataAccess, authProvider);
