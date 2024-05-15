@@ -13,7 +13,6 @@ import {
 
 type QuasmState = {
   roomName: string | undefined;
-  roomID: string | undefined;
   roomCharacters: CharacterDetails[];
   isGameMaster: boolean;
   currentPlayerName: string;

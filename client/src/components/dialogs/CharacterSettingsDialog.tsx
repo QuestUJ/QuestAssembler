@@ -5,8 +5,10 @@ import {
   MAX_CHARACTER_DESCRIPTION_LENGTH,
   MAX_CHARACTER_NICK_LENGTH
 } from '@quasm/common';
+import { useParams } from '@tanstack/react-router';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import shortUUID from 'short-uuid';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -19,6 +21,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useSocket } from '@/lib/socketIOStore';
 
 import {
   Form,
@@ -27,6 +30,7 @@ import {
   FormItem,
   FormMessage
 } from '../ui/form';
+import { useToast } from '../ui/use-toast';
 
 const formSchema = z.object({
   nick: z
@@ -49,6 +53,11 @@ export interface CharacterSettingsProps {
 
 export function CharacterSettingsDialog(props: CharacterSettingsProps) {
   const [open, setOpen] = useState(false);
+  const socket = useSocket();
+  const { roomId }: { roomId: string } = useParams({
+    strict: false
+  });
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,8 +68,40 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
   });
 
   const formHandler: SubmitHandler<z.infer<typeof formSchema>> = data => {
+    if (roomId) {
+      if (!socket) {
+        toast({
+          title: 'Something went wrong!',
+          variant: 'destructive',
+          description: 'Socket is unavailable'
+        });
+      } else {
+        socket.emit(
+          'changeCharacterSettings',
+          { roomID: shortUUID().toUUID(roomId), ...data },
+          res => {
+            if (res.success) {
+              toast({
+                title: 'Character settings changed successfully'
+              });
+            } else {
+              toast({
+                title: 'Something went wrong!',
+                variant: 'destructive',
+                description: 'Server side error'
+              });
+            }
+          }
+        );
+      }
+    } else {
+      toast({
+        title: 'Something went wrong!',
+        variant: 'destructive',
+        description: 'Room id is unavailable'
+      });
+    }
     form.reset(undefined, { keepDirtyValues: true }); // keepDirtyValues here, I don't feel like we should ever reset this (after unsuccessful change user probably wants to use existing input anyway)
-    console.log(data);
     setOpen(false);
   };
 

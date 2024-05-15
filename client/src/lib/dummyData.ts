@@ -1,8 +1,6 @@
-import {
-  CharacterDetails,
-  MessageDetails,
-  StoryChunkDetails
-} from '@quasm/common';
+import { MessageDetails, StoryChunkDetails } from '@quasm/common';
+
+import { CharacterDetails } from './sharedTypes';
 
 export const PLACEHOLDER_ROOM_PLAYERS: CharacterDetails[] = [
   {

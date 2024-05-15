@@ -5,6 +5,8 @@ import {
 } from '@/presentation/socket/socketServer';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
+import { changeCharacterSettingsHandler } from './handlers/changeCharacterSettings';
+import { changeRoomSettingsHandler } from './handlers/changeRoomSettings';
 import { joinRoomHandler } from './handlers/joinRoom';
 import { sendMessageHandler } from './handlers/sendMessage';
 import { subscribeToRoomHandler } from './handlers/subscribeToRoom';
@@ -31,6 +33,20 @@ export class User {
         });
 
         sendMessageHandler({
+            io,
+            socket,
+            dataAccess,
+            authProvider
+        });
+
+        changeCharacterSettingsHandler({
+            io,
+            socket,
+            dataAccess,
+            authProvider
+        });
+
+        changeRoomSettingsHandler({
             io,
             socket,
             dataAccess,

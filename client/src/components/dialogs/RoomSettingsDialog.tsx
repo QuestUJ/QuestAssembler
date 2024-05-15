@@ -5,9 +5,11 @@ import {
   MAX_ROOM_NAME_LENGTH,
   MAX_ROOM_PLAYERS
 } from '@quasm/common';
+import { useParams } from '@tanstack/react-router';
 import { Settings } from 'lucide-react';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import shortUUID from 'short-uuid';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -20,6 +22,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useSocket } from '@/lib/socketIOStore';
 
 import {
   Form,
@@ -28,9 +31,10 @@ import {
   FormItem,
   FormMessage
 } from '../ui/form';
+import { useToast } from '../ui/use-toast';
 
 const formSchema = z.object({
-  nick: z
+  name: z
     .string()
     .min(1, {
       message: ErrorMap[ErrorCode.RoomNameEmpty]
@@ -38,7 +42,7 @@ const formSchema = z.object({
     .max(MAX_ROOM_NAME_LENGTH, {
       message: ErrorMap[ErrorCode.MaxRoomName]
     }),
-  description: z.coerce
+  maxPlayers: z.coerce
     .number()
     .int({
       message: ErrorMap[ErrorCode.MaxPlayersNotInteger]
@@ -53,19 +57,61 @@ const formSchema = z.object({
 
 export function RoomSettingsDialog() {
   const [open, setOpen] = useState(false);
+  const { roomId }: { roomId: string } = useParams({
+    strict: false
+  });
+  const socket = useSocket();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      maxPlayers: ''
+      maxPlayers: 0
     }
   });
 
   // override and fill with actual settings change on the backend
   const formHandler: SubmitHandler<z.infer<typeof formSchema>> = data => {
+    if (roomId) {
+      if (!socket) {
+        toast({
+          title: 'Something went wrong!',
+          variant: 'destructive',
+          description: 'Socket is unavailable'
+        });
+      } else {
+        console.log('got here');
+        socket.emit(
+          'changeRoomSettings',
+          {
+            roomID: shortUUID().toUUID(roomId),
+            name: data.name,
+            maxPlayers: data.maxPlayers
+          },
+          res => {
+            if (res.success) {
+              toast({
+                title: 'Room settings changed successfully'
+              });
+            } else {
+              toast({
+                title: 'Something went wrong!',
+                variant: 'destructive',
+                description: 'Server side error'
+              });
+            }
+          }
+        );
+      }
+    } else {
+      toast({
+        title: 'Something went wrong!',
+        variant: 'destructive',
+        description: 'Room id is unavailable'
+      });
+    }
     form.reset(undefined, { keepDirtyValues: true }); // keepDirtyValues here, I don't feel like we should ever reset this (after unsuccessful change user probably wants to use existing input anyway)
-    console.log(data);
     setOpen(false);
   };
 
@@ -85,7 +131,7 @@ export function RoomSettingsDialog() {
           <form onSubmit={e => void form.handleSubmit(formHandler)(e)}>
             <FormField
               control={form.control}
-              name='nick'
+              name='name'
               render={({ field }) => (
                 <FormItem className='mb-4'>
                   <FormControl>
@@ -97,7 +143,7 @@ export function RoomSettingsDialog() {
             />
             <FormField
               control={form.control}
-              name='description'
+              name='maxPlayers'
               render={({ field }) => (
                 <FormItem className='mb-4'>
                   <FormControl>

@@ -17,9 +17,29 @@ export interface SocketMessagePayload {
     content: string;
 }
 
+export interface ChangeCharacterSettingsPayload {
+    roomID: string;
+    nick: string;
+    description: string;
+}
+
+export interface ChangeRoomSettingsPayload {
+    roomID: string;
+    name: string;
+    maxPlayers: number;
+}
+
 export interface ClientToServerEvents {
     joinRoom: (roomID: string, callback: (res: Ack) => void) => void;
     subscribeToRoom: (roomID: string, callback: (res: Ack) => void) => void;
+    changeCharacterSettings: (
+        data: ChangeCharacterSettingsPayload,
+        callback: (res: Ack) => void
+    ) => void;
+    changeRoomSettings: (
+        data: ChangeRoomSettingsPayload,
+        callback: (res: Ack) => void
+    ) => void;
     sendMessage: (
         message: SocketMessagePayload,
         callback: (res: Ack<MsgEvent>) => void
@@ -36,9 +56,16 @@ export interface MsgEvent {
     content: string;
 }
 
+export interface RoomSettingsChangeEvent {
+    name: string;
+    maxPlayers: number;
+}
+
 export interface ServerToClientEvents {
     message: (message: MsgEvent) => void;
     newPlayer: (player: SocketPlayerDetails) => void;
+    changeCharacterDetails: (player: SocketPlayerDetails) => void;
+    changeRoomSettings: (roomData: RoomSettingsChangeEvent) => void;
 }
 
 // =============================================================================================
