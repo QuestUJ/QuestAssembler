@@ -35,7 +35,7 @@ function TopBarExpanded() {
   return (
     <div
       className={cn(
-        'bg-additional flex h-full w-full flex-row items-center p-1 pl-4',
+        'bg-additional flex h-full w-full flex-row items-center p-4',
         isOnDashboard ? 'justify-end' : 'justify-between'
       )}
     >
