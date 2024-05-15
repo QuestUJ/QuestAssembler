@@ -1,10 +1,11 @@
-import type { MessageDetails, StoryChunkDetails } from '@quasm/common';
 import {
   Accordion,
   AccordionContent,
   AccordionItem
 } from '@radix-ui/react-accordion';
 import { ReactNode } from 'react';
+
+import type { MessageDetails, StoryChunkDetails } from '@/lib/sharedTypes';
 
 import { AccordionTrigger } from '../ui/accordion';
 

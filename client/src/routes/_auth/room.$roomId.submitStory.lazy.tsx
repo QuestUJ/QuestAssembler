@@ -1,4 +1,3 @@
-import { CharacterDetails } from '@quasm/common';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { Bot, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
@@ -17,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useWindowSize } from '@/hooks/windowSize';
 import { useQuasmStore } from '@/lib/quasmStore';
+import { CharacterDetails } from '@/lib/sharedTypes';
 
 function TabNavigation({ characterInfo }: { characterInfo: CharacterDetails }) {
   const { id, pictureURL } = characterInfo;
@@ -125,7 +125,9 @@ function CharacterSubmitTab({
 }
 
 function SubmitStory() {
-  const roomCharacters = useQuasmStore(state => state.roomCharacters);
+  const roomCharacters = useQuasmStore(
+    state => state.roomCharacters as CharacterDetails[] // again temporary solution as room Characters will need to be filled with sockets
+  );
   const [story, setStory] = useState('');
   const { width } = useWindowSize();
 
