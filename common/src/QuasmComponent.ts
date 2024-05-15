@@ -5,6 +5,8 @@ export enum QuasmComponent {
     HTTP = 'HTTP',
     CONFIG = 'Config',
     ROOM = 'Room',
+    ROOMSETTINGS = 'Room Settings',
     CHARACTER = 'Character',
-    CHAT = 'Chat'
+    CHAT = 'Chat',
+    STORY = 'STORY'
 }

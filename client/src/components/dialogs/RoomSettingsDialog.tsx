@@ -2,14 +2,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   ErrorCode,
   ErrorMap,
-  MAX_CHARACTER_DESCRIPTION_LENGTH,
-  MAX_CHARACTER_NICK_LENGTH,
   MAX_ROOM_NAME_LENGTH,
   MAX_ROOM_PLAYERS
 } from '@quasm/common';
 import { Settings } from 'lucide-react';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -22,7 +20,6 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
 
 import {
   Form,
@@ -56,7 +53,6 @@ const formSchema = z.object({
 
 export function RoomSettingsDialog() {
   const [open, setOpen] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,8 +63,10 @@ export function RoomSettingsDialog() {
   });
 
   // override and fill with actual settings change on the backend
-  const changeCharacterSettingsHandler = (data: z.infer<typeof formSchema>) => {
+  const formHandler: SubmitHandler<z.infer<typeof formSchema>> = data => {
+    form.reset(undefined, { keepDirtyValues: true }); // keepDirtyValues here, I don't feel like we should ever reset this (after unsuccessful change user probably wants to use existing input anyway)
     console.log(data);
+    setOpen(false);
   };
 
   return (
@@ -84,13 +82,7 @@ export function RoomSettingsDialog() {
           <DialogDescription>Change your room settings</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit((data: z.infer<typeof formSchema>) => {
-              form.reset(undefined, { keepDirtyValues: true }); // keepDirtyValues here, I don't feel like we should ever reset this (after unsuccessful change user probably wants to use existing input anyway)
-              changeCharacterSettingsHandler(data); // if we want to reset to default after successful change, we need to add a success handler with form.reset() in it (refer to create game dialog)
-              setOpen(false);
-            })}
-          >
+          <form onSubmit={e => void form.handleSubmit(formHandler)(e)}>
             <FormField
               control={form.control}
               name='nick'

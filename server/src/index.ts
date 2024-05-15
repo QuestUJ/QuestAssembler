@@ -11,6 +11,9 @@ import {
     QuasmSocketServer,
     startSocketServer
 } from './presentation/socket/socketServer';
+import { CharacterRepositoryPostgres } from './repositories/character/CharacterRepositoryPostgres';
+import { ChatRepositoryPostgres } from './repositories/chat/ChatRepositoryPostgres';
+import { DataAccessFacade } from './repositories/DataAccessFacade';
 import { RoomRepositoryPostgres } from './repositories/room/RoomRepositoryPostgres';
 
 const { PORT, AUTH0_DOMAIN, AUTH0_AUDIENCE } = config.pick([
@@ -21,13 +24,20 @@ const { PORT, AUTH0_DOMAIN, AUTH0_AUDIENCE } = config.pick([
 
 (async () => {
     const roomRepo = new RoomRepositoryPostgres(db);
+    const dataAccess = new DataAccessFacade(
+        roomRepo,
+        new CharacterRepositoryPostgres(db),
+        new ChatRepositoryPostgres(db)
+    );
+    roomRepo.provideDataAccess(dataAccess);
+
     const auth0 = new Auth0Provider({
         domain: AUTH0_DOMAIN,
         audience: AUTH0_AUDIENCE
     });
 
-    const app = await startHTTPServer(roomRepo, auth0);
-    startSocketServer(app.io, roomRepo, auth0);
+    const app = await startHTTPServer(dataAccess, auth0);
+    startSocketServer(app.io, dataAccess, auth0);
 
     await app.listen({ port: PORT, host: '0.0.0.0' });
 

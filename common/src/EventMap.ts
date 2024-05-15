@@ -1,14 +1,13 @@
 export interface Ack<T = undefined> {
     success: boolean;
     error?: string;
-    payload: T;
+    payload?: T;
 }
 
 export interface SocketPlayerDetails {
-    userID: string;
+    id: string;
     nick: string;
     description?: string;
-    playerTurnSubmit?: string;
     profileIMG?: string;
 }
 

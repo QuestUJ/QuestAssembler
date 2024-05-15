@@ -1,4 +1,4 @@
-import { QuasmComponent } from './Structure';
+import { QuasmComponent } from './QuasmComponent';
 
 export interface ApiResponse<Payload> {
     success: boolean;
@@ -70,6 +70,7 @@ export type CreateRoomResponse = ApiResponse<string>;
 // /fetchMessages/
 // =======================
 export interface ApiMessagePayload {
+    id: number;
     authorName: string;
     characterPictureURL: string | undefined;
     timestamp: Date;

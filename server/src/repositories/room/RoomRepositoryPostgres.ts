@@ -1,54 +1,52 @@
-import {
-    ChunkRange,
-    ErrorCode,
-    QuasmComponent,
-    QuasmError
-} from '@quasm/common';
+import { ErrorCode, QuasmComponent, QuasmError } from '@quasm/common';
 import { randomUUID, UUID } from 'crypto';
 import { Kysely } from 'kysely';
 
-import { Character, CharacterDetails } from '@/domain/game/Character';
-import {
-    ChatMessage,
-    ChatMessageDetails,
-    ChatParticipants
-} from '@/domain/game/ChatMessage';
-import { PlayerTurnSubmit } from '@/domain/game/PlayerTurnSubmit';
-import { Room, RoomSettings } from '@/domain/game/Room';
-import { StoryChunk } from '@/domain/game/StoryChunk';
+import { Character, CharacterDetails } from '@/domain/game/character/Character';
+import { Room } from '@/domain/game/room/Room';
+import { RoomSettingsDetails } from '@/domain/game/room/RoomSettings';
 import { logger } from '@/infrastructure/logger/Logger';
 import { Database } from '@/infrastructure/postgres/db';
 
+import { DataAccessFacade } from '../DataAccessFacade';
 import { IRoomRepository } from './IRoomRepository';
 
-/**
- * Main repository providing access to PostgreSQL based database
- */
 export class RoomRepositoryPostgres implements IRoomRepository {
     private fetchedRooms: Map<UUID, Room>;
-    private fetchedStoryChunks: Map<UUID, StoryChunk>;
+    private dataAccess?: DataAccessFacade;
 
     constructor(private db: Kysely<Database>) {
         this.fetchedRooms = new Map();
-        this.fetchedStoryChunks = new Map();
+    }
+
+    private checkDataAccess() {
+        if (!this.dataAccess) {
+            throw new QuasmError(
+                QuasmComponent.DATABASE,
+                500,
+                ErrorCode.Unexpected,
+                'Missing dataAccess provider in RoomRepository'
+            );
+        }
+    }
+
+    provideDataAccess(dt: DataAccessFacade) {
+        this.dataAccess = dt;
     }
 
     async createRoom(
-        roomDetails: RoomSettings,
+        roomDetails: RoomSettingsDetails,
         gameMasterDetails: CharacterDetails
     ): Promise<Room> {
+        this.checkDataAccess();
+
         const gameMasterUUID = randomUUID();
         const roomUUID = randomUUID();
 
-        logger.info(
-            QuasmComponent.DATABASE,
-            `Creating Room ${roomUUID} instance and validating`
-        );
-
         // Instantiate - and perform validation
-        const room = new Room(this, roomUUID, roomDetails);
+        const room = new Room(this.dataAccess!, roomUUID, roomDetails);
         const master = new Character(
-            this,
+            this.dataAccess!.characterRepository,
             gameMasterUUID,
             gameMasterDetails.userID,
             gameMasterDetails.nick,
@@ -56,8 +54,8 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             gameMasterDetails.profileIMG
         );
 
-        room.restoreCharacter(master);
-        room.spawnChats();
+        room.characters.restoreCharacter(master);
+        room.chats.spawnChats();
 
         logger.info(
             QuasmComponent.DATABASE,
@@ -92,6 +90,8 @@ export class RoomRepositoryPostgres implements IRoomRepository {
     }
 
     async fetchRooms(userID: string): Promise<Room[]> {
+        this.checkDataAccess();
+
         const roomsData = await this.db
             .selectFrom('Rooms')
             .innerJoin(
@@ -125,14 +125,16 @@ export class RoomRepositoryPostgres implements IRoomRepository {
 
         roomsData.forEach(r => {
             if (!this.fetchedRooms.has(r.roomID as UUID)) {
-                const settings = new RoomSettings(r.roomName, r.maxPlayerCount);
-                const room = new Room(this, r.roomID as UUID, settings);
+                const room = new Room(this.dataAccess!, r.roomID as UUID, {
+                    roomName: r.roomName,
+                    maxPlayerCount: r.maxPlayerCount
+                });
                 this.fetchedRooms.set(r.roomID as UUID, room);
                 result.push(room);
             }
 
             const character = new Character(
-                this,
+                this.dataAccess!.characterRepository,
                 r.characterID as UUID,
                 r.userID,
                 r.nick,
@@ -142,8 +144,8 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             );
 
             const room = this.fetchedRooms.get(r.roomID as UUID);
-            room?.restoreCharacter(character);
-            room?.spawnChats();
+            room?.characters.restoreCharacter(character);
+            room?.chats.spawnChats();
         });
 
         return result;
@@ -153,6 +155,8 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         if (this.fetchedRooms.has(roomID)) {
             return this.fetchedRooms.get(roomID)!;
         }
+
+        this.checkDataAccess();
 
         const roomData = await this.db
             .selectFrom('Rooms')
@@ -172,11 +176,13 @@ export class RoomRepositoryPostgres implements IRoomRepository {
 
         const { roomName, maxPlayerCount } = roomData[0];
 
-        const settings = new RoomSettings(roomName, maxPlayerCount);
-        const room = new Room(this, roomID, settings);
+        const room = new Room(this.dataAccess!, roomID, {
+            roomName,
+            maxPlayerCount
+        });
         roomData.forEach(r => {
             const character = new Character(
-                this,
+                this.dataAccess!.characterRepository,
                 r.id as UUID,
                 r.userID,
                 r.nick,
@@ -185,8 +191,8 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 r.description ?? undefined
             );
 
-            room.restoreCharacter(character);
-            room.spawnChats();
+            room.characters.restoreCharacter(character);
+            room.chats.spawnChats();
         });
 
         this.fetchedRooms.set(room.id, room);
@@ -194,7 +200,10 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         return room;
     }
 
-    async updateRoom(roomID: UUID, roomSettings: RoomSettings): Promise<void> {
+    async updateRoom(
+        roomID: UUID,
+        roomSettings: Partial<RoomSettingsDetails>
+    ): Promise<void> {
         await this.db
             .updateTable('Rooms')
             .set(roomSettings)
@@ -207,216 +216,4 @@ export class RoomRepositoryPostgres implements IRoomRepository {
 
         this.fetchedRooms.delete(roomID);
     }
-
-    async addCharacter(
-        roomID: UUID,
-        characterDetails: CharacterDetails
-    ): Promise<Character> {
-        const newCharacter = new Character(
-            this,
-            randomUUID(),
-            characterDetails.userID,
-            characterDetails.nick,
-            false,
-            characterDetails.profileIMG,
-            characterDetails.description
-        );
-
-        await this.db
-            .insertInto('Characters')
-            .values({
-                id: randomUUID(),
-                nick: characterDetails.nick,
-                roomID,
-                description: characterDetails.description,
-                isGameMaster: false,
-                userID: characterDetails.userID,
-                profileIMG: characterDetails.profileIMG,
-                submitContent: null,
-                submitTimestamp: null
-            })
-            .executeTakeFirstOrThrow();
-
-        return newCharacter;
-    }
-
-    async updateCharacter(
-        id: UUID,
-        characterDetails: Partial<CharacterDetails>
-    ): Promise<void> {
-        await this.db
-            .updateTable('Characters')
-            .set(characterDetails)
-            .where('id', '=', id)
-            .execute();
-    }
-
-    async setPlayerTurnSubmit(
-        id: UUID,
-        submit: PlayerTurnSubmit
-    ): Promise<void> {
-        await this.db
-            .updateTable('Characters')
-            .set(submit)
-            .where('id', '=', id)
-            .execute();
-    }
-
-    async addMessage(
-        chatMessageDetails: ChatMessageDetails
-    ): Promise<ChatMessage> {
-        const result = await this.db
-            .insertInto('ChatMessages')
-            .values(chatMessageDetails)
-            .returning(['messageID', 'timestamp'])
-            .executeTakeFirstOrThrow();
-
-        const newChatMessage = new ChatMessage(
-            result.messageID,
-            chatMessageDetails.from,
-            chatMessageDetails.to,
-            chatMessageDetails.content,
-            result.timestamp
-        );
-
-        return newChatMessage;
-    }
-
-    async fetchMessageCount(
-        chatParticipants: ChatParticipants
-    ): Promise<number> {
-        if (chatParticipants === 'broadcast') {
-            const { messageCount } = await this.db
-                .selectFrom('ChatMessages')
-                .where('ChatMessages.to', '=', 'broadcast')
-                .select(({ fn }) =>
-                    fn
-                        .count<number>('ChatMessages.messageID')
-                        .as('messageCount')
-                )
-                .executeTakeFirstOrThrow();
-
-            return messageCount;
-        }
-
-        const [x, y] = chatParticipants;
-
-        const { messageCount } = await this.db
-            .selectFrom('ChatMessages')
-            .where(eb =>
-                eb.or([
-                    eb('from', '=', x).and('to', '=', y),
-
-                    eb('from', '=', y).and('to', '=', x)
-                ])
-            )
-            .select(eb =>
-                eb.fn.count<number>('ChatMessages.messageID').as('messageCount')
-            )
-
-            .executeTakeFirstOrThrow();
-
-        return messageCount;
-    }
-
-    async fetchMessages(
-        chatParticipants: ChatParticipants,
-        range: ChunkRange
-    ): Promise<ChatMessage[]> {
-        let query = this.db.selectFrom('ChatMessages');
-        if (chatParticipants === 'broadcast') {
-            query = query.where('ChatMessages.to', '=', 'broadcast');
-        } else {
-            const [x, y] = chatParticipants;
-
-            query = query.where(eb =>
-                eb.or([
-                    eb('from', '=', x).and('to', '=', y),
-
-                    eb('from', '=', y).and('to', '=', x)
-                ])
-            );
-        }
-
-        if (range.offset) {
-            query = query.where('ChatMessages.messageID', '<', range.offset);
-        }
-
-        return (
-            await query
-                .orderBy('messageID', 'desc')
-                .limit(range.count)
-                .selectAll()
-                .execute()
-        )
-            .map(
-                m =>
-                    new ChatMessage(
-                        m.messageID,
-                        m.from as UUID,
-                        m.to as UUID,
-                        m.content,
-                        m.timestamp
-                    )
-            )
-            .toReversed();
-    }
-    //
-    // async addStoryChunk(roomID: UUID, chunk: StoryChunk): Promise<StoryChunk> {
-    //     await this.db
-    //         .insertInto('StoryChunks')
-    //         .values({
-    //             roomID: roomID,
-    //             title: chunk.title,
-    //             content: chunk.content,
-    //             imageURL: chunk.imageUrl
-    //         })
-    //         .executeTakeFirstOrThrow();
-    //     return chunk;
-    // }
-    //
-    // async fetchStory(roomID: UUID, range: ChunkRange): Promise<StoryChunk[]> {
-    //     if (typeof range.offset == 'undefined')
-    //         range.offset = DEFAULT_FETCHED_STORYCHUNKS;
-    //
-    //     const lowerBound = range.offset - range.count + 1;
-    //     const upperBound = range.offset;
-    //
-    //     const storyChunkData = await this.db
-    //         .selectFrom('StoryChunks')
-    //         .where('roomID', '=', roomID)
-    //         .where('id', '>=', lowerBound)
-    //         .where('id', '<=', upperBound)
-    //         .selectAll()
-    //         .execute();
-    //
-    //     storyChunkData.forEach(r => {
-    //         this.fetchedRooms.delete(r.chunkID as unknown as UUID);
-    //     });
-    //
-    //     const result: StoryChunk[] = [];
-    //
-    //     storyChunkData.forEach(r => {
-    //         if (!this.fetchedRooms.has(r.chunkID as unknown as UUID)) {
-    //             const chunk = new StoryChunk(
-    //                 r.chunkID,
-    //                 r.title,
-    //                 r.content,
-    //                 r.imageURL,
-    //                 r.timestamp
-    //             );
-    //             this.fetchedStoryChunks.set(
-    //                 r.chunkID as unknown as UUID,
-    //                 chunk
-    //             );
-    //             result.push(chunk);
-    //         }
-    //     });
-    //     return result;
-    // }
-    //
-    // fetchStoryChunks(
-    //     roomID: string,
-    //     range: ChunkRange
-    // ): Promise<StoryChunk[]> {}
 }

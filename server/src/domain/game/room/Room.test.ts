@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/unbound-method */
-/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable */
 import { randomUUID } from 'crypto';
 import { describe, expect, it, vi } from 'vitest';
 

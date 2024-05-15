@@ -1,6 +1,5 @@
 import { ApiMessagePayload } from '@quasm/common';
-import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import { createLazyFileRoute } from '@tanstack/react-router';
 import shortUUID from 'short-uuid';
 
 import {
@@ -9,63 +8,18 @@ import {
 } from '@/components/chatUtilities/Messages';
 import { InputBar } from '@/components/InputBar';
 import { SvgSpinner } from '@/components/Spinner';
-import { useToast } from '@/components/ui/use-toast';
 import { useApiGet } from '@/lib/api';
-import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
+import { useSocketChat } from '@/lib/chat/socketChat';
 
 function PlayerChat() {
-  const socket = useSocket();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
   const { roomId, characterId } = Route.useParams();
 
   const roomUUID = shortUUID().toUUID(roomId);
   const characterUUID = shortUUID().toUUID(characterId);
 
-  const sendMessage = (content: string) => {
-    if (!socket) {
-      toast({
-        title: 'Connection issue! Try refreshing site!',
-        variant: 'destructive'
-      });
-      return;
-    }
-
-    socket.emit(
-      'sendMessage',
-      {
-        roomID: roomUUID,
-        receiver: characterUUID,
-        content
-      },
-      res => {
-        if (!res.success) {
-          toast({
-            title: 'Sending failed',
-            variant: 'destructive'
-          });
-          return;
-        }
-
-        queryClient.setQueryData<ApiMessagePayload[]>(
-          ['fetchMessages', roomUUID, characterUUID],
-          old => (old ? [...old, res.payload] : [res.payload])
-        );
-      }
-    );
-  };
-
-  // TODO!: Filtering events outside active chat
-  useSocketEvent('message', data => {
-    toast({
-      title: data.authorName,
-      description: data.content
-    });
-    queryClient.setQueryData<ApiMessagePayload[]>(
-      ['fetchMessages', roomUUID, characterUUID],
-      old => (old ? [...old, data] : [data])
-    );
+  const sendMessage = useSocketChat({
+    roomUUID,
+    characterUUID
   });
 
   const { data, isPending } = useApiGet<ApiMessagePayload[]>({
@@ -75,7 +29,6 @@ function PlayerChat() {
 
   return (
     <div className='flex h-full flex-col justify-end'>
-      {/**TODO: replace for actual room data */}
       <OutletWrapper>
         {isPending ? (
           <div className='w-ful flex h-full items-center justify-center'>
@@ -98,6 +51,8 @@ function PlayerChat() {
   );
 }
 
-export const Route = createFileRoute('/_auth/room/$roomId/chat/$characterId')({
+export const Route = createLazyFileRoute(
+  '/_auth/room/$roomId/chat/$characterId'
+)({
   component: PlayerChat
 });

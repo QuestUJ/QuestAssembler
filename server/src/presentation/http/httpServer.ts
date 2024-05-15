@@ -8,7 +8,7 @@ import path from 'path';
 import { config } from '@/config';
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
 import { logger } from '@/infrastructure/logger/Logger';
-import { IRoomRepository } from '@/repositories/room/IRoomRepository';
+import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 import { apiRoutes } from './plugins/api';
 
@@ -21,7 +21,7 @@ const { ALLOWED_ORIGIN, NODE_ENV } = config.pick([
  * it will spin up an fastify HTTP server for REST API and serving prebuilt static files
  */
 export async function startHTTPServer(
-    roomRepository: IRoomRepository,
+    dataAccess: DataAccessFacade,
     authProvider: IAuthProvider
 ) {
     const app = Fastify();
@@ -72,7 +72,7 @@ export async function startHTTPServer(
         root: staticPath
     });
 
-    await app.register(apiRoutes(authProvider, roomRepository), {
+    await app.register(apiRoutes(authProvider, dataAccess), {
         prefix: '/api/v1'
     });
 
