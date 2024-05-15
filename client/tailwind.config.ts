@@ -31,7 +31,11 @@ const config = {
         },
         supporting: {
           DEFAULT: 'hsl(var(--supporting))',
-          foreground: 'hsl(var(--supporting'
+          foreground: 'hsl(var(--supporting))'
+        },
+        additional: {
+          DEFAULT: 'hsl(var(--additional))',
+          foreground: 'hsl(var(--additional))'
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
@@ -84,7 +88,7 @@ const config = {
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui'],
         medieval: ['MedievalSharp']
-      },
+      }
     }
   },
   plugins: [require('tailwindcss-animate')]
