@@ -171,7 +171,7 @@ function SubmitStory() {
           </div>
         </div>
       ) : (
-        <div className='flex min-h-screen w-full flex-col items-center bg-gradient-to-b from-[#222] to-[#111]'>
+        <div className='flex min-h-screen w-full flex-col items-center bg-supporting from-[#222] to-[#111]'>
           <CharacterSubmitTab roomCharacters={roomCharacters} />
           <ActionsAccordion story={story} setStory={setStory} />
           <Button

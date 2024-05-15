@@ -15,7 +15,7 @@ export function Message({ message }: { message: MessageDetails }) {
     <div className='m-1 my-3 flex min-h-10 w-full'>
       <img
         src={characterPictureURL}
-        className='aspect-square h-full max-h-10 rounded-full'
+        className='aspect-square h-10 w-10 rounded-full'
       />
       <div className='mx-2 w-full'>
         <div className='flex flex-nowrap items-center'>
@@ -24,7 +24,7 @@ export function Message({ message }: { message: MessageDetails }) {
             {timestamp.toLocaleString()}
           </h3>
         </div>
-        <p className='text-xs'>{content}</p>
+        <p className='text-s'>{content}</p>
       </div>
     </div>
   );
