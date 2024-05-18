@@ -12,19 +12,20 @@ import { AccordionTrigger } from '../ui/accordion';
 export function Message({ message }: { message: MessageDetails }) {
   const { authorName, characterPictureURL, content, timestamp } = message;
   return (
-    <div className='m-1 my-3 flex min-h-10 w-full'>
+    <div className='flex min-h-10 gap-2'>
       <img
         src={characterPictureURL}
-        className='aspect-square h-10 w-10 rounded-full'
+        className='aspect-square h-10 w-10 self-end rounded-full'
       />
-      <div className='mx-2 w-full'>
-        <div className='flex flex-nowrap items-center'>
-          <h1 className='text-md mr-2 text-primary'>{authorName}</h1>
-          <h3 className='pt-1 text-xs text-secondary'>
+      <div className='flex flex-col gap-1 rounded-md bg-background p-2'>
+        <div className='flex flex-nowrap justify-between gap-4'>
+          <h1 className='text-sm font-semibold text-primary'>{authorName}</h1>
+          <h3 className='text-xs text-secondary'>
             {timestamp.toLocaleString()}
           </h3>
         </div>
-        <p className='text-s'>{content}</p>
+        <hr />
+        <p className='text-md'>{content}</p>
       </div>
     </div>
   );
@@ -33,10 +34,13 @@ export function Message({ message }: { message: MessageDetails }) {
 export function StoryChunk({ storyChunk }: { storyChunk: StoryChunkDetails }) {
   const { contents, imageURL } = storyChunk;
   return (
-    <div className='m-1 my-3 flex min-h-10 flex-col'>
-      <p className='text-sm'>{contents}</p>
+    <div className='flex min-h-10 flex-col gap-4'>
+      <p className='text-md rounded-md bg-background p-4'>{contents}</p>
       {imageURL ? (
-        <img className='m-1 aspect-square w-40' src={imageURL} />
+        <img
+          className='aspect-square max-h-96 max-w-96 self-center rounded-md'
+          src={imageURL}
+        />
       ) : (
         <></>
       )}
@@ -46,17 +50,18 @@ export function StoryChunk({ storyChunk }: { storyChunk: StoryChunkDetails }) {
 
 export function StoryChunkContainer({ story }: { story: StoryChunkDetails[] }) {
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col gap-4'>
       {story.map(storyChunk => (
         <StoryChunk storyChunk={storyChunk} />
       ))}
+      <hr />
     </div>
   );
 }
 
 export function MessageContainer({ messages }: { messages: MessageDetails[] }) {
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col gap-2'>
       {messages.map(message => (
         <Message key={message.timestamp.toISOString()} message={message} />
       ))}
@@ -81,8 +86,10 @@ export function BroadcastChat({ messages }: { messages: MessageDetails[] }) {
 // Outlet wrapper is used to display children correctly (not overflow the site)
 export function OutletWrapper({ children }: { children: ReactNode }) {
   return (
-    <div className='h-full overflow-y-auto p-3'>
-      <div className='flex h-fit min-h-full flex-col'>{children}</div>
+    <div className='h-full overflow-y-auto p-4'>
+      <div className='flex h-fit min-h-full flex-col justify-end gap-4'>
+        {children}
+      </div>
     </div>
   );
 }

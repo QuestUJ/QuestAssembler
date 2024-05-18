@@ -35,7 +35,7 @@ function TopBarExpanded() {
   return (
     <div
       className={cn(
-        'bg-additional flex h-full w-full flex-row items-center p-4',
+        'bg-mantle flex h-full w-full flex-row items-center p-4',
         isOnDashboard ? 'justify-end' : 'justify-between'
       )}
     >
@@ -108,7 +108,7 @@ function AuthLayout() {
   return (
     <>
       {width >= 1024 ? (
-        <div className='grid h-screen w-screen grid-cols-[300px_repeat(4,_1fr)] grid-rows-[5em_repeat(7,1fr)] overflow-x-auto bg-supporting from-[#222] to-[#111]'>
+        <div className='bg-crust grid h-screen w-screen grid-cols-[300px_repeat(4,_1fr)] grid-rows-[5em_repeat(7,1fr)] overflow-x-auto from-[#222] to-[#111]'>
           <div className='row-span-8'>
             <SidebarFixed isOnDashboard={roomId === undefined} />
           </div>

@@ -33,9 +33,13 @@ const config = {
           DEFAULT: 'hsl(var(--supporting))',
           foreground: 'hsl(var(--supporting))'
         },
-        additional: {
-          DEFAULT: 'hsl(var(--additional))',
-          foreground: 'hsl(var(--additional))'
+        crust: {
+          DEFAULT: 'hsl(var(--crust))',
+          foreground: 'hsl(var(--crust))'
+        },
+        mantle: {
+          DEFAULT: 'hsl(var(--mantle))',
+          foreground: 'hsl(var(--mantle))'
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
