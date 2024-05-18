@@ -21,7 +21,10 @@ export function Message({ message }: { message: MessageDetails }) {
         <div className='flex flex-nowrap justify-between gap-4'>
           <h1 className='text-sm font-semibold text-primary'>{authorName}</h1>
           <h3 className='text-xs text-secondary'>
-            {timestamp.toLocaleString()}
+            {timestamp.toLocaleString('en-GB', {
+              dateStyle: 'short',
+              timeStyle: 'short'
+            })}
           </h3>
         </div>
         <hr />
