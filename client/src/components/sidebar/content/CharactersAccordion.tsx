@@ -25,10 +25,10 @@ function Character({ characterInfo }: { characterInfo: ApiPlayerPayload }) {
         characterId: shortUUID().fromUUID(characterID)
       }}
     >
-      <div className='my-1 flex h-10 flex-row items-center rounded-xl p-1 hover:cursor-pointer hover:bg-highlight'>
+      <div className='flex h-10 flex-row items-center gap-2 rounded-xl p-2 hover:cursor-pointer hover:bg-highlight'>
         <img
           src={profilePicture}
-          className='mr-4 aspect-square h-full rounded-full'
+          className='aspect-square h-full rounded-full'
         />
         <h1 className='text-2xl'>{nick}</h1>
       </div>
@@ -46,7 +46,7 @@ export function CharactersAccordion({
       <AccordionTrigger className='w-full text-2xl text-primary hover:text-primary-shaded'>
         Players
       </AccordionTrigger>
-      <AccordionContent>
+      <AccordionContent className='flex flex-col gap-2'>
         {!characters ? (
           <SvgSpinner className='mx-auto h-10 w-10' />
         ) : characters.length === 0 ? (

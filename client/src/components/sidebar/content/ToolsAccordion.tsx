@@ -11,7 +11,7 @@ import { useQuasmStore } from '@/lib/quasmStore';
 
 function ToolLink({ children }: { children: ReactNode }) {
   return (
-    <div className='my-2 flex h-10 items-center rounded-xl hover:bg-highlight-foreground'>
+    <div className='flex h-10 items-center gap-2 rounded-xl p-2 hover:bg-highlight-foreground'>
       {children}
     </div>
   );
@@ -26,7 +26,7 @@ export function ToolsAccordion() {
       <AccordionTrigger className='w-full text-2xl text-primary hover:text-primary-shaded'>
         Tools
       </AccordionTrigger>
-      <AccordionContent className=''>
+      <AccordionContent className='flex flex-col gap-2'>
         <Link
           to='/room/$roomId'
           params={{
@@ -40,7 +40,7 @@ export function ToolsAccordion() {
           }}
         >
           <ToolLink>
-            <Scroll className='mr-2 h-8 w-8 text-primary' />
+            <Scroll className='h-8 w-8 text-primary' />
             <h1 className='text-xl'>View story</h1>
           </ToolLink>
         </Link>
@@ -56,7 +56,7 @@ export function ToolsAccordion() {
               }}
             >
               <ToolLink>
-                <Crown className='mr-2 h-8 w-8 text-primary' />
+                <Crown className='h-8 w-8 text-primary' />
                 <h1 className='text-xl'>AI support</h1>
               </ToolLink>
             </Link>
@@ -74,14 +74,14 @@ export function ToolsAccordion() {
               }}
             >
               <ToolLink>
-                <Reply className='mr-2 h-8 w-8 text-primary' />
+                <Reply className='h-8 w-8 text-primary' />
                 <h1 className='text-xl'>Submit story chunk</h1>
               </ToolLink>
             </Link>
           </>
         ) : (
           <ToolLink>
-            <Crown className='mr-2 h-8 w-8 text-primary' />
+            <Crown className='h-8 w-8 text-primary' />
             <h1 className='text-xl'>Contact game master</h1>
           </ToolLink>
         )}
