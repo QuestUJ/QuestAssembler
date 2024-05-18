@@ -30,7 +30,7 @@ function Character({ characterInfo }: { characterInfo: ApiPlayerPayload }) {
           src={profilePicture}
           className='aspect-square h-full rounded-full'
         />
-        <h1 className='text-2xl'>{nick}</h1>
+        <h1 className='font-decorative text-2xl'>{nick}</h1>
       </div>
     </Link>
   );
@@ -43,7 +43,7 @@ export function CharactersAccordion({
 }) {
   return (
     <AccordionItem value='players'>
-      <AccordionTrigger className='w-full text-2xl text-primary hover:text-primary-shaded'>
+      <AccordionTrigger className='font-decorative w-full text-2xl text-primary hover:text-primary-shaded'>
         Players
       </AccordionTrigger>
       <AccordionContent className='flex flex-col gap-2'>

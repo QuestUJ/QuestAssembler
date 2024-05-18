@@ -23,7 +23,7 @@ export function ToolsAccordion() {
 
   return (
     <AccordionItem value='tools'>
-      <AccordionTrigger className='w-full text-2xl text-primary hover:text-primary-shaded'>
+      <AccordionTrigger className='font-decorative w-full text-2xl text-primary hover:text-primary-shaded'>
         Tools
       </AccordionTrigger>
       <AccordionContent className='flex flex-col gap-2'>
@@ -41,7 +41,7 @@ export function ToolsAccordion() {
         >
           <ToolLink>
             <Scroll className='h-8 w-8 text-primary' />
-            <h1 className='text-xl'>View story</h1>
+            <h1 className='font-decorative text-xl'>View story</h1>
           </ToolLink>
         </Link>
         {isGameMaster ? (
@@ -57,7 +57,7 @@ export function ToolsAccordion() {
             >
               <ToolLink>
                 <Crown className='h-8 w-8 text-primary' />
-                <h1 className='text-xl'>AI support</h1>
+                <h1 className='font-decorative text-xl'>AI support</h1>
               </ToolLink>
             </Link>
 
@@ -75,14 +75,14 @@ export function ToolsAccordion() {
             >
               <ToolLink>
                 <Reply className='h-8 w-8 text-primary' />
-                <h1 className='text-xl'>Submit story chunk</h1>
+                <h1 className='font-decorative text-xl'>Submit story chunk</h1>
               </ToolLink>
             </Link>
           </>
         ) : (
           <ToolLink>
             <Crown className='h-8 w-8 text-primary' />
-            <h1 className='text-xl'>Contact game master</h1>
+            <h1 className='font-decorative text-xl'>Contact game master</h1>
           </ToolLink>
         )}
       </AccordionContent>

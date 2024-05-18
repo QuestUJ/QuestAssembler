@@ -35,7 +35,7 @@ function TopBarExpanded() {
   return (
     <div
       className={cn(
-        'bg-mantle flex h-full w-full flex-row items-center p-4',
+        'flex h-full w-full flex-row items-center bg-mantle p-4',
         isOnDashboard ? 'justify-end' : 'justify-between'
       )}
     >
@@ -46,7 +46,9 @@ function TopBarExpanded() {
           ) : (
             <>
               <RoomIcon isGameMaster={isGameMaster} />
-              <h1 className='text-4xl text-primary'>{currentRoomName}</h1>
+              <h1 className='font-decorative text-4xl text-primary'>
+                {currentRoomName}
+              </h1>
             </>
           )}
         </div>

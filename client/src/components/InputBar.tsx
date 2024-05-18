@@ -24,8 +24,11 @@ export function InputBar({
         value={inputValue}
         onChange={e => setInputValue(e.target.value)}
       />
-      <Button className='h-full' onClick={handleClick}>
-        <b>{sendButtonText}</b>
+      <Button
+        className='font-decorative h-full font-bold'
+        onClick={handleClick}
+      >
+        {sendButtonText}
       </Button>
     </div>
   );

@@ -91,7 +91,8 @@ const config = {
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui'],
-        medieval: ['MedievalSharp']
+        medieval: ['MedievalSharp'],
+        decorative: ['Fira Sans']
       }
     }
   },

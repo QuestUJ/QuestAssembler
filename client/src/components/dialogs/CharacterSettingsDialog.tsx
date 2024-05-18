@@ -114,7 +114,7 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
             className='mr-2 aspect-square h-full rounded-full'
             alt='current player character picture'
           />
-          <h1 className='text-2xl'>{props.nick}</h1>
+          <h1 className='font-decorative text-2xl'>{props.nick}</h1>
         </div>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
