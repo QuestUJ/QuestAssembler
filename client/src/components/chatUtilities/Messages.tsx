@@ -57,7 +57,7 @@ export function StoryChunkContainer({ story }: { story: StoryChunkDetails[] }) {
       {story.map(storyChunk => (
         <StoryChunk storyChunk={storyChunk} />
       ))}
-      <hr />
+      <hr className='border-primary' />
     </div>
   );
 }
@@ -79,9 +79,13 @@ export function BroadcastChat({ messages }: { messages: MessageDetails[] }) {
         <AccordionContent>
           <MessageContainer messages={messages} />
         </AccordionContent>
-        <AccordionTrigger className='text-2xl text-primary'>
-          Chat
-        </AccordionTrigger>
+        <div className='mt-4 flex w-full items-center'>
+          <hr className='flex-grow border-primary' />
+          <AccordionTrigger className='rounded-md bg-primary p-2 text-xl text-primary-foreground'>
+            <b>Chat</b>
+          </AccordionTrigger>
+          <hr className='flex-grow border-primary' />
+        </div>
       </AccordionItem>
     </Accordion>
   );
@@ -89,7 +93,7 @@ export function BroadcastChat({ messages }: { messages: MessageDetails[] }) {
 // Outlet wrapper is used to display children correctly (not overflow the site)
 export function OutletWrapper({ children }: { children: ReactNode }) {
   return (
-    <div className='h-full overflow-y-auto p-4'>
+    <div className='h-full overflow-y-auto p-4 pb-0'>
       <div className='flex h-fit min-h-full flex-col justify-end gap-4'>
         {children}
       </div>

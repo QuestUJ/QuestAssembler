@@ -124,7 +124,7 @@ function AuthLayout() {
           <div>
             <TopBar />
           </div>
-          <div className='row-span-7 bg-supporting from-[#222] to-[#111]'>
+          <div className='bg-crust row-span-7 from-[#222] to-[#111]'>
             <Outlet />
           </div>
         </div>
