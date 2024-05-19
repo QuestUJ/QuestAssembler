@@ -37,18 +37,18 @@ function TurnSubmitCard({
 }) {
   const { pictureURL, turnSubmit, name } = characterInfo;
   return (
-    <Card className='my-1 max-h-48 overflow-auto'>
+    <Card className='overflow-auto'>
       <CardHeader className='lg:p-2'>
-        <div className='flex items-center'>
+        <div className='flex items-center gap-2'>
           <img
-            className='mr-2 h-10 w-10 rounded-full'
+            className='h-10 w-10 rounded-full'
             src={pictureURL ? pictureURL : defaultProfilePic}
           />
-          <h1 className='text-2xl text-primary lg:text-lg'>{name}</h1>
+          <h1 className='font-decorative text-md text-primary lg:text-lg'>{name}</h1>
         </div>
         <Separator className='w-full' />
       </CardHeader>
-      <CardContent className='text-sm lg:text-xs'>
+      <CardContent className='text-sm lg:text-md p-4 pt-0'>
         {turnSubmit.content
           ? turnSubmit.content
           : 'Player turn submit is unavailable.'}
@@ -59,7 +59,7 @@ function TurnSubmitCard({
 
 function ImageHandler() {
   return (
-    <div className='flex h-80 w-80 items-center justify-center rounded-xl bg-background lg:h-full lg:w-full'>
+    <div className='flex h-80 w-80 items-center justify-center rounded-md bg-background lg:h-full lg:w-full'>
       Image Handler Component
     </div>
   );
@@ -75,27 +75,27 @@ function ActionsAccordion({
   return (
     <Accordion type='multiple' className='w-4/5'>
       <AccordionItem value='story'>
-        <AccordionTrigger className='my-1 flex w-full flex-row items-center text-2xl text-primary'>
+        <AccordionTrigger className='flex w-full flex-row items-center text-2xl text-primary'>
           Story
         </AccordionTrigger>
-        <AccordionContent className='my-1'>
+        <AccordionContent className='flex flex-col gap-2'>
           <Textarea
             placeholder='Type your story here...'
             value={story}
             onChange={e => setStory(e.target.value)}
             className='min-h-72'
           />
-          <Button className='my-3 flex w-full items-center justify-center bg-white'>
-            <Bot className='mr-1' />
+          <Button className='flex w-full items-center justify-center bg-white'>
+            <Bot className='' />
             Rewrite with LLM
           </Button>
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value='image'>
-        <AccordionTrigger className='my-1 flex w-full flex-row items-center text-2xl text-primary'>
+        <AccordionTrigger className='flex w-full flex-row items-center text-2xl text-primary'>
           Image
         </AccordionTrigger>
-        <AccordionContent className='my-1'>
+        <AccordionContent className=''>
           <ImageHandler />
         </AccordionContent>
       </AccordionItem>
@@ -138,7 +138,7 @@ function SubmitStory() {
   return (
     <>
       {width >= 1024 ? (
-        <div className='grid h-full grid-cols-5 grid-rows-6 gap-1 p-1'>
+        <div className='grid h-full grid-cols-5 grid-rows-6 gap-2 p-2'>
           <div className='col-span-3 row-span-3'>
             <Textarea
               placeholder='Type your story here...'
@@ -148,37 +148,38 @@ function SubmitStory() {
           <div className='col-span-2 col-start-1 row-span-3 row-start-4'>
             <ImageHandler />
           </div>
-          <div className='col-span-2 col-start-4 row-span-6 row-start-1 m-2 mr-4 max-h-full overflow-y-auto border-2 border-primary p-3'>
-            <h1 className='text-2xl text-primary'>Player's turn submits</h1>
-            <div className='flex h-fit min-h-full flex-col justify-end'>
+          <div className='col-span-2 col-start-4 row-span-6 row-start-1 max-h-full overflow-y-auto border-2 border-secondary rounded-md p-2'>
+            <h1 className='font-decorative text-2xl text-primary'>Player's turn submits</h1>
+            <hr className='my-2' />
+            <div className='flex h-fit min-h-full flex-col justify-end gap-2'>
               {roomCharacters.map(character => (
                 <TurnSubmitCard characterInfo={character} />
               ))}
             </div>
           </div>
-          <div className='col-start-3 row-span-3 row-start-4 p-1'>
-            <Button className='flex w-full max-w-72 items-center bg-white p-2 text-xs'>
-              <Bot className='mr-1' />
+          <div className='col-start-3 row-span-3 row-start-4 flex flex-col gap-2'>
+            <Button className='flex w-full items-center bg-white p-2 text-xs gap-2'>
+              <Bot className='' />
               Rewrite with LLM
             </Button>
             <Button
-              className='my-1 flex w-full max-w-72 items-center p-2 text-xs'
+              className='flex w-full items-center p-2 text-xs gap-2'
               onClick={handleSubmit}
             >
-              <CheckCircle className='mr-1' />
+              <CheckCircle className='' />
               Submit story chunk
             </Button>
           </div>
         </div>
       ) : (
-        <div className='flex min-h-screen w-full flex-col items-center bg-gradient-to-b from-[#222] to-[#111]'>
+        <div className='flex gap-2 min-h-screen w-full flex-col items-center bg-crust from-[#222] to-[#111]'>
           <CharacterSubmitTab roomCharacters={roomCharacters} />
           <ActionsAccordion story={story} setStory={setStory} />
           <Button
-            className='my-2 flex w-4/5 items-center'
+            className='flex w-4/5 items-center'
             onClick={handleSubmit}
           >
-            <CheckCircle className='mr-1' />
+            <CheckCircle className='' />
             Submit story chunk
           </Button>
         </div>

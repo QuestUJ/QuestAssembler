@@ -18,14 +18,16 @@ export function InputBar({
   };
 
   return (
-    <div className='flex h-16 flex-nowrap'>
+    <div className='m-4 flex h-12 flex-nowrap gap-4'>
       <Textarea
         placeholder='Type your message here...'
         value={inputValue}
         onChange={e => setInputValue(e.target.value)}
-        className='h-16'
       />
-      <Button className='h-full' onClick={handleClick}>
+      <Button
+        className='font-decorative h-full font-bold'
+        onClick={handleClick}
+      >
         {sendButtonText}
       </Button>
     </div>

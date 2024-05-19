@@ -35,7 +35,7 @@ function TopBarExpanded() {
   return (
     <div
       className={cn(
-        'flex h-full w-full flex-row items-center p-1 pl-4',
+        'flex h-full w-full flex-row items-center bg-mantle p-4',
         isOnDashboard ? 'justify-end' : 'justify-between'
       )}
     >
@@ -46,7 +46,9 @@ function TopBarExpanded() {
           ) : (
             <>
               <RoomIcon isGameMaster={isGameMaster} />
-              <h1 className='text-4xl text-primary'>{currentRoomName}</h1>
+              <h1 className='font-decorative text-4xl text-primary'>
+                {currentRoomName}
+              </h1>
             </>
           )}
         </div>
@@ -62,7 +64,7 @@ function TopBar() {
   });
 
   return (
-    <div className='flex h-full flex-row flex-nowrap items-center justify-between bg-background'>
+    <div className='flex h-full flex-row flex-nowrap items-center justify-between'>
       <SidebarDrawer isOnDashboard={roomId === undefined} />
       <LogoWithText />
       <User />
@@ -108,7 +110,7 @@ function AuthLayout() {
   return (
     <>
       {width >= 1024 ? (
-        <div className='grid h-screen w-screen grid-cols-[300px_repeat(4,_1fr)] grid-rows-[5em_repeat(7,1fr)] overflow-x-auto bg-gradient-to-b from-[#222] to-[#111]'>
+        <div className='bg-crust grid h-screen w-screen grid-cols-[300px_repeat(4,_1fr)] grid-rows-[5em_repeat(7,1fr)] overflow-x-auto from-[#222] to-[#111]'>
           <div className='row-span-8'>
             <SidebarFixed isOnDashboard={roomId === undefined} />
           </div>
@@ -124,7 +126,7 @@ function AuthLayout() {
           <div>
             <TopBar />
           </div>
-          <div className='row-span-7 bg-gradient-to-b from-[#222] to-[#111]'>
+          <div className='bg-crust row-span-7 from-[#222] to-[#111]'>
             <Outlet />
           </div>
         </div>

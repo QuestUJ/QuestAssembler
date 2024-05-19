@@ -11,7 +11,7 @@ import { useQuasmStore } from '@/lib/quasmStore';
 
 function ToolLink({ children }: { children: ReactNode }) {
   return (
-    <div className='my-2 flex h-10 items-center rounded-xl hover:bg-highlight-foreground'>
+    <div className='flex h-14 items-center gap-2 rounded-xl p-2 hover:bg-highlight-foreground'>
       {children}
     </div>
   );
@@ -23,10 +23,10 @@ export function ToolsAccordion() {
 
   return (
     <AccordionItem value='tools'>
-      <AccordionTrigger className='w-full text-2xl text-primary hover:text-primary-shaded'>
+      <AccordionTrigger className='font-decorative w-full text-2xl text-primary hover:text-primary-shaded'>
         Tools
       </AccordionTrigger>
-      <AccordionContent className=''>
+      <AccordionContent className='flex flex-col gap-2'>
         <Link
           to='/room/$roomId'
           params={{
@@ -40,8 +40,8 @@ export function ToolsAccordion() {
           }}
         >
           <ToolLink>
-            <Scroll className='mr-2 h-8 w-8 text-primary' />
-            <h1 className='text-xl'>View story</h1>
+            <Scroll className='h-8 w-8 text-primary' />
+            <h1 className='font-decorative text-xl'>View story</h1>
           </ToolLink>
         </Link>
         {isGameMaster ? (
@@ -56,8 +56,8 @@ export function ToolsAccordion() {
               }}
             >
               <ToolLink>
-                <Crown className='mr-2 h-8 w-8 text-primary' />
-                <h1 className='text-xl'>AI support</h1>
+                <Crown className='h-8 w-8 text-primary' />
+                <h1 className='font-decorative text-xl'>AI support</h1>
               </ToolLink>
             </Link>
 
@@ -74,15 +74,15 @@ export function ToolsAccordion() {
               }}
             >
               <ToolLink>
-                <Reply className='mr-2 h-8 w-8 text-primary' />
-                <h1 className='text-xl'>Submit story chunk</h1>
+                <Reply className='h-8 w-8 text-primary' />
+                <h1 className='font-decorative text-xl'>Submit story chunk</h1>
               </ToolLink>
             </Link>
           </>
         ) : (
           <ToolLink>
-            <Crown className='mr-2 h-8 w-8 text-primary' />
-            <h1 className='text-xl'>Contact game master</h1>
+            <Crown className='h-8 w-8 text-primary' />
+            <h1 className='font-decorative text-xl'>Contact game master</h1>
           </ToolLink>
         )}
       </AccordionContent>
