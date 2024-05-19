@@ -9,7 +9,6 @@ import { useQuasmStore } from '@/lib/quasmStore';
 import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
 
 import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
-import { LeaveRoomDialog } from '../dialogs/LeaveRoomDialog';
 import { RoomSettingsDialog } from '../dialogs/RoomSettingsDialog';
 import LogoWithText from '../LogoWithText';
 import { SvgSpinner } from '../Spinner';
@@ -60,7 +59,7 @@ export function SidebarContentRoom() {
     const playerQueryData: ApiPlayerPayload = {
       id: player.id,
       nick: player.nick,
-      profilePicture: player.profileIMG
+      profileIMG: player.profileIMG
     };
 
     queryClient.setQueryData<RoomDetailsPayload>(['getRoom', roomUUID], {
@@ -137,7 +136,7 @@ export function SidebarContentRoom() {
               />
             )}
           </div>
-          {isGameMaster ? <RoomSettingsDialog /> : <LeaveRoomDialog />}
+          {isGameMaster && <RoomSettingsDialog />}
         </div>
       </div>
     </div>

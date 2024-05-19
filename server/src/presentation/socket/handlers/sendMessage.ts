@@ -35,6 +35,7 @@ export function sendMessageHandler({ socket, dataAccess }: HandlerConfig) {
                 });
 
             const payload: MsgEvent = {
+                id: msg.id,
                 roomID: room.id,
                 from: msg.from,
                 authorName: myCharacter.getNick(),

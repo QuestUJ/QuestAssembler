@@ -54,6 +54,7 @@ export interface ClientToServerEvents {
 
 // ==============================================================================================
 export interface MsgEvent {
+    id: number;
     roomID: string;
     from: string;
     authorName: string;

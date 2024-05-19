@@ -1,4 +1,4 @@
-import { ApiMessagePayload } from '@quasm/common';
+import { ApiMessagePayload, MsgEvent } from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '@/components/ui/use-toast';
@@ -40,9 +40,11 @@ export function useSocketChat({ roomUUID, characterUUID }: Props) {
           return;
         }
 
+        const msg: MsgEvent = res.payload!;
+
         queryClient.setQueryData<ApiMessagePayload[]>(
           ['fetchMessages', roomUUID, characterUUID],
-          old => (old ? [...old, res.payload!] : [res.payload!])
+          old => (old ? [...old, msg] : [msg])
         );
       }
     );

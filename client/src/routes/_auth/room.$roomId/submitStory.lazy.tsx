@@ -1,8 +1,10 @@
 import { GenerateTextBody, GenerateTextPayload } from '@quasm/common';
-import { createLazyFileRoute } from '@tanstack/react-router';
+import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { Bot, CheckCircle, RotateCcw } from 'lucide-react';
+import { useEffect } from 'react';
 
 import defaultProfilePic from '@/assets/defaultProfilePicture.jpg';
+import { SvgSpinner } from '@/components/Spinner';
 import {
   Accordion,
   AccordionContent,
@@ -199,6 +201,30 @@ function SubmitStory() {
     console.log('jestem zsubmitowany');
   };
 
+  const isGameMaster = useQuasmStore(state => state.isGameMaster);
+
+  const navigate = useNavigate({ from: '/room/$roomId/submitStory' });
+
+  useEffect(() => {
+    console.log(isGameMaster);
+  });
+
+  useEffect(() => {
+    if (!isGameMaster) {
+      void navigate({
+        to: '/room/$roomId'
+      });
+    }
+  }, [isGameMaster, navigate]);
+
+  if (!isGameMaster) {
+    return (
+      <div className='flex items-center justify-center p-10'>
+        <SvgSpinner className='h-24 w-24' />
+      </div>
+    );
+  }
+
   return (
     <>
       {width >= 1024 ? (
@@ -234,7 +260,7 @@ function SubmitStory() {
       ) : (
         <div className='flex min-h-screen w-full flex-col items-center gap-2 bg-crust from-[#222] to-[#111]'>
           <CharacterSubmitTab roomCharacters={roomCharacters} />
-          <ActionsAccordion />
+          <ActionsAccordion story={story} setStory={setStory} />
           <Button className='flex w-4/5 items-center' onClick={handleSubmit}>
             <CheckCircle className='' />
             Submit story chunk

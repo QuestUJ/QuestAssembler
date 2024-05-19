@@ -26,6 +26,6 @@ function Story() {
   );
 }
 
-export const Route = createLazyFileRoute('/_auth/room/$roomId')({
+export const Route = createLazyFileRoute('/_auth/room/$roomId/')({
   component: Story
 });
