@@ -17,6 +17,7 @@ import { addCreateRoomHandler } from '../handlers/createRoom';
 import { addFetchMessagesHandler } from '../handlers/fetchMessages';
 import { addFetchRoomsHandler } from '../handlers/fetchRooms';
 import { addGetRoomHandler } from '../handlers/getRoom';
+import { addDeleteRoomHandler } from '../handlers/deleteRoom';
 
 export function apiRoutes(
     authProvider: IAuthProvider,
@@ -60,6 +61,7 @@ export function apiRoutes(
         addFetchRoomsHandler(fastify, dataAccess);
         addGetRoomHandler(fastify, dataAccess);
         addCreateRoomHandler(fastify, dataAccess);
+        addDeleteRoomHandler(fastify, dataAccess);
         addFetchMessagesHandler(fastify, dataAccess);
 
         done();

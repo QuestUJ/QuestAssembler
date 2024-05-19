@@ -78,3 +78,5 @@ export interface ApiMessagePayload {
 }
 
 export type FetchMessagesResponse = ApiResponse<ApiMessagePayload[]>;
+
+export type DeleteRoomResponse = ApiResponse<string>;
