@@ -78,7 +78,7 @@ function ActionsAccordion({
         <AccordionTrigger className='flex w-full flex-row items-center text-2xl text-primary'>
           Story
         </AccordionTrigger>
-        <AccordionContent className=''>
+        <AccordionContent className='flex flex-col gap-2'>
           <Textarea
             placeholder='Type your story here...'
             value={story}
@@ -172,7 +172,7 @@ function SubmitStory() {
           </div>
         </div>
       ) : (
-        <div className='flex min-h-screen w-full flex-col items-center bg-supporting from-[#222] to-[#111]'>
+        <div className='flex gap-2 min-h-screen w-full flex-col items-center bg-crust from-[#222] to-[#111]'>
           <CharacterSubmitTab roomCharacters={roomCharacters} />
           <ActionsAccordion story={story} setStory={setStory} />
           <Button
