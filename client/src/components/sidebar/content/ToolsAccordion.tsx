@@ -11,7 +11,7 @@ import { useQuasmStore } from '@/lib/quasmStore';
 
 function ToolLink({ children }: { children: ReactNode }) {
   return (
-    <div className='flex h-10 items-center gap-2 rounded-xl p-2 hover:bg-highlight-foreground'>
+    <div className='flex h-14 items-center gap-2 rounded-xl p-2 hover:bg-highlight-foreground'>
       {children}
     </div>
   );

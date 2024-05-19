@@ -25,7 +25,7 @@ function Character({ characterInfo }: { characterInfo: ApiPlayerPayload }) {
         characterId: shortUUID().fromUUID(characterID)
       }}
     >
-      <div className='flex h-10 flex-row items-center gap-2 rounded-xl p-2 hover:cursor-pointer hover:bg-highlight'>
+      <div className='flex h-14 flex-row items-center gap-2 rounded-xl p-2 hover:cursor-pointer hover:bg-highlight'>
         <img
           src={profilePicture}
           className='aspect-square h-full rounded-full'
