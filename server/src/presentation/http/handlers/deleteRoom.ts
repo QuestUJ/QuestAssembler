@@ -44,11 +44,8 @@ export function addDeleteRoomHandler(
 
         await reply.status(500).send({
             success: false,
-            error: {
-                message: 'Failed to delete room'
-            }
+            error: {message: 'Failed to delete room'}
         });
     }
     });
 }
-
