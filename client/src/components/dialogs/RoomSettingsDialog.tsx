@@ -32,6 +32,7 @@ import {
   FormMessage
 } from '../ui/form';
 import { useToast } from '../ui/use-toast';
+import { DeleteRoomDialog } from './DeleteRoomDialog';
 
 const formSchema = z.object({
   name: z
@@ -154,6 +155,7 @@ export function RoomSettingsDialog() {
               )}
             />
             <div className='flex justify-between'>
+              <DeleteRoomDialog />
               <Button
                 className='bg-supporting'
                 type='button'
