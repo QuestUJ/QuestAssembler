@@ -20,20 +20,35 @@ export function addDeleteRoomHandler(
     }>('/deleteRoom/:roomID', async (request, reply) => {
         logger.info(
             QuasmComponent.HTTP,
-            `${request.user.userID} | DELETE /deleteRoom RECEIVED ${request.params.roomID}`
+            `${request.user.userID} | POST /deleteRoom RECEIVED ${request.params.roomID}`
         );
 
-        
+    try{
         await dataAccess.roomRepository.deleteRoom(request.params.roomID as UUID);
 
         await reply.send({
-                success: true
+            success: true,
+            payload: `Room ${request.params.roomID} deleted successfully`
         });
 
-            logger.info(
-                QuasmComponent.HTTP,
-                `${request.user.userID} | DELETE /deleteRoom SUCCESS ${request.params.roomID}`
-            );
+        logger.info(
+            QuasmComponent.HTTP,
+            `${request.user.userID} | POST /deleteRoom SUCCESS ${request.params.roomID}`
+        );
+    }
+    catch (error) {
+        logger.error(
+            QuasmComponent.HTTP,
+            `Error deleting room ${request.params.roomID}`
+        );
+
+        await reply.status(500).send({
+            success: false,
+            error: {
+                message: 'Failed to delete room'
+            }
+        });
+    }
     });
 }
 

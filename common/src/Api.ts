@@ -79,4 +79,10 @@ export interface ApiMessagePayload {
 
 export type FetchMessagesResponse = ApiResponse<ApiMessagePayload[]>;
 
-export type DeleteRoomResponse = ApiResponse<string>;
+export interface DeleteRoomResponse {
+    success: boolean;
+    error?: {
+        message: string;
+    };
+    payload?: string;
+}
