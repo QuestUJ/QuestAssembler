@@ -9,6 +9,7 @@ import { useQuasmStore } from '@/lib/quasmStore';
 import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
 
 import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
+import { LeaveRoomDialog } from '../dialogs/LeaveRoomDialog';
 import { RoomSettingsDialog } from '../dialogs/RoomSettingsDialog';
 import LogoWithText from '../LogoWithText';
 import { SvgSpinner } from '../Spinner';
@@ -73,6 +74,26 @@ export function SidebarContentRoom() {
     });
   });
 
+  useSocketEvent('playerLeft', player => {
+    if (!data) return;
+
+    const playerQueryData: ApiPlayerPayload = {
+      id: player.id,
+      nick: player.nick,
+      profilePicture: player.profileIMG
+    };
+
+    queryClient.setQueryData<RoomDetailsPayload>(['getRoom', roomUUID], {
+      ...data,
+      players: [playerQueryData, ...data.players]
+    });
+
+    toast({
+      title: player.nick,
+      description: 'has left the game!'
+    });
+  });
+
   useSocketEvent('changeCharacterDetails', player => {
     if (!data) return;
 
@@ -122,6 +143,7 @@ export function SidebarContentRoom() {
               />
             )}
           </div>
+          <LeaveRoomDialog />
           {isGameMaster ? <RoomSettingsDialog /> : <></>}
         </div>
       </div>

@@ -9,6 +9,27 @@ import { ICharacterRepository } from './ICharacterRepository';
 export class CharacterRepositoryPostgres implements ICharacterRepository {
     constructor(private db: Kysely<Database>) {}
 
+    async getCharacter(roomID: UUID, userID: UUID): Promise<Character> {
+        const fetchedCharacter = await this.db
+            .selectFrom('Characters')
+            .where('roomID', '=', roomID)
+            .where('userID', '=', userID)
+            .selectAll()
+            .execute();
+
+        const character = new Character(
+            this,
+            fetchedCharacter[0].id as UUID,
+            fetchedCharacter[0].userID,
+            fetchedCharacter[0].nick,
+            fetchedCharacter[0].isGameMaster,
+            fetchedCharacter[0].profileIMG!, // gives error without !
+            fetchedCharacter[0].description!
+        );
+
+        return character;
+    }
+
     async updateCharacter(
         id: UUID,
         characterDetails: Partial<CharacterDetails>

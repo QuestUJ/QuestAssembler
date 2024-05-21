@@ -43,7 +43,7 @@ export function CharactersAccordion({
 }) {
   return (
     <AccordionItem value='players'>
-      <AccordionTrigger className='font-decorative w-full text-2xl text-primary hover:text-primary-shaded'>
+      <AccordionTrigger className='w-full font-decorative text-2xl text-primary hover:text-primary-shaded'>
         Players
       </AccordionTrigger>
       <AccordionContent className='flex flex-col gap-2'>

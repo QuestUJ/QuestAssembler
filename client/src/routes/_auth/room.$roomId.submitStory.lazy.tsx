@@ -44,11 +44,13 @@ function TurnSubmitCard({
             className='h-10 w-10 rounded-full'
             src={pictureURL ? pictureURL : defaultProfilePic}
           />
-          <h1 className='font-decorative text-md text-primary lg:text-lg'>{name}</h1>
+          <h1 className='text-md font-decorative text-primary lg:text-lg'>
+            {name}
+          </h1>
         </div>
         <Separator className='w-full' />
       </CardHeader>
-      <CardContent className='text-sm lg:text-md p-4 pt-0'>
+      <CardContent className='lg:text-md p-4 pt-0 text-sm'>
         {turnSubmit.content
           ? turnSubmit.content
           : 'Player turn submit is unavailable.'}
@@ -148,8 +150,10 @@ function SubmitStory() {
           <div className='col-span-2 col-start-1 row-span-3 row-start-4'>
             <ImageHandler />
           </div>
-          <div className='col-span-2 col-start-4 row-span-6 row-start-1 max-h-full overflow-y-auto border-2 border-secondary rounded-md p-2'>
-            <h1 className='font-decorative text-2xl text-primary'>Player's turn submits</h1>
+          <div className='col-span-2 col-start-4 row-span-6 row-start-1 max-h-full overflow-y-auto rounded-md border-2 border-secondary p-2'>
+            <h1 className='font-decorative text-2xl text-primary'>
+              Player's turn submits
+            </h1>
             <hr className='my-2' />
             <div className='flex h-fit min-h-full flex-col justify-end gap-2'>
               {roomCharacters.map(character => (
@@ -158,12 +162,12 @@ function SubmitStory() {
             </div>
           </div>
           <div className='col-start-3 row-span-3 row-start-4 flex flex-col gap-2'>
-            <Button className='flex w-full items-center bg-white p-2 text-xs gap-2'>
+            <Button className='flex w-full items-center gap-2 bg-white p-2 text-xs'>
               <Bot className='' />
               Rewrite with LLM
             </Button>
             <Button
-              className='flex w-full items-center p-2 text-xs gap-2'
+              className='flex w-full items-center gap-2 p-2 text-xs'
               onClick={handleSubmit}
             >
               <CheckCircle className='' />
@@ -172,13 +176,10 @@ function SubmitStory() {
           </div>
         </div>
       ) : (
-        <div className='flex gap-2 min-h-screen w-full flex-col items-center bg-crust from-[#222] to-[#111]'>
+        <div className='flex min-h-screen w-full flex-col items-center gap-2 bg-crust from-[#222] to-[#111]'>
           <CharacterSubmitTab roomCharacters={roomCharacters} />
           <ActionsAccordion story={story} setStory={setStory} />
-          <Button
-            className='flex w-4/5 items-center'
-            onClick={handleSubmit}
-          >
+          <Button className='flex w-4/5 items-center' onClick={handleSubmit}>
             <CheckCircle className='' />
             Submit story chunk
           </Button>

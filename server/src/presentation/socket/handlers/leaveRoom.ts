@@ -7,34 +7,29 @@ import { logger } from '@/infrastructure/logger/Logger';
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
 
-export function joinRoomHandler({
+export function leaveRoomHandler({
     dataAccess,
     authProvider,
     socket,
     io
 }: HandlerConfig) {
-    socket.on('joinRoom', (roomID, respond) => {
+    socket.on('leaveRoom', (roomID, respond) => {
         withErrorHandling(respond, async () => {
+            authProvider;
+
             logger.info(
                 QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET joinRoom RECEIVED ${roomID} `
+                `${socket.data.userID} | SOCKET leaveRoom RECEIVED ${roomID} `
             );
 
             const room = await dataAccess.roomRepository.getRoomByID(
                 roomID as UUID
             );
 
-            const { nickname, profileImg } =
-                await authProvider.fetchUserDetails(socket.data.token);
-
-            const characterDetails = {
-                userID: socket.data.userID,
-                nick: nickname,
-                profileIMG: profileImg
-            };
-
-            const character =
-                await room.characters.addCharacter(characterDetails);
+            const character = await dataAccess.characterRepository.getCharacter(
+                roomID as UUID,
+                socket.data.userID as UUID
+            );
 
             respond({
                 success: true
@@ -47,12 +42,12 @@ export function joinRoomHandler({
                     socket.data.userID
                 );
 
-                socket.join(
+                socket.leave(
                     JSON.stringify(Chat.toId([other.id, character.id]))
                 );
             });
 
-            socket.to(room.id).emit('newPlayer', {
+            socket.to(room.id).emit('playerLeft', {
                 id: character.id,
                 nick: character.getNick(),
                 profileIMG: character.profileIMG
@@ -60,7 +55,7 @@ export function joinRoomHandler({
 
             logger.info(
                 QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET joinRoom SUCCESS ${roomID} `
+                `${socket.data.userID} | SOCKET leaveRoom SUCCESS ${roomID} `
             );
         });
     });
