@@ -14,7 +14,6 @@ import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 import { addCreateRoomHandler } from '../handlers/createRoom';
-import { addDeleteRoomHandler } from '../handlers/deleteRoom';
 import { addFetchMessagesHandler } from '../handlers/fetchMessages';
 import { addFetchRoomsHandler } from '../handlers/fetchRooms';
 import { addGetRoomHandler } from '../handlers/getRoom';
@@ -61,7 +60,6 @@ export function apiRoutes(
         addFetchRoomsHandler(fastify, dataAccess);
         addGetRoomHandler(fastify, dataAccess);
         addCreateRoomHandler(fastify, dataAccess);
-        addDeleteRoomHandler(fastify, dataAccess);
         addFetchMessagesHandler(fastify, dataAccess);
 
         done();

@@ -15,41 +15,6 @@ import { useSocket } from '@/lib/socketIOStore';
 
 import { useToast } from '../ui/use-toast';
 
-/* async function deleteRoom(roomId: string, toast: any) {
-
-
-  /* console.log(`Deleting room with ID: ${roomId}`);
-  try {
-    const response: Response = await fetch(`/deleteRoom/${roomId}`, {
-      method: 'POST'
-    });
-
-    if (!response.ok) {
-      console.error(`Failed to delete room: ${roomId}`);
-      throw new Error('Failed to delete room');
-    }
-
-    const result: DeleteRoomResponse = await response.json();
-
-    if (result.success) {
-      toast({
-        title: 'Room deleted successfully'
-      });
-      return { success: true };
-    } else {
-      throw new Error(result.error?.message || 'Failed to delete room');
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    toast({
-      title: 'Cannot delete room!',
-      variant: 'destructive',
-      description: 'Server error'
-    });
-    return { success: false, message: 'Server error' };
-  }
-} */
-
 export function DeleteRoomDialog() {
   const [open, setOpen] = useState(false);
   const { roomId }: { roomId: string } = useParams({
