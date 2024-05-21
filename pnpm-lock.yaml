@@ -227,9 +227,6 @@ importers:
       '@fastify/static':
         specifier: ^7.0.3
         version: 7.0.3
-      '@huggingface/inference':
-        specifier: ^2.7.0
-        version: 2.7.0
       '@quasm/common':
         specifier: workspace:^
         version: link:../common
@@ -774,13 +771,6 @@ packages:
     resolution: {integrity: sha512-o5cgpGOuJYrd+iMKvkttOclgwRW86EsWJZZRC23prf0uU2i48Htq4PuT73AVb9ionFyZrwYEITuOFGF+BydEtQ==}
     peerDependencies:
       react-hook-form: ^7.0.0
-
-  '@huggingface/inference@2.7.0':
-    resolution: {integrity: sha512-u7Fn637Q3f7nUB1tajM4CgzhvoFQkOQr5W5Fm+2wT9ETgGoLBh25BLlYPTJRjAd2WY01s71v0lqAwNvHHCc3mg==}
-    engines: {node: '>=18'}
-
-  '@huggingface/tasks@0.10.6':
-    resolution: {integrity: sha512-aGqvPsZZ8JLkAs7IChsEZil/aNLoMsqDryDFqJV7N5u//EaHzHAU6ORwVxEJIWJ9MIqJauJ9f7LYNtKC5Axh3w==}
 
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
@@ -3894,12 +3884,6 @@ snapshots:
   '@hookform/resolvers@3.3.4(react-hook-form@7.51.4(react@18.2.0))':
     dependencies:
       react-hook-form: 7.51.4(react@18.2.0)
-
-  '@huggingface/inference@2.7.0':
-    dependencies:
-      '@huggingface/tasks': 0.10.6
-
-  '@huggingface/tasks@0.10.6': {}
 
   '@humanwhocodes/config-array@0.11.14':
     dependencies:
