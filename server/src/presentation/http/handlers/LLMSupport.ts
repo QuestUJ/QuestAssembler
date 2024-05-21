@@ -32,8 +32,6 @@ export function addLLMSupportHandler(
 
         const LLMText = await aiAssistant.getText(prompt);
 
-        console.log(LLMText);
-
         await reply.send({
             success: true,
             payload: {
