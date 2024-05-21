@@ -1,7 +1,4 @@
-import {
-    QuasmComponent,
-    DeleteRoomResponse
-} from '@quasm/common';
+import { DeleteRoomResponse, QuasmComponent } from '@quasm/common';
 import { UUID } from 'crypto';
 import { FastifyInstance } from 'fastify';
 
@@ -23,29 +20,30 @@ export function addDeleteRoomHandler(
             `${request.user.userID} | POST /deleteRoom RECEIVED ${request.params.roomID}`
         );
 
-    try{
-        await dataAccess.roomRepository.deleteRoom(request.params.roomID as UUID);
+        try {
+            await dataAccess.roomRepository.deleteRoom(
+                request.params.roomID as UUID
+            );
 
-        await reply.send({
-            success: true,
-            payload: `Room ${request.params.roomID} deleted successfully`
-        });
+            await reply.send({
+                success: true,
+                payload: `Room ${request.params.roomID} deleted successfully`
+            });
 
-        logger.info(
-            QuasmComponent.HTTP,
-            `${request.user.userID} | POST /deleteRoom SUCCESS ${request.params.roomID}`
-        );
-    }
-    catch (error) {
-        logger.error(
-            QuasmComponent.HTTP,
-            `Error deleting room ${request.params.roomID}`
-        );
+            logger.info(
+                QuasmComponent.HTTP,
+                `${request.user.userID} | POST /deleteRoom SUCCESS ${request.params.roomID}`
+            );
+        } catch (error) {
+            logger.error(
+                QuasmComponent.HTTP,
+                `Error deleting room ${request.params.roomID}`
+            );
 
-        await reply.status(500).send({
-            success: false,
-            error: {message: 'Failed to delete room'}
-        });
-    }
+            await reply.status(500).send({
+                success: false,
+                error: { message: 'Failed to delete room' }
+            });
+        }
     });
 }

@@ -14,10 +14,10 @@ import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 import { addCreateRoomHandler } from '../handlers/createRoom';
+import { addDeleteRoomHandler } from '../handlers/deleteRoom';
 import { addFetchMessagesHandler } from '../handlers/fetchMessages';
 import { addFetchRoomsHandler } from '../handlers/fetchRooms';
 import { addGetRoomHandler } from '../handlers/getRoom';
-import { addDeleteRoomHandler } from '../handlers/deleteRoom';
 
 export function apiRoutes(
     authProvider: IAuthProvider,

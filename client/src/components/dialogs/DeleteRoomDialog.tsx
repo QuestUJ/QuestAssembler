@@ -1,6 +1,6 @@
-import { DeleteRoomResponse } from '@quasm/common';
 import { useParams } from '@tanstack/react-router';
 import { useState } from 'react';
+import shortUUID from 'short-uuid';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -11,11 +11,14 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
+import { useSocket } from '@/lib/socketIOStore';
 
 import { useToast } from '../ui/use-toast';
 
-async function deleteRoom(roomId: string, toast: any) {
-  console.log(`Deleting room with ID: ${roomId}`);
+/* async function deleteRoom(roomId: string, toast: any) {
+
+
+  /* console.log(`Deleting room with ID: ${roomId}`);
   try {
     const response: Response = await fetch(`/deleteRoom/${roomId}`, {
       method: 'POST'
@@ -45,7 +48,7 @@ async function deleteRoom(roomId: string, toast: any) {
     });
     return { success: false, message: 'Server error' };
   }
-}
+} */
 
 export function DeleteRoomDialog() {
   const [open, setOpen] = useState(false);
@@ -54,11 +57,31 @@ export function DeleteRoomDialog() {
   });
   const { toast } = useToast();
 
-  const handleDelete = async () => {
-    const result = await deleteRoom(roomId, toast);
-    if (result.success) {
-      setOpen(false);
+  const socket = useSocket();
+
+  const handleDelete = () => {
+    if (!socket) {
+      toast({
+        title: 'Error',
+        description: 'Socket is unavailable',
+        variant: 'destructive'
+      });
+      return;
     }
+
+    socket.emit('deleteRoom', { roomID: shortUUID().toUUID(roomId) }, res => {
+      if (res.success) {
+        toast({
+          title: 'Success!',
+          description: 'Successfully deleted the room!'
+        });
+      } else {
+        toast({
+          title: 'Error!',
+          description: 'Cannot delete the room.'
+        });
+      }
+    });
   };
 
   return (
