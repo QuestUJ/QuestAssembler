@@ -2,7 +2,11 @@ import { ApiMessagePayload, MsgEvent } from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '@/components/ui/use-toast';
-import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
+import {
+  SocketErrorToast,
+  useSocket,
+  useSocketEvent
+} from '@/lib/socketIOStore';
 
 interface Props {
   roomUUID: string;
@@ -16,10 +20,7 @@ export function useSocketChat({ roomUUID, characterUUID }: Props) {
 
   const sendMessage = (content: string) => {
     if (!socket) {
-      toast({
-        title: 'Connection issue! Try refreshing site!',
-        variant: 'destructive'
-      });
+      toast(SocketErrorToast);
       return;
     }
 

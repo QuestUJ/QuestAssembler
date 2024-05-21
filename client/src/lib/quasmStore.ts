@@ -1,8 +1,3 @@
-import {
-  CharacterDetails,
-  MessageDetails,
-  StoryChunkDetails
-} from '@quasm/common/';
 import { create } from 'zustand';
 
 import {
@@ -10,6 +5,11 @@ import {
   PLACEHOLDER_DUMMY_STORY,
   PLACEHOLDER_ROOM_PLAYERS
 } from './dummyData';
+import {
+  CharacterDetails,
+  MessageDetails,
+  StoryChunkDetails
+} from './sharedTypes';
 
 type QuasmState = {
   roomName: string | undefined;

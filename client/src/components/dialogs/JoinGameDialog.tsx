@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { useSocket } from '@/lib/socketIOStore';
+import { SocketErrorToast, useSocket } from '@/lib/socketIOStore';
 
 export function JoinGameDialog() {
   const [gameCode, setGameCode] = useState('');
@@ -26,10 +26,7 @@ export function JoinGameDialog() {
 
   const joinRoom = () => {
     if (!socket) {
-      toast({
-        title: 'Connection error! Try again.',
-        variant: 'destructive'
-      });
+      toast(SocketErrorToast);
       return;
     }
 

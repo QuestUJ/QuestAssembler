@@ -192,7 +192,7 @@ function CharacterSubmitTab({
 
 function SubmitStory() {
   const roomCharacters = useQuasmStore(
-    state => state.roomCharacters as CharacterDetails[] // again temporary solution as room Characters will need to be filled with sockets
+    state => state.roomCharacters // again temporary solution as room Characters will need to be filled with sockets
   );
 
   const { width } = useWindowSize();
@@ -204,10 +204,6 @@ function SubmitStory() {
   const isGameMaster = useQuasmStore(state => state.isGameMaster);
 
   const navigate = useNavigate({ from: '/room/$roomId/submitStory' });
-
-  useEffect(() => {
-    console.log(isGameMaster);
-  });
 
   useEffect(() => {
     if (!isGameMaster) {

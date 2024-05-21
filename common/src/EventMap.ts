@@ -33,6 +33,11 @@ export interface DeleteRoomPayload {
     roomID: string;
 }
 
+export interface SubmitActionPayload {
+    roomID: string;
+    content: string;
+}
+
 export interface ClientToServerEvents {
     joinRoom: (roomID: string, callback: (res: Ack) => void) => void;
     leaveRoom: (roomID: string, callback: (res: Ack) => void) => void;
@@ -50,6 +55,10 @@ export interface ClientToServerEvents {
         callback: (res: Ack<MsgEvent>) => void
     ) => void;
     deleteRoom: (data: DeleteRoomPayload, callback: (res: Ack) => void) => void;
+    submitAction: (
+        content: SubmitActionPayload,
+        callback: (res: Ack) => void
+    ) => void;
 }
 
 // ==============================================================================================
