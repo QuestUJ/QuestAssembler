@@ -81,7 +81,7 @@ export function BroadcastChat({ messages }: { messages: MessageDetails[] }) {
         </AccordionContent>
         <div className='mt-4 flex w-full items-center'>
           <hr className='flex-grow border-primary' />
-          <AccordionTrigger className='font-decorative rounded-md bg-primary p-2 text-sm font-bold text-primary-foreground'>
+          <AccordionTrigger className='rounded-md bg-primary p-2 font-decorative text-sm font-bold text-primary-foreground'>
             Chat
           </AccordionTrigger>
           <hr className='flex-grow border-primary' />

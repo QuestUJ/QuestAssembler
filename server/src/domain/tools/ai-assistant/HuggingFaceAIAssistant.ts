@@ -1,14 +1,16 @@
-import { IAIAssistant } from './IAIAssistant';
+import { HfInference } from '@huggingface/inference';
 
+import { IAIAssistant } from './IAIAssistant';
 /**
  * Simple HuggingFace client
  */
 export class HuggingFaceAiAssistant implements IAIAssistant {
+    private hfApiService;
     /**
      * @param hgToken huggingface access token (it is not required but without huggingface is blocking requests almost imediately)
      */
     constructor(hgToken: string) {
-        hgToken;
+        this.hfApiService = new HfInference(hgToken);
     }
 
     async getImage(prompt: string): Promise<Buffer> {
@@ -20,10 +22,13 @@ export class HuggingFaceAiAssistant implements IAIAssistant {
     }
 
     async getText(prompt: string): Promise<string> {
-        prompt;
-        await new Promise(resolve => {
-            resolve('');
-        });
-        return '';
+        return this.hfApiService
+            .textGeneration({
+                model: 'gpt2',
+                inputs: prompt,
+                max_new_tokens: 250, // maximum for text generation
+                max_length: 500
+            })
+            .then(value => value.generated_text);
     }
 }

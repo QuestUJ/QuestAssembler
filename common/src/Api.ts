@@ -78,3 +78,16 @@ export interface ApiMessagePayload {
 }
 
 export type FetchMessagesResponse = ApiResponse<ApiMessagePayload[]>;
+
+// ======================
+// /generateText/
+// ======================
+export interface GenerateTextPayload {
+    generatedText: string;
+}
+
+export interface GenerateTextBody {
+    prompt: string;
+}
+
+export type GenerateTextResponse = ApiResponse<GenerateTextPayload>;

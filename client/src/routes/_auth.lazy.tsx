@@ -110,7 +110,7 @@ function AuthLayout() {
   return (
     <>
       {width >= 1024 ? (
-        <div className='bg-crust grid h-screen w-screen grid-cols-[300px_repeat(4,_1fr)] grid-rows-[5em_repeat(7,1fr)] overflow-x-auto from-[#222] to-[#111]'>
+        <div className='grid h-screen w-screen grid-cols-[300px_repeat(4,_1fr)] grid-rows-[5em_repeat(7,1fr)] overflow-x-auto bg-crust from-[#222] to-[#111]'>
           <div className='row-span-8'>
             <SidebarFixed isOnDashboard={roomId === undefined} />
           </div>
@@ -126,7 +126,7 @@ function AuthLayout() {
           <div>
             <TopBar />
           </div>
-          <div className='bg-crust row-span-7 from-[#222] to-[#111]'>
+          <div className='row-span-7 bg-crust from-[#222] to-[#111]'>
             <Outlet />
           </div>
         </div>
