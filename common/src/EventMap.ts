@@ -9,6 +9,7 @@ export interface SocketPlayerDetails {
     nick: string;
     description?: string;
     profileIMG?: string;
+    isReady: boolean;
 }
 
 export interface SocketMessagePayload {

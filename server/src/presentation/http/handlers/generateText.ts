@@ -8,7 +8,7 @@ import { FastifyInstance } from 'fastify';
 import { IAIAssistant } from '@/domain/tools/ai-assistant/IAIAssistant';
 import { logger } from '@/infrastructure/logger/Logger';
 
-export function addLLMSupportHandler(
+export function addGenerateTextHandler(
     fastify: FastifyInstance,
     aiAssistant: IAIAssistant
 ) {

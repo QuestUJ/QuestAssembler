@@ -13,16 +13,4 @@ export type StoryChunkDetails = {
   imageURL: string | undefined;
 };
 
-export type TurnSubmitDetails = {
-  content: string;
-  timestamp: string;
-};
-
-export type CharacterDetails = {
-  profileIMG?: string;
-  nick: string;
-  characterID: string;
-  submit: TurnSubmitDetails | null;
-};
-
 export type MessageTypes = MessageDetails | StoryChunkDetails;

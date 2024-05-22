@@ -21,13 +21,15 @@ export function submitActionHandler({ socket, dataAccess, io }: HandlerConfig) {
                 success: true,
                 payload: {
                     content: savedContent,
-                    timestamp
+                    timestamp: timestamp.toISOString()
                 }
             });
 
             const masterID = room.characters.getGameMaster().userID;
 
             const roomSockets = await io.in(roomID).fetchSockets();
+
+            socket.to(roomID).emit('playerReady', character.id);
 
             const masterSocket = roomSockets.find(
                 socket => socket.data.userID === masterID
@@ -39,7 +41,7 @@ export function submitActionHandler({ socket, dataAccess, io }: HandlerConfig) {
                     nick: character.getNick(),
                     profileIMG: character.profileIMG,
                     content: savedContent,
-                    timestamp
+                    timestamp: timestamp.toISOString()
                 });
             }
         });

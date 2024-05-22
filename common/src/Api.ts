@@ -34,18 +34,23 @@ export type FetchRoomsResponse = ApiResponse<ApiRoomPayload[]>;
 export interface ApiPlayerPayload {
     id: string;
     nick: string;
-    profilePicture?: string;
+    profileIMG?: string;
+    isReady: boolean;
 }
 
 export interface RoomDetailsPayload {
     id: string;
     roomName: string;
     gameMasterID: string;
-    players: ApiPlayerPayload[];
     currentPlayer: ApiPlayerPayload;
 }
 
 export type GetRoomResponse = ApiResponse<RoomDetailsPayload>;
+
+// =======================
+// /getRoomPlayers/
+// =======================
+export type GetRoomPlayersResponse = ApiResponse<ApiPlayerPayload[]>;
 
 // =======================
 // /joinRoom/

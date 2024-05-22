@@ -4,6 +4,8 @@ import { FastifyInstance } from 'fastify';
 
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
+import { getRoomCheckUser } from './utils';
+
 export function addGetTurnSubmitHandler(
     fastify: FastifyInstance,
     dataAccess: DataAccessFacade
@@ -14,9 +16,11 @@ export function addGetTurnSubmitHandler(
         };
         Reply: GetTurnSubmitResponse;
     }>('/getTurnSubmit/:roomId', async (request, reply) => {
-        const room = await dataAccess.roomRepository.getRoomByID(
-            request.params.roomId as UUID
-        );
+        const room = await getRoomCheckUser({
+            roomID: request.params.roomId as UUID,
+            userID: request.user.userID,
+            roomRepo: dataAccess.roomRepository
+        });
 
         const character = room.characters.getCharacterByUserID(
             request.user.userID
