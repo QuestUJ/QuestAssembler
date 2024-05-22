@@ -21,7 +21,8 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { SocketErrorToast, useSocket } from '@/lib/socketIOStore';
+import { useSocket } from '@/lib/socketIOStore';
+import { SocketErrorToast } from '@/lib/toasters';
 
 import {
   Form,

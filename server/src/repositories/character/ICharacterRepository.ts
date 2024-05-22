@@ -1,6 +1,7 @@
 import { UUID } from 'crypto';
 
 import { Character, CharacterDetails } from '@/domain/game/character/Character';
+import { PlayerTurnSubmit } from '@/domain/game/story/PlayerTurnSubmit';
 
 export interface ICharacterRepository {
     /**
@@ -23,4 +24,13 @@ export interface ICharacterRepository {
      * Deletes the character based on id
      */
     deleteCharacter(id: UUID): Promise<void>;
+    /**
+     * Sets the characters turn action
+     */
+    setTurnSubmit(
+        characterID: UUID,
+        content: string
+    ): Promise<PlayerTurnSubmit>;
+
+    resetTurnSubmit(characterID: UUID): Promise<void>;
 }

@@ -60,8 +60,3 @@ export function useSocketEvent<T extends keyof ServerToClientEvents>(
     };
   }, [event, handler, socket]);
 }
-
-export const SocketErrorToast: { title: string; variant: 'destructive' } = {
-  title: 'Connection issue! Try refreshing site!',
-  variant: 'destructive'
-};

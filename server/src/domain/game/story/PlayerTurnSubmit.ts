@@ -1,10 +1,8 @@
 export class PlayerTurnSubmit {
-    content: string = '';
-    readonly timestamp: Date = new Date();
-
-    constructor(content: string) {
-        this.content = content;
-    }
+    constructor(
+        readonly content: string,
+        readonly timestamp: Date
+    ) {}
 
     length() {
         return this.content.length;

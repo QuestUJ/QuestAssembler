@@ -18,6 +18,7 @@ import { addCreateRoomHandler } from '../handlers/createRoom';
 import { addFetchMessagesHandler } from '../handlers/fetchMessages';
 import { addFetchRoomsHandler } from '../handlers/fetchRooms';
 import { addGetRoomHandler } from '../handlers/getRoom';
+import { addGetTurnSubmitHandler } from '../handlers/getTurnSubmit';
 import { addLLMSupportHandler } from '../handlers/LLMSupport';
 
 export function apiRoutes(
@@ -65,6 +66,7 @@ export function apiRoutes(
         addCreateRoomHandler(fastify, dataAccess);
         addFetchMessagesHandler(fastify, dataAccess);
         addLLMSupportHandler(fastify, aiAssistant);
+        addGetTurnSubmitHandler(fastify, dataAccess);
 
         done();
     };

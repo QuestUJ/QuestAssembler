@@ -22,7 +22,8 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { SocketErrorToast, useSocket } from '@/lib/socketIOStore';
+import { useSocket } from '@/lib/socketIOStore';
+import { getResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
 
 import {
   Form,
@@ -92,11 +93,7 @@ export function RoomSettingsDialog() {
             title: 'Room settings changed successfully'
           });
         } else {
-          toast({
-            title: 'Something went wrong!',
-            variant: 'destructive',
-            description: 'Server side error'
-          });
+          toast(getResponseErrorToast(res.error));
         }
       }
     );

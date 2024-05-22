@@ -12,6 +12,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { useSocket } from '@/lib/socketIOStore';
+import { SocketErrorToast } from '@/lib/toasters';
 
 import { useToast } from '../ui/use-toast';
 
@@ -26,11 +27,7 @@ export function DeleteRoomDialog() {
 
   const handleDelete = () => {
     if (!socket) {
-      toast({
-        title: 'Error',
-        description: 'Socket is unavailable',
-        variant: 'destructive'
-      });
+      toast(SocketErrorToast);
       return;
     }
 

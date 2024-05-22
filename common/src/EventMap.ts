@@ -38,6 +38,11 @@ export interface SubmitActionPayload {
     content: string;
 }
 
+export interface SubmitActionAck {
+    content: string;
+    timestamp: Date;
+}
+
 export interface ClientToServerEvents {
     joinRoom: (roomID: string, callback: (res: Ack) => void) => void;
     leaveRoom: (roomID: string, callback: (res: Ack) => void) => void;
@@ -57,7 +62,7 @@ export interface ClientToServerEvents {
     deleteRoom: (data: DeleteRoomPayload, callback: (res: Ack) => void) => void;
     submitAction: (
         content: SubmitActionPayload,
-        callback: (res: Ack) => void
+        callback: (res: Ack<SubmitActionAck>) => void
     ) => void;
 }
 

@@ -2,11 +2,9 @@ import { ApiMessagePayload, MsgEvent } from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '@/components/ui/use-toast';
-import {
-  SocketErrorToast,
-  useSocket,
-  useSocketEvent
-} from '@/lib/socketIOStore';
+import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
+
+import { SocketErrorToast } from '../toasters';
 
 interface Props {
   roomUUID: string;

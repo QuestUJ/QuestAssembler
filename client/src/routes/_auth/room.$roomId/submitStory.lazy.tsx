@@ -1,4 +1,4 @@
-import { GenerateTextBody, GenerateTextPayload } from '@quasm/common';
+import { ApiGenerateTextPayload, GenerateTextBody } from '@quasm/common';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { Bot, CheckCircle, RotateCcw } from 'lucide-react';
 import { useEffect } from 'react';
@@ -75,7 +75,7 @@ function StoryTextArea() {
   const setStory = useStoryChunkStore(state => state.setStory);
   const story = useStoryChunkStore(state => state.story);
   const oldStory = useStoryChunkStore(state => state.oldStory);
-  const reverseStory = useStoryChunkStore(state => state.reverseStory);
+  const reverseStory = useStoryChunkStore(state => state.revertStory);
   return (
     <div className='relative lg:h-full lg:w-full'>
       <Textarea
@@ -110,7 +110,7 @@ function LLMAssistanceButton() {
   // a bit quirky as the mutation does not really mutate anything, but the interaction is just a prototype
   // TODO: rethink which method to use for AI assistance
   const { mutate: LLMSupportMutation } = useApiPost<
-    GenerateTextPayload,
+    ApiGenerateTextPayload,
     GenerateTextBody
   >({
     path: '/generateText',
@@ -256,7 +256,7 @@ function SubmitStory() {
       ) : (
         <div className='flex min-h-screen w-full flex-col items-center gap-2 bg-crust from-[#222] to-[#111]'>
           <CharacterSubmitTab roomCharacters={roomCharacters} />
-          <ActionsAccordion story={story} setStory={setStory} />
+          <ActionsAccordion />
           <Button className='flex w-4/5 items-center' onClick={handleSubmit}>
             <CheckCircle className='' />
             Submit story chunk

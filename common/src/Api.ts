@@ -82,7 +82,7 @@ export type FetchMessagesResponse = ApiResponse<ApiMessagePayload[]>;
 // ======================
 // /generateText/
 // ======================
-export interface GenerateTextPayload {
+export interface ApiGenerateTextPayload {
     generatedText: string;
 }
 
@@ -90,5 +90,16 @@ export interface GenerateTextBody {
     prompt: string;
 }
 
-export type GenerateTextResponse = ApiResponse<GenerateTextPayload>;
-export type DeleteRoomResponse = ApiResponse<{ message: string }>;
+export type GenerateTextResponse = ApiResponse<ApiGenerateTextPayload>;
+
+// ======================
+// /getTurnSubmit/
+// ======================
+interface TurnSubmit {
+    content: string;
+    timestamp: string;
+}
+
+export type ApiTurnSubmitPayload = TurnSubmit | null;
+
+export type GetTurnSubmitResponse = ApiResponse<ApiTurnSubmitPayload>;

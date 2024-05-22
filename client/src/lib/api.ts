@@ -5,6 +5,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/ui/use-toast';
 import { config } from '@/config';
 
+import { getResponseErrorToast } from './toasters';
+
 interface ApiCall {
   path: string;
   queryKey: string[];
@@ -83,11 +85,7 @@ export function useApiPost<Payload, Body>({
 
       // response handling
       if (!response.success) {
-        toast({
-          variant: 'destructive',
-          title: 'Something went wrong',
-          description: response.error?.message
-        });
+        toast(getResponseErrorToast(response.error?.message));
         throw new Error(`Something went wrong ${response.error?.message}`);
       } else {
         onSuccess(response.payload! as Payload);

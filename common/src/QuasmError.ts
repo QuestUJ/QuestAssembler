@@ -47,7 +47,10 @@ export enum ErrorCode {
     MissingChat = 'missing.chat',
     MessagesLimit = 'messages.limit',
     MessageLength = 'message.length',
-    IncorrectMessageDetails = 'incorrect.message.details'
+    IncorrectMessageDetails = 'incorrect.message.details',
+
+    // Story related
+    MasterAction = 'master.action'
 }
 
 /**
@@ -88,7 +91,9 @@ export const ErrorMap: Record<ErrorCode, string> = {
     [ErrorCode.MissingChat]: `Could not find appropriate chat`,
     [ErrorCode.MessagesLimit]: `Limit of messages per chat has been reached`,
     [ErrorCode.MessageLength]: `Message is too long`,
-    [ErrorCode.IncorrectMessageDetails]: `Message contains incorrect information`
+    [ErrorCode.IncorrectMessageDetails]: `Message contains incorrect information`,
+
+    [ErrorCode.MasterAction]: `Game master is not able to submit actions only Story`
 };
 
 export class QuasmError extends Error {

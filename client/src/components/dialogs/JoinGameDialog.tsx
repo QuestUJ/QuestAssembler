@@ -15,7 +15,8 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { SocketErrorToast, useSocket } from '@/lib/socketIOStore';
+import { useSocket } from '@/lib/socketIOStore';
+import { getResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
 
 export function JoinGameDialog() {
   const [gameCode, setGameCode] = useState('');
@@ -40,11 +41,7 @@ export function JoinGameDialog() {
           queryKey: ['roomFetch']
         });
       } else {
-        toast({
-          title: 'Something went wrong!',
-          variant: 'destructive',
-          description: res.error
-        });
+        toast(getResponseErrorToast(res.error));
       }
     });
   };
