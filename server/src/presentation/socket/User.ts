@@ -7,6 +7,7 @@ import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 import { changeCharacterSettingsHandler } from './handlers/changeCharacterSettings';
 import { changeRoomSettingsHandler } from './handlers/changeRoomSettings';
+import { deleteRoomHandler } from './handlers/deleteRoom';
 import { joinRoomHandler } from './handlers/joinRoom';
 import { sendMessageHandler } from './handlers/sendMessage';
 import { subscribeToRoomHandler } from './handlers/subscribeToRoom';
@@ -47,6 +48,13 @@ export class User {
         });
 
         changeRoomSettingsHandler({
+            io,
+            socket,
+            dataAccess,
+            authProvider
+        });
+
+        deleteRoomHandler({
             io,
             socket,
             dataAccess,
