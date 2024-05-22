@@ -3,7 +3,7 @@ import { UUID } from 'crypto';
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
 
-export function submitActionHandler({ socket, dataAccess }: HandlerConfig) {
+export function submitActionHandler({ socket, dataAccess, io }: HandlerConfig) {
     socket.on('submitAction', ({ content, roomID }, res) => {
         withErrorHandling(res, async () => {
             const room = await dataAccess.roomRepository.getRoomByID(
@@ -24,6 +24,24 @@ export function submitActionHandler({ socket, dataAccess }: HandlerConfig) {
                     timestamp
                 }
             });
+
+            const masterID = room.characters.getGameMaster().userID;
+
+            const roomSockets = await io.in(roomID).fetchSockets();
+
+            const masterSocket = roomSockets.find(
+                socket => socket.data.userID === masterID
+            );
+
+            if (masterSocket) {
+                masterSocket.emit('turnSubmit', {
+                    characterID: character.id,
+                    nick: character.getNick(),
+                    profileIMG: character.profileIMG,
+                    content: savedContent,
+                    timestamp
+                });
+            }
         });
     });
 }

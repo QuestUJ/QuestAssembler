@@ -50,7 +50,8 @@ export enum ErrorCode {
     IncorrectMessageDetails = 'incorrect.message.details',
 
     // Story related
-    MasterAction = 'master.action'
+    MasterAction = 'master.action',
+    CantViewOtherActions = 'cant.view.other.actions'
 }
 
 /**
@@ -93,7 +94,8 @@ export const ErrorMap: Record<ErrorCode, string> = {
     [ErrorCode.MessageLength]: `Message is too long`,
     [ErrorCode.IncorrectMessageDetails]: `Message contains incorrect information`,
 
-    [ErrorCode.MasterAction]: `Game master is not able to submit actions only Story`
+    [ErrorCode.MasterAction]: `Game master is not able to submit actions only Story`,
+    [ErrorCode.CantViewOtherActions]: `Regular player cannot view other players' turn submits`
 };
 
 export class QuasmError extends Error {

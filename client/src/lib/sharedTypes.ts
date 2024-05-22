@@ -14,15 +14,15 @@ export type StoryChunkDetails = {
 };
 
 export type TurnSubmitDetails = {
-  content: string | undefined;
-  timestamp: Date | undefined;
+  content: string;
+  timestamp: string;
 };
 
 export type CharacterDetails = {
-  pictureURL: string | undefined;
-  name: string;
-  turnSubmit: TurnSubmitDetails;
-  id: number;
+  profileIMG?: string;
+  nick: string;
+  characterID: string;
+  submit: TurnSubmitDetails | null;
 };
 
 export type MessageTypes = MessageDetails | StoryChunkDetails;

@@ -5,15 +5,10 @@ import {
   PLACEHOLDER_DUMMY_STORY,
   PLACEHOLDER_ROOM_PLAYERS
 } from './dummyData';
-import {
-  CharacterDetails,
-  MessageDetails,
-  StoryChunkDetails
-} from './sharedTypes';
+import { MessageDetails, StoryChunkDetails } from './sharedTypes';
 
 type QuasmState = {
   roomName: string | undefined;
-  roomCharacters: CharacterDetails[];
   isGameMaster: boolean;
   currentPlayerName: string;
   currentPlayerURLImage: string | undefined;

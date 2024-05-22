@@ -103,3 +103,17 @@ interface TurnSubmit {
 export type ApiTurnSubmitPayload = TurnSubmit | null;
 
 export type GetTurnSubmitResponse = ApiResponse<ApiTurnSubmitPayload>;
+
+// ======================
+// /fetchTurnSubmits/
+// ======================
+export interface ApiTurnSubmitWithCharacterPayload {
+    characterID: string;
+    profileIMG?: string;
+    nick: string;
+    submit: ApiTurnSubmitPayload;
+}
+
+export type FetchTurnSubmitsResponse = ApiResponse<
+    ApiTurnSubmitWithCharacterPayload[]
+>;

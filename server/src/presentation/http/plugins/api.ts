@@ -17,6 +17,7 @@ import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 import { addCreateRoomHandler } from '../handlers/createRoom';
 import { addFetchMessagesHandler } from '../handlers/fetchMessages';
 import { addFetchRoomsHandler } from '../handlers/fetchRooms';
+import { addFetchTurnSubmitsHandler } from '../handlers/fetchTurnSubmits';
 import { addGetRoomHandler } from '../handlers/getRoom';
 import { addGetTurnSubmitHandler } from '../handlers/getTurnSubmit';
 import { addLLMSupportHandler } from '../handlers/LLMSupport';
@@ -67,6 +68,7 @@ export function apiRoutes(
         addFetchMessagesHandler(fastify, dataAccess);
         addLLMSupportHandler(fastify, aiAssistant);
         addGetTurnSubmitHandler(fastify, dataAccess);
+        addFetchTurnSubmitsHandler(fastify, dataAccess);
 
         done();
     };

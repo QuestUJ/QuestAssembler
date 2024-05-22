@@ -40,7 +40,7 @@ export interface SubmitActionPayload {
 
 export interface SubmitActionAck {
     content: string;
-    timestamp: Date;
+    timestamp: string;
 }
 
 export interface ClientToServerEvents {
@@ -73,13 +73,21 @@ export interface MsgEvent {
     from: string;
     authorName: string;
     characterPictureURL: string | undefined;
-    timestamp: Date;
+    timestamp: string;
     content: string;
 }
 
 export interface RoomSettingsChangeEvent {
     name: string;
     maxPlayers: number;
+}
+
+export interface TurnSubmitEvent {
+    characterID: string;
+    nick: string;
+    profileIMG?: string;
+    content: string;
+    timestamp: string;
 }
 
 export interface ServerToClientEvents {
@@ -89,6 +97,8 @@ export interface ServerToClientEvents {
     changeCharacterDetails: (player: SocketPlayerDetails) => void;
     changeRoomSettings: (roomData: RoomSettingsChangeEvent) => void;
     roomDeletion: () => Promise<void>; // wanted to use navigate and invalidate queries, so async function
+    turnSubmit: (submit: TurnSubmitEvent) => void;
+    playerReady: (characterID: string) => void;
 }
 
 // =============================================================================================
