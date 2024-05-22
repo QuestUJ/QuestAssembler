@@ -91,3 +91,4 @@ export interface GenerateTextBody {
 }
 
 export type GenerateTextResponse = ApiResponse<GenerateTextPayload>;
+export type DeleteRoomResponse = ApiResponse<{ message: string }>;

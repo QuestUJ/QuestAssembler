@@ -1,5 +1,10 @@
 import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
-import { createLazyFileRoute, useParams } from '@tanstack/react-router';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  createLazyFileRoute,
+  useNavigate,
+  useParams
+} from '@tanstack/react-router';
 import { Outlet } from '@tanstack/react-router';
 import { Crown, Swords } from 'lucide-react';
 import { useEffect } from 'react';
@@ -12,7 +17,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { User } from '@/components/User';
 import { useWindowSize } from '@/hooks/windowSize';
 import { useQuasmStore } from '@/lib/quasmStore';
-import { useIOStore } from '@/lib/socketIOStore';
+import { useIOStore, useSocketEvent } from '@/lib/socketIOStore';
 import { cn } from '@/lib/utils';
 
 function RoomIcon({ isGameMaster }: { isGameMaster: boolean }) {
@@ -83,6 +88,9 @@ function AuthLayout() {
 
   const { toast } = useToast();
 
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (!isAuthenticated) return;
 
@@ -107,6 +115,20 @@ function AuthLayout() {
     });
   }, [connectSocket, getAccessTokenSilently, toast, isAuthenticated]);
 
+  useSocketEvent('roomDeletion', async () => {
+    await queryClient.invalidateQueries({
+      queryKey: ['roomFetch']
+    });
+    toast({
+      title: 'You have been redirected',
+      description: 'Room you were a part of has been deleted!'
+    });
+    await navigate({
+      to: '/dashboard'
+    });
+    return;
+  }); // had to move the handler here, because if handler couldn't fire when sidebar was hidden in mobile view (SidebarComponentRoom wasn't mounted)
+  // TODO: probably a good idea to move rest of the handlers here, or at least write the new ones here
   return (
     <>
       {width >= 1024 ? (
