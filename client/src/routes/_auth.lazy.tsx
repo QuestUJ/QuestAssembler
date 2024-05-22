@@ -114,7 +114,6 @@ function AuthLayout() {
   }, [connectSocket, getAccessTokenSilently, toast, isAuthenticated]);
 
   useSocketEvent('roomDeletion', async () => {
-    console.log('dupa');
     await queryClient.invalidateQueries({
       queryKey: ['roomFetch']
     });
