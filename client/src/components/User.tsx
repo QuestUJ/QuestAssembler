@@ -24,7 +24,7 @@ export function User() {
       <h2 className='hidden text-xs lg:block lg:text-sm'>{user?.name}</h2>
       <img className='h-10 rounded-full' src={user?.picture} />
       <Button
-        className='font-decorative w-16 font-bold'
+        className='w-16 font-decorative font-bold'
         onClick={() => void logout()}
       >
         Log out

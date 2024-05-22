@@ -25,7 +25,7 @@ export function InputBar({
         onChange={e => setInputValue(e.target.value)}
       />
       <Button
-        className='font-decorative h-full font-bold'
+        className='h-full font-decorative font-bold'
         onClick={handleClick}
       >
         {sendButtonText}

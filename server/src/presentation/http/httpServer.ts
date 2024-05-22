@@ -6,6 +6,7 @@ import FastifyIO from 'fastify-socket.io';
 import path from 'path';
 
 import { config } from '@/config';
+import { IAIAssistant } from '@/domain/tools/ai-assistant/IAIAssistant';
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
 import { logger } from '@/infrastructure/logger/Logger';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
@@ -22,7 +23,8 @@ const { ALLOWED_ORIGIN, NODE_ENV } = config.pick([
  */
 export async function startHTTPServer(
     dataAccess: DataAccessFacade,
-    authProvider: IAuthProvider
+    authProvider: IAuthProvider,
+    aiAssistant: IAIAssistant
 ) {
     const app = Fastify();
 
@@ -72,7 +74,7 @@ export async function startHTTPServer(
         root: staticPath
     });
 
-    await app.register(apiRoutes(authProvider, dataAccess), {
+    await app.register(apiRoutes(authProvider, dataAccess, aiAssistant), {
         prefix: '/api/v1'
     });
 

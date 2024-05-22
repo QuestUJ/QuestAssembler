@@ -81,7 +81,6 @@ export function RoomSettingsDialog() {
           description: 'Socket is unavailable'
         });
       } else {
-        console.log('got here');
         socket.emit(
           'changeRoomSettings',
           {

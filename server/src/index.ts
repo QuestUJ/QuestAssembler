@@ -3,6 +3,7 @@ import 'dotenv/config';
 import { QuasmComponent } from '@quasm/common';
 
 import { config } from './config';
+import { HuggingFaceAiAssistant } from './domain/tools/ai-assistant/HuggingFaceAIAssistant';
 import { Auth0Provider } from './domain/tools/auth-provider/Auth0Provider';
 import { logger } from './infrastructure/logger/Logger';
 import { db } from './infrastructure/postgres/db';
@@ -16,10 +17,11 @@ import { ChatRepositoryPostgres } from './repositories/chat/ChatRepositoryPostgr
 import { DataAccessFacade } from './repositories/DataAccessFacade';
 import { RoomRepositoryPostgres } from './repositories/room/RoomRepositoryPostgres';
 
-const { PORT, AUTH0_DOMAIN, AUTH0_AUDIENCE } = config.pick([
+const { PORT, AUTH0_DOMAIN, AUTH0_AUDIENCE, HUGGINGFACE_TOKEN } = config.pick([
     'PORT',
     'AUTH0_DOMAIN',
-    'AUTH0_AUDIENCE'
+    'AUTH0_AUDIENCE',
+    'HUGGINGFACE_TOKEN'
 ]);
 
 (async () => {
@@ -36,7 +38,9 @@ const { PORT, AUTH0_DOMAIN, AUTH0_AUDIENCE } = config.pick([
         audience: AUTH0_AUDIENCE
     });
 
-    const app = await startHTTPServer(dataAccess, auth0);
+    const aiAssistant = new HuggingFaceAiAssistant(HUGGINGFACE_TOKEN);
+
+    const app = await startHTTPServer(dataAccess, auth0, aiAssistant);
     startSocketServer(app.io, dataAccess, auth0);
 
     await app.listen({ port: PORT, host: '0.0.0.0' });
