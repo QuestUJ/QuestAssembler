@@ -10,6 +10,7 @@ import {
     type FastifyRequest
 } from 'fastify';
 
+import { IAIAssistant } from '@/domain/tools/ai-assistant/IAIAssistant';
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
@@ -17,10 +18,12 @@ import { addCreateRoomHandler } from '../handlers/createRoom';
 import { addFetchMessagesHandler } from '../handlers/fetchMessages';
 import { addFetchRoomsHandler } from '../handlers/fetchRooms';
 import { addGetRoomHandler } from '../handlers/getRoom';
+import { addLLMSupportHandler } from '../handlers/LLMSupport';
 
 export function apiRoutes(
     authProvider: IAuthProvider,
-    dataAccess: DataAccessFacade
+    dataAccess: DataAccessFacade,
+    aiAssistant: IAIAssistant
 ) {
     return (
         fastify: FastifyInstance,
@@ -61,6 +64,7 @@ export function apiRoutes(
         addGetRoomHandler(fastify, dataAccess);
         addCreateRoomHandler(fastify, dataAccess);
         addFetchMessagesHandler(fastify, dataAccess);
+        addLLMSupportHandler(fastify, aiAssistant);
 
         done();
     };

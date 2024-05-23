@@ -29,6 +29,10 @@ export interface ChangeRoomSettingsPayload {
     maxPlayers: number;
 }
 
+export interface DeleteRoomPayload {
+    roomID: string;
+}
+
 export interface ClientToServerEvents {
     joinRoom: (roomID: string, callback: (res: Ack) => void) => void;
     leaveRoom: (roomID: string, callback: (res: Ack) => void) => void;
@@ -45,6 +49,7 @@ export interface ClientToServerEvents {
         message: SocketMessagePayload,
         callback: (res: Ack<MsgEvent>) => void
     ) => void;
+    deleteRoom: (data: DeleteRoomPayload, callback: (res: Ack) => void) => void;
 }
 
 // ==============================================================================================
@@ -68,6 +73,7 @@ export interface ServerToClientEvents {
     playerLeft: (player: SocketPlayerDetails) => void;
     changeCharacterDetails: (player: SocketPlayerDetails) => void;
     changeRoomSettings: (roomData: RoomSettingsChangeEvent) => void;
+    roomDeletion: () => Promise<void>; // wanted to use navigate and invalidate queries, so async function
 }
 
 // =============================================================================================
