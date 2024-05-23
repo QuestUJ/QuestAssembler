@@ -3,8 +3,6 @@ import { UUID } from 'crypto';
 import { Character, CharacterDetails } from '@/domain/game/character/Character';
 
 export interface ICharacterRepository {
-    getCharacter(roomID: UUID, userID: UUID): Promise<Character>;
-
     /**
      * Just persists some character attributes changes
      */

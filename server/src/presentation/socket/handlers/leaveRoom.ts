@@ -26,9 +26,8 @@ export function leaveRoomHandler({
                 roomID as UUID
             );
 
-            const character = await dataAccess.characterRepository.getCharacter(
-                roomID as UUID,
-                socket.data.userID as UUID
+            const character = room.characters.getCharacterByUserID(
+                socket.data.userID
             );
 
             const roomSockets = await io.in(room.id).fetchSockets();
