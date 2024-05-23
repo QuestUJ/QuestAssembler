@@ -18,4 +18,9 @@ export interface ICharacterRepository {
         roomID: UUID,
         characterDetails: CharacterDetails
     ): Promise<Character>;
+
+    /**
+     * Deletes the character based on id
+     */
+    deleteCharacter(id: UUID): Promise<void>;
 }

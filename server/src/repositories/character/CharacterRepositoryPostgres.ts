@@ -51,4 +51,8 @@ export class CharacterRepositoryPostgres implements ICharacterRepository {
 
         return newCharacter;
     }
+
+    async deleteCharacter(id: UUID): Promise<void> {
+        await this.db.deleteFrom('Characters').where('id', '=', id).execute();
+    }
 }

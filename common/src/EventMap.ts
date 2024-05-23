@@ -35,6 +35,7 @@ export interface DeleteRoomPayload {
 
 export interface ClientToServerEvents {
     joinRoom: (roomID: string, callback: (res: Ack) => void) => void;
+    leaveRoom: (roomID: string, callback: (res: Ack) => void) => void;
     subscribeToRoom: (roomID: string, callback: (res: Ack) => void) => void;
     changeCharacterSettings: (
         data: ChangeCharacterSettingsPayload,
@@ -69,6 +70,7 @@ export interface RoomSettingsChangeEvent {
 export interface ServerToClientEvents {
     message: (message: MsgEvent) => void;
     newPlayer: (player: SocketPlayerDetails) => void;
+    playerLeft: (player: SocketPlayerDetails) => void;
     changeCharacterDetails: (player: SocketPlayerDetails) => void;
     changeRoomSettings: (roomData: RoomSettingsChangeEvent) => void;
     roomDeletion: () => Promise<void>; // wanted to use navigate and invalidate queries, so async function

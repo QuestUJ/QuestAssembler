@@ -9,6 +9,7 @@ import { changeCharacterSettingsHandler } from './handlers/changeCharacterSettin
 import { changeRoomSettingsHandler } from './handlers/changeRoomSettings';
 import { deleteRoomHandler } from './handlers/deleteRoom';
 import { joinRoomHandler } from './handlers/joinRoom';
+import { leaveRoomHandler } from './handlers/leaveRoom';
 import { sendMessageHandler } from './handlers/sendMessage';
 import { subscribeToRoomHandler } from './handlers/subscribeToRoom';
 
@@ -20,6 +21,13 @@ export class User {
         authProvider: IAuthProvider
     ) {
         joinRoomHandler({
+            io,
+            socket,
+            dataAccess,
+            authProvider
+        });
+
+        leaveRoomHandler({
             io,
             socket,
             dataAccess,

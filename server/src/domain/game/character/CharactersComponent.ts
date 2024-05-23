@@ -9,6 +9,7 @@ import { Character, CharacterDetails } from './Character';
 export class CharactersComponent {
     private characters: Character[] = [];
     private characterJoinHandler?: (character: Character) => void;
+    private characterLeaveHandler?: (character: Character) => void;
 
     constructor(
         private characterRepository: ICharacterRepository,
@@ -18,6 +19,10 @@ export class CharactersComponent {
 
     onCharacterJoin(handler: (character: Character) => void) {
         this.characterJoinHandler = handler;
+    }
+
+    onCharacterLeave(handler: (character: Character) => void) {
+        this.characterLeaveHandler = handler;
     }
 
     validateCharacter(character: CharacterDetails) {
@@ -115,5 +120,25 @@ export class CharactersComponent {
 
     hasEmptySlot(): boolean {
         return this.characters.length < this.settings.getMaxPlayerCount();
+    }
+
+    async deleteCharacter(id: UUID): Promise<void> {
+        const characterIndex = this.characters.findIndex(
+            character => character.id == id
+        );
+        if (characterIndex == -1) {
+            throw new QuasmError(
+                QuasmComponent.CHARACTER,
+                404,
+                ErrorCode.CharacterNotFound,
+                `Character with id ${id} was not found when someone tried to delete it`
+            );
+        }
+        const characterToBeDeleted = this.characters[characterIndex];
+        if (this.characterLeaveHandler) {
+            this.characterLeaveHandler(characterToBeDeleted);
+        }
+        this.characters.splice(characterIndex, 1);
+        await characterToBeDeleted.delete();
     }
 }
