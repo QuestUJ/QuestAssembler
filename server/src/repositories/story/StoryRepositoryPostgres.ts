@@ -1,72 +1,47 @@
-// export class StoryRepositoryPostgres implements IStoryRepository {
-//     constructor(private db: Kysely<Database>) {}
-//
-//     fetchStoryChunks(
-//         roomID: string,
-//         range: ChunkRange
-//     ): Promise<StoryChunk[]> {}
-//
-//     async setPlayerTurnSubmit(
-//         id: UUID,
-//         submit: PlayerTurnSubmit
-//     ): Promise<void> {
-//         await this.db
-//             .updateTable('Characters')
-//             .set(submit)
-//             .where('id', '=', id)
-//             .execute();
-//     }
-//
-//     async addStoryChunk(roomID: UUID, chunk: StoryChunk): Promise<StoryChunk> {
-//         await this.db
-//             .insertInto('StoryChunks')
-//             .values({
-//                 roomID: roomID,
-//                 title: chunk.title,
-//                 content: chunk.content,
-//                 imageURL: chunk.imageUrl
-//             })
-//             .executeTakeFirstOrThrow();
-//         return chunk;
-//     }
-//
-//     async fetchStory(roomID: UUID, range: ChunkRange): Promise<StoryChunk[]> {
-//         if (typeof range.offset == 'undefined')
-//             range.offset = DEFAULT_FETCHED_STORYCHUNKS;
-//
-//         const lowerBound = range.offset - range.count + 1;
-//         const upperBound = range.offset;
-//
-//         const storyChunkData = await this.db
-//             .selectFrom('StoryChunks')
-//             .where('roomID', '=', roomID)
-//             .where('id', '>=', lowerBound)
-//             .where('id', '<=', upperBound)
-//             .selectAll()
-//             .execute();
-//
-//         storyChunkData.forEach(r => {
-//             this.fetchedRooms.delete(r.chunkID as unknown as UUID);
-//         });
-//
-//         const result: StoryChunk[] = [];
-//
-//         storyChunkData.forEach(r => {
-//             if (!this.fetchedRooms.has(r.chunkID as unknown as UUID)) {
-//                 const chunk = new StoryChunk(
-//                     r.chunkID,
-//                     r.title,
-//                     r.content,
-//                     r.imageURL,
-//                     r.timestamp
-//                 );
-//                 this.fetchedStoryChunks.set(
-//                     r.chunkID as unknown as UUID,
-//                     chunk
-//                 );
-//                 result.push(chunk);
-//             }
-//         });
-//         return result;
-//     }
-// }
+import { ChunkRange } from '@quasm/common';
+import { UUID } from 'crypto';
+import { Kysely } from 'kysely';
+
+import { StoryChunk, StoryChunkDetails } from '@/domain/game/story/StoryChunk';
+import { Database } from '@/infrastructure/postgres/db';
+
+import { IStoryRepository } from './IStoryRepository';
+
+export class StoryRepositoryPostgres implements IStoryRepository {
+    constructor(private db: Kysely<Database>) {}
+
+    async addStoryChunk(
+        roomID: UUID,
+        chunk: StoryChunkDetails
+    ): Promise<StoryChunk> {
+        const saved = await this.db
+            .insertInto('StoryChunks')
+            .values({
+                roomID,
+                ...chunk
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+
+        return new StoryChunk(
+            saved.chunkID,
+            saved.title,
+            saved.content,
+            saved.imageURL ?? undefined,
+            saved.timestamp
+        );
+    }
+
+    async fetchStory(roomID: UUID, range: ChunkRange): Promise<StoryChunk[]> {
+        const storyChunkData = await this.db
+            .selectFrom('StoryChunks')
+            .where('roomID', '=', roomID)
+            .limit(range.count)
+            .selectAll()
+            .execute();
+
+        return storyChunkData.map(
+            ch => new StoryChunk(ch.chunkID, ch.title, ch.content)
+        );
+    }
+}

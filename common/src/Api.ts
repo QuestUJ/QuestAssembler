@@ -122,3 +122,14 @@ export interface ApiTurnSubmitWithCharacterPayload {
 export type FetchTurnSubmitsResponse = ApiResponse<
     ApiTurnSubmitWithCharacterPayload[]
 >;
+
+// ======================
+// /fetchStory/
+// ======================
+export interface ApiStoryChunk {
+    id: number;
+    content: string;
+    imageURL?: string;
+}
+
+export type FetchStoryResponse = ApiResponse<ApiStoryChunk[]>;

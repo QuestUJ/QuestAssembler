@@ -29,8 +29,9 @@ import { useToast } from '@/components/ui/use-toast';
 import { useWindowSize } from '@/hooks/windowSize';
 import { useApiGet, useApiPost } from '@/lib/api';
 import { useQuasmStore } from '@/lib/quasmStore';
-import { useSocketEvent } from '@/lib/socketIOStore';
+import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
 import { useStoryChunkStore } from '@/lib/storyChunkStore';
+import { getResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
 import { cn } from '@/lib/utils';
 
 interface TurnSubmitDetails {
@@ -272,9 +273,48 @@ function SubmitStory() {
 
   const { width } = useWindowSize();
 
+  const { story, setStory } = useStoryChunkStore();
+
+  const socket = useSocket();
+
   const handleSubmit = () => {
-    console.log('jestem zsubmitowany');
+    if (story.length <= 0) return;
+    if (!socket) {
+      toast(SocketErrorToast);
+      return;
+    }
+
+    socket.emit(
+      'submitStory',
+      {
+        roomID: roomUUID,
+        story
+      },
+      async res => {
+        if (res.success) {
+          setStory('');
+          toast({
+            title: 'Story submitted'
+          });
+
+          await navigate({
+            to: '/room/$roomId',
+            params: {
+              roomId
+            }
+          });
+        } else {
+          toast(getResponseErrorToast(res.error));
+        }
+      }
+    );
   };
+
+  useSocketEvent('newTurn', async () => {
+    await queryClient.invalidateQueries({
+      queryKey: ['fetchTurnSubmits', roomUUID]
+    });
+  });
 
   const isGameMaster = useQuasmStore(state => state.isGameMaster);
 
@@ -314,7 +354,10 @@ function SubmitStory() {
             <div className='flex h-fit flex-col gap-2'>
               {data ? (
                 data.map(character => (
-                  <TurnSubmitCard characterInfo={character} />
+                  <TurnSubmitCard
+                    characterInfo={character}
+                    key={character.characterID}
+                  />
                 ))
               ) : (
                 <div className='flex h-full w-full justify-center pt-20'>

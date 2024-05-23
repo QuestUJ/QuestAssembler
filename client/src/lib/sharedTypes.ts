@@ -9,8 +9,8 @@ export type MessageDetails = {
 
 export type StoryChunkDetails = {
   type: 'storychunk';
-  contents: string;
-  imageURL: string | undefined;
+  content: string;
+  imageURL?: string;
 };
 
 export type MessageTypes = MessageDetails | StoryChunkDetails;

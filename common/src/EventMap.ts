@@ -44,6 +44,18 @@ export interface SubmitActionAck {
     timestamp: string;
 }
 
+export interface SubmitStoryPayload {
+    roomID: string;
+    story: string;
+}
+
+export interface SubmitStoryAck {
+    id: number;
+    title: string;
+    content: string;
+    imageURL?: string;
+}
+
 export interface ClientToServerEvents {
     joinRoom: (roomID: string, callback: (res: Ack) => void) => void;
     leaveRoom: (roomID: string, callback: (res: Ack) => void) => void;
@@ -64,6 +76,10 @@ export interface ClientToServerEvents {
     submitAction: (
         content: SubmitActionPayload,
         callback: (res: Ack<SubmitActionAck>) => void
+    ) => void;
+    submitStory: (
+        submit: SubmitStoryPayload,
+        callback: (res: Ack<SubmitStoryAck>) => void
     ) => void;
 }
 
@@ -91,6 +107,13 @@ export interface TurnSubmitEvent {
     timestamp: string;
 }
 
+export interface NewTurnEvent {
+    id: number;
+    title: string;
+    story: string;
+    imageURL?: string;
+}
+
 export interface ServerToClientEvents {
     message: (message: MsgEvent) => void;
     newPlayer: (player: SocketPlayerDetails) => void;
@@ -100,6 +123,7 @@ export interface ServerToClientEvents {
     roomDeletion: () => Promise<void>; // wanted to use navigate and invalidate queries, so async function
     turnSubmit: (submit: TurnSubmitEvent) => void;
     playerReady: (characterID: string) => void;
+    newTurn: (submit: NewTurnEvent) => void;
 }
 
 // =============================================================================================

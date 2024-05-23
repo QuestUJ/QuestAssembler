@@ -66,7 +66,7 @@ export function SidebarContentRoom() {
     const playerQueryData: ApiPlayerPayload = {
       id: player.id,
       nick: player.nick,
-      profileIMG: player.profileIMG
+      profileIMG: player.profileIMG,
       isReady: player.isReady
     };
 
@@ -130,6 +130,12 @@ export function SidebarContentRoom() {
       ['getRoomPlayers', roomUUID],
       players.map(p => (p.id === characterID ? { ...p, isReady: true } : p))
     );
+  });
+
+  useSocketEvent('newTurn', async () => {
+    await queryClient.invalidateQueries({
+      queryKey: ['getRoomPlayers', roomUUID]
+    });
   });
 
   return (

@@ -12,6 +12,7 @@ import { joinRoomHandler } from './handlers/joinRoom';
 import { leaveRoomHandler } from './handlers/leaveRoom';
 import { sendMessageHandler } from './handlers/sendMessage';
 import { submitActionHandler } from './handlers/submitAction';
+import { submitStoryHandler } from './handlers/submitStory';
 import { subscribeToRoomHandler } from './handlers/subscribeToRoom';
 
 export class User {
@@ -28,7 +29,8 @@ export class User {
             changeCharacterSettingsHandler,
             changeRoomSettingsHandler,
             submitActionHandler,
-            leaveRoomHandler
+            leaveRoomHandler,
+            submitStoryHandler
         ];
 
         handlers.forEach(handler => {

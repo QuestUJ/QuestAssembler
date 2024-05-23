@@ -1,4 +1,4 @@
-import { QuasmComponent } from '@quasm/common';
+import { ErrorCode, QuasmComponent, QuasmError } from '@quasm/common';
 import { UUID } from 'crypto';
 
 import { logger } from '@/infrastructure/logger/Logger';
@@ -20,12 +20,12 @@ export function subscribeToRoomHandler({ socket, dataAccess }: HandlerConfig) {
             );
 
             if (!isMemberOf(socket, room)) {
-                respond({
-                    success: false,
-                    error: "You don't belong to this room"
-                });
-
-                return;
+                throw new QuasmError(
+                    QuasmComponent.SOCKET,
+                    400,
+                    ErrorCode.RoomNotFound,
+                    `${socket.data.userID} is not member of ${id}`
+                );
             }
 
             const character = room.characters.getCharacterByUserID(

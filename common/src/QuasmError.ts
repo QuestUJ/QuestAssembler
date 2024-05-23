@@ -51,7 +51,8 @@ export enum ErrorCode {
 
     // Story related
     MasterAction = 'master.action',
-    CantViewOtherActions = 'cant.view.other.actions'
+    CantViewOtherActions = 'cant.view.other.actions',
+    UnauthorizedStorySubmit = 'unauthorized.story.submit'
 }
 
 /**
@@ -95,7 +96,8 @@ export const ErrorMap: Record<ErrorCode, string> = {
     [ErrorCode.IncorrectMessageDetails]: `Message contains incorrect information`,
 
     [ErrorCode.MasterAction]: `Game master is not able to submit actions only Story`,
-    [ErrorCode.CantViewOtherActions]: `Regular player cannot view other players' turn submits`
+    [ErrorCode.CantViewOtherActions]: `Regular player cannot view other players' turn submits`,
+    [ErrorCode.UnauthorizedStorySubmit]: `Only game master can submit story chunks`
 };
 
 export class QuasmError extends Error {

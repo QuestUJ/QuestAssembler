@@ -121,6 +121,11 @@ export class Character {
         return this.turnSubmit;
     }
 
+    async resetTurnSubmit() {
+        await this.characterRepository.resetTurnSubmit(this.id);
+        this.turnSubmit = null;
+    }
+
     getTurnSubmit() {
         return this.turnSubmit;
     }

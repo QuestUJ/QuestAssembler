@@ -4,12 +4,14 @@ import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 import { CharactersComponent } from '../character/CharactersComponent';
 import { ChatsComponent } from '../chat/ChatsComponent';
+import { StoryComponent } from '../story/StoryComponent';
 import { RoomSettings, RoomSettingsDetails } from './RoomSettings';
 
 export class Room {
     readonly roomSettings: RoomSettings;
     readonly characters: CharactersComponent;
     readonly chats: ChatsComponent;
+    readonly story: StoryComponent;
 
     constructor(
         private readonly dataAccess: DataAccessFacade,
@@ -34,5 +36,20 @@ export class Room {
             this.id,
             this.characters
         );
+
+        this.story = new StoryComponent(
+            this.dataAccess.storyRepository,
+            this.id
+        );
+
+        this.setEvents();
+    }
+
+    setEvents() {
+        this.story.on('newStoryChunk', async () => {
+            await Promise.all(
+                this.characters.getCharacters().map(ch => ch.resetTurnSubmit())
+            );
+        });
     }
 }

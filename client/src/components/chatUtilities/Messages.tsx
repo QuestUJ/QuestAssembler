@@ -32,10 +32,10 @@ export function Message({ message }: { message: MessageDetails }) {
 }
 
 export function StoryChunk({ storyChunk }: { storyChunk: StoryChunkDetails }) {
-  const { contents, imageURL } = storyChunk;
+  const { content, imageURL } = storyChunk;
   return (
     <div className='flex min-h-10 flex-col gap-4'>
-      <p className='text-md rounded-md bg-background p-4'>{contents}</p>
+      <p className='text-md rounded-md bg-background p-4'>{content}</p>
       {imageURL && (
         <img
           className='aspect-square max-h-96 max-w-96 self-center rounded-md'

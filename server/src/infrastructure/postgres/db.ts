@@ -22,10 +22,10 @@ export interface RoomsTable {
 
 export interface StoryChunksTable {
     roomID: string;
-    chunkID: number;
+    chunkID: Generated<number>;
     title: string;
     content: string;
-    imageURL: string;
+    imageURL: string | null;
     timestamp: ColumnType<Date, string | undefined, never>;
 }
 
