@@ -77,15 +77,9 @@ export function SidebarContentRoom() {
   useSocketEvent('playerLeft', player => {
     if (!data) return;
 
-    const playerQueryData: ApiPlayerPayload = {
-      id: player.id,
-      nick: player.nick,
-      profilePicture: player.profileIMG
-    };
-
     queryClient.setQueryData<RoomDetailsPayload>(['getRoom', roomUUID], {
       ...data,
-      players: [playerQueryData, ...data.players]
+      players: data.players.filter(arrayPlayer => arrayPlayer.id !== player.id)
     });
 
     toast({
@@ -143,8 +137,7 @@ export function SidebarContentRoom() {
               />
             )}
           </div>
-          <LeaveRoomDialog />
-          {isGameMaster ? <RoomSettingsDialog /> : <></>}
+          {isGameMaster ? <RoomSettingsDialog /> : <LeaveRoomDialog />}
         </div>
       </div>
     </div>

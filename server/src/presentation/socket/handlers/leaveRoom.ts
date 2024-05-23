@@ -31,10 +31,6 @@ export function leaveRoomHandler({
                 socket.data.userID as UUID
             );
 
-            respond({
-                success: true
-            });
-
             const roomSockets = await io.in(room.id).fetchSockets();
 
             roomSockets.forEach(socket => {
@@ -51,6 +47,12 @@ export function leaveRoomHandler({
                 id: character.id,
                 nick: character.getNick(),
                 profileIMG: character.profileIMG
+            });
+
+            await room.characters.deleteCharacter(character.id);
+
+            respond({
+                success: true
             });
 
             logger.info(

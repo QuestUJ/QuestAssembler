@@ -88,4 +88,12 @@ export class Character {
 
         this.description = newDescription;
     }
+
+    /**
+     * Watch out when using this. If you delete a character by Character.delete() characters array in CharactersComponent will become out of sync with reality
+     * You will probably always want to use the room.characters.deleteCharacter()
+     */
+    async delete(): Promise<void> {
+        await this.characterRepository.deleteCharacter(this.id);
+    }
 }

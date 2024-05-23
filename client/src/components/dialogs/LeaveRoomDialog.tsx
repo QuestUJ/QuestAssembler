@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from '@tanstack/react-router';
-import { Settings } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useState } from 'react';
 import shortUUID from 'short-uuid';
 
@@ -35,13 +35,12 @@ export function LeaveRoomDialog() {
       return;
     }
 
-    void navigate({ to: '/dashboard' });
-
     socket.emit('leaveRoom', shortUUID().toUUID(roomId), async res => {
       if (res.success) {
         toast({
           title: 'You have left the room!'
         });
+        await navigate({ to: '/dashboard' });
 
         await queryClient.invalidateQueries({
           queryKey: ['roomFetch']
@@ -59,8 +58,8 @@ export function LeaveRoomDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className='m-0 h-12 w-12 rounded p-0'>
-          <Settings className='h-full text-background' />
+        <Button className='m-0 h-12 w-12 rounded bg-destructive p-2'>
+          <X className='h-full w-full' />
         </Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>

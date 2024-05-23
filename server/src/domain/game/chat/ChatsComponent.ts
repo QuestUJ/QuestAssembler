@@ -26,6 +26,9 @@ export class ChatsComponent {
         this.charactersComponent.onCharacterJoin(character => {
             this.addChat(character.id);
         });
+        this.charactersComponent.onCharacterLeave(character => {
+            this.removeChats(character.id);
+        });
     }
 
     /**
@@ -98,5 +101,14 @@ export class ChatsComponent {
         }
 
         return chat;
+    }
+
+    removeChats(characterId: UUID): void {
+        const characters = this.charactersComponent.getCharacters();
+        characters.forEach(other => {
+            this.chats.delete(
+                JSON.stringify(Chat.toId([characterId, other.id]))
+            );
+        });
     }
 }
