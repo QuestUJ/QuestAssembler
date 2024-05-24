@@ -316,6 +316,12 @@ function SubmitStory() {
     });
   });
 
+  useSocketEvent('playerLeft', async () => {
+    await queryClient.invalidateQueries({
+      queryKey: ['fetchTurnSubmits', roomUUID]
+    });
+  });
+
   const isGameMaster = useQuasmStore(state => state.isGameMaster);
 
   const navigate = useNavigate({ from: '/room/$roomId/submitStory' });
