@@ -9,6 +9,8 @@ import { UUID } from 'crypto';
 
 import { ICharacterRepository } from '@/repositories/character/ICharacterRepository';
 
+import { PlayerTurnSubmit } from '../story/PlayerTurnSubmit';
+
 export interface CharacterDetails {
     userID: string;
     nick: string;
@@ -17,6 +19,8 @@ export interface CharacterDetails {
 }
 
 export class Character {
+    private turnSubmit: PlayerTurnSubmit | null;
+
     constructor(
         readonly characterRepository: ICharacterRepository,
         readonly id: UUID,
@@ -24,10 +28,12 @@ export class Character {
         private nick: string,
         readonly isGameMaster: boolean,
         public profileIMG?: string,
-        private description?: string
+        private description?: string,
+        turnSubmit?: PlayerTurnSubmit
     ) {
         this.validateNick(this.nick);
         this.validateDescription(this.description);
+        this.turnSubmit = turnSubmit ? turnSubmit : null;
     }
 
     validateNick(nick: string) {
@@ -95,5 +101,32 @@ export class Character {
      */
     async delete(): Promise<void> {
         await this.characterRepository.deleteCharacter(this.id);
+    }
+
+    async setTurnSubmit(content: string) {
+        if (this.isGameMaster) {
+            throw new QuasmError(
+                QuasmComponent.CHARACTER,
+                400,
+                ErrorCode.MasterAction,
+                `${this.id} tried to submit action`
+            );
+        }
+
+        this.turnSubmit = await this.characterRepository.setTurnSubmit(
+            this.id,
+            content
+        );
+
+        return this.turnSubmit;
+    }
+
+    async resetTurnSubmit() {
+        await this.characterRepository.resetTurnSubmit(this.id);
+        this.turnSubmit = null;
+    }
+
+    getTurnSubmit() {
+        return this.turnSubmit;
     }
 }

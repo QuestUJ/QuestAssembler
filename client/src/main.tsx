@@ -45,7 +45,7 @@ if (!rootElement.innerHTML) {
         >
           <RouterProvider router={router} />
           <Toaster />
-          {/* <ReactQueryDevtools /> */}
+          {/*<ReactQueryDevtools /> */}
         </Auth0Provider>
       </QueryClientProvider>
     </StrictMode>

@@ -1,5 +1,6 @@
 import { ApiPlayerPayload } from '@quasm/common';
 import { Link, useParams } from '@tanstack/react-router';
+import { CheckCircle, Crown, Hourglass } from 'lucide-react';
 import shortUUID from 'short-uuid';
 
 import { SvgSpinner } from '@/components/Spinner';
@@ -9,8 +10,14 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion';
 
-function Character({ characterInfo }: { characterInfo: ApiPlayerPayload }) {
-  const { nick, profilePicture, id: characterID } = characterInfo;
+function Character({
+  characterInfo,
+  isGameMaster
+}: {
+  characterInfo: ApiPlayerPayload;
+  isGameMaster: boolean;
+}) {
+  const { nick, profileIMG, id: characterID, isReady } = characterInfo;
 
   const { roomId }: { roomId: string } = useParams({ strict: false });
 
@@ -26,20 +33,28 @@ function Character({ characterInfo }: { characterInfo: ApiPlayerPayload }) {
       }}
     >
       <div className='flex h-14 flex-row items-center gap-2 rounded-xl p-2 hover:cursor-pointer hover:bg-highlight'>
-        <img
-          src={profilePicture}
-          className='aspect-square h-full rounded-full'
-        />
-        <h1 className='font-decorative text-2xl'>{nick}</h1>
+        <img src={profileIMG} className='aspect-square h-full rounded-full' />
+        <div className='flex w-full items-center justify-between'>
+          <h1 className='font-decorative text-2xl'>{nick}</h1>
+          {isGameMaster ? (
+            <Crown className='h-8 w-8 flex-shrink-0 text-primary' />
+          ) : isReady ? (
+            <CheckCircle className='h-8 w-8 flex-shrink-0 text-primary' />
+          ) : (
+            <Hourglass className='h-8 w-8 flex-shrink-0 text-secondary' />
+          )}
+        </div>
       </div>
     </Link>
   );
 }
 
 export function CharactersAccordion({
-  characters
+  characters,
+  gameMaster
 }: {
   characters: ApiPlayerPayload[] | undefined;
+  gameMaster: string | undefined;
 }) {
   return (
     <AccordionItem value='players'>
@@ -53,7 +68,11 @@ export function CharactersAccordion({
           <h1 className='text-secondary'>No more players in this room :(</h1>
         ) : (
           characters.map(character => (
-            <Character characterInfo={character} key={character.id} />
+            <Character
+              isGameMaster={gameMaster === character.id}
+              characterInfo={character}
+              key={character.id}
+            />
           ))
         )}
       </AccordionContent>

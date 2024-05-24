@@ -5,6 +5,8 @@ import { FastifyInstance } from 'fastify';
 import { logger } from '@/infrastructure/logger/Logger';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
+import { getRoomCheckUser } from './utils';
+
 export function addFetchMessagesHandler(
     fastify: FastifyInstance,
     dataAccess: DataAccessFacade
@@ -25,9 +27,11 @@ export function addFetchMessagesHandler(
             `${request.user.userID} | GET /fetchMessages RECEIVED ${JSON.stringify(request.query)}`
         );
 
-        const room = await dataAccess.roomRepository.getRoomByID(
-            request.params.roomId as UUID
-        );
+        const room = await getRoomCheckUser({
+            roomID: request.params.roomId as UUID,
+            userID: request.user.userID,
+            roomRepo: dataAccess.roomRepository
+        });
 
         logger.info(QuasmComponent.HTTP, '/fetchMessages Room found');
 

@@ -58,7 +58,7 @@ function LandingPage() {
             </div>
           </div>
         </div>
-        <img src={diceImg} className='hidden w-1/2 lg:block' />
+        <img src={diceImg} className='hidden w-1/2 lg:block' alt='Hero image' />
       </div>
     </div>
   );

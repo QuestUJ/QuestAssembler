@@ -5,6 +5,7 @@ import { Kysely } from 'kysely';
 import { Character, CharacterDetails } from '@/domain/game/character/Character';
 import { Room } from '@/domain/game/room/Room';
 import { RoomSettingsDetails } from '@/domain/game/room/RoomSettings';
+import { PlayerTurnSubmit } from '@/domain/game/story/PlayerTurnSubmit';
 import { logger } from '@/infrastructure/logger/Logger';
 import { Database } from '@/infrastructure/postgres/db';
 
@@ -113,7 +114,9 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 'Characters.nick',
                 'Characters.isGameMaster',
                 'Characters.description',
-                'Characters.profileIMG'
+                'Characters.profileIMG',
+                'Characters.submitContent',
+                'Characters.submitTimestamp'
             ])
             .execute();
 
@@ -133,6 +136,11 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 result.push(room);
             }
 
+            const submit =
+                r.submitContent && r.submitTimestamp
+                    ? new PlayerTurnSubmit(r.submitContent, r.submitTimestamp)
+                    : null;
+
             const character = new Character(
                 this.dataAccess!.characterRepository,
                 r.characterID as UUID,
@@ -140,7 +148,8 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 r.nick,
                 r.isGameMaster,
                 r.profileIMG ?? undefined,
-                r.description ?? undefined
+                r.description ?? undefined,
+                submit
             );
 
             const room = this.fetchedRooms.get(r.roomID as UUID);
@@ -181,6 +190,11 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             maxPlayerCount
         });
         roomData.forEach(r => {
+            const submit =
+                r.submitContent && r.submitTimestamp
+                    ? new PlayerTurnSubmit(r.submitContent, r.submitTimestamp)
+                    : null;
+
             const character = new Character(
                 this.dataAccess!.characterRepository,
                 r.id as UUID,
@@ -188,7 +202,8 @@ export class RoomRepositoryPostgres implements IRoomRepository {
                 r.nick,
                 r.isGameMaster,
                 r.profileIMG ?? undefined,
-                r.description ?? undefined
+                r.description ?? undefined,
+                submit
             );
 
             room.characters.restoreCharacter(character);

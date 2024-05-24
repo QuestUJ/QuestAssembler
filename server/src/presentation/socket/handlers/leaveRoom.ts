@@ -45,7 +45,8 @@ export function leaveRoomHandler({
             socket.to(room.id).emit('playerLeft', {
                 id: character.id,
                 nick: character.getNick(),
-                profileIMG: character.profileIMG
+                profileIMG: character.profileIMG,
+                isReady: !!character.getTurnSubmit()
             });
 
             await room.characters.deleteCharacter(character.id);

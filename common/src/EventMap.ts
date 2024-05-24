@@ -9,6 +9,7 @@ export interface SocketPlayerDetails {
     nick: string;
     description?: string;
     profileIMG?: string;
+    isReady: boolean;
 }
 
 export interface SocketMessagePayload {
@@ -33,6 +34,28 @@ export interface DeleteRoomPayload {
     roomID: string;
 }
 
+export interface SubmitActionPayload {
+    roomID: string;
+    content: string;
+}
+
+export interface SubmitActionAck {
+    content: string;
+    timestamp: string;
+}
+
+export interface SubmitStoryPayload {
+    roomID: string;
+    story: string;
+}
+
+export interface SubmitStoryAck {
+    id: number;
+    title: string;
+    content: string;
+    imageURL?: string;
+}
+
 export interface ClientToServerEvents {
     joinRoom: (roomID: string, callback: (res: Ack) => void) => void;
     leaveRoom: (roomID: string, callback: (res: Ack) => void) => void;
@@ -50,21 +73,45 @@ export interface ClientToServerEvents {
         callback: (res: Ack<MsgEvent>) => void
     ) => void;
     deleteRoom: (data: DeleteRoomPayload, callback: (res: Ack) => void) => void;
+    submitAction: (
+        content: SubmitActionPayload,
+        callback: (res: Ack<SubmitActionAck>) => void
+    ) => void;
+    submitStory: (
+        submit: SubmitStoryPayload,
+        callback: (res: Ack<SubmitStoryAck>) => void
+    ) => void;
 }
 
 // ==============================================================================================
 export interface MsgEvent {
+    id: number;
     roomID: string;
     from: string;
     authorName: string;
     characterPictureURL: string | undefined;
-    timestamp: Date;
+    timestamp: string;
     content: string;
 }
 
 export interface RoomSettingsChangeEvent {
     name: string;
     maxPlayers: number;
+}
+
+export interface TurnSubmitEvent {
+    characterID: string;
+    nick: string;
+    profileIMG?: string;
+    content: string;
+    timestamp: string;
+}
+
+export interface NewTurnEvent {
+    id: number;
+    title: string;
+    story: string;
+    imageURL?: string;
 }
 
 export interface ServerToClientEvents {
@@ -74,6 +121,9 @@ export interface ServerToClientEvents {
     changeCharacterDetails: (player: SocketPlayerDetails) => void;
     changeRoomSettings: (roomData: RoomSettingsChangeEvent) => void;
     roomDeletion: () => Promise<void>; // wanted to use navigate and invalidate queries, so async function
+    turnSubmit: (submit: TurnSubmitEvent) => void;
+    playerReady: (characterID: string) => void;
+    newTurn: (submit: NewTurnEvent) => void;
 }
 
 // =============================================================================================

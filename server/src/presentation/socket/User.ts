@@ -11,6 +11,8 @@ import { deleteRoomHandler } from './handlers/deleteRoom';
 import { joinRoomHandler } from './handlers/joinRoom';
 import { leaveRoomHandler } from './handlers/leaveRoom';
 import { sendMessageHandler } from './handlers/sendMessage';
+import { submitActionHandler } from './handlers/submitAction';
+import { submitStoryHandler } from './handlers/submitStory';
 import { subscribeToRoomHandler } from './handlers/subscribeToRoom';
 
 export class User {
@@ -20,46 +22,24 @@ export class User {
         dataAccess: DataAccessFacade,
         authProvider: IAuthProvider
     ) {
-        joinRoomHandler({
-            io,
-            socket,
-            dataAccess,
-            authProvider
-        });
+        const handlers = [
+            joinRoomHandler,
+            subscribeToRoomHandler,
+            sendMessageHandler,
+            changeCharacterSettingsHandler,
+            changeRoomSettingsHandler,
+            submitActionHandler,
+            leaveRoomHandler,
+            submitStoryHandler
+        ];
 
-        leaveRoomHandler({
-            io,
-            socket,
-            dataAccess,
-            authProvider
-        });
-
-        subscribeToRoomHandler({
-            io,
-            socket,
-            dataAccess,
-            authProvider
-        });
-
-        sendMessageHandler({
-            io,
-            socket,
-            dataAccess,
-            authProvider
-        });
-
-        changeCharacterSettingsHandler({
-            io,
-            socket,
-            dataAccess,
-            authProvider
-        });
-
-        changeRoomSettingsHandler({
-            io,
-            socket,
-            dataAccess,
-            authProvider
+        handlers.forEach(handler => {
+            handler({
+                io,
+                socket,
+                dataAccess,
+                authProvider
+            });
         });
 
         deleteRoomHandler({

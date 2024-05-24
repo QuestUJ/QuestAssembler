@@ -29,9 +29,9 @@ export function changeCharacterSettingsHandler({
                 id: currentCharacter.id,
                 nick: currentCharacter.getNick(),
                 description: currentCharacter.getDescription(),
-                profileIMG: currentCharacter.profileIMG
-            }); // I chose to use io.in becouse it will send to the sender too
-            // there is an alternative option with sending by socket.to.emit but character settings change will have to happen after successful respond in settingsCharacterChangeHandler
+                profileIMG: currentCharacter.profileIMG,
+                isReady: !!currentCharacter.getTurnSubmit()
+            });
 
             respond({
                 success: true

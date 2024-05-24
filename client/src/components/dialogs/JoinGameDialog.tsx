@@ -16,6 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { useSocket } from '@/lib/socketIOStore';
+import { getResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
 
 export function JoinGameDialog() {
   const [gameCode, setGameCode] = useState('');
@@ -26,10 +27,7 @@ export function JoinGameDialog() {
 
   const joinRoom = () => {
     if (!socket) {
-      toast({
-        title: 'Connection error! Try again.',
-        variant: 'destructive'
-      });
+      toast(SocketErrorToast);
       return;
     }
 
@@ -43,11 +41,7 @@ export function JoinGameDialog() {
           queryKey: ['roomFetch']
         });
       } else {
-        toast({
-          title: 'Something went wrong!',
-          variant: 'destructive',
-          description: res.error
-        });
+        toast(getResponseErrorToast(res.error));
       }
     });
   };

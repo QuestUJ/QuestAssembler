@@ -21,10 +21,7 @@ export function Message({ message }: { message: MessageDetails }) {
         <div className='flex flex-nowrap justify-between gap-4'>
           <h1 className='text-sm font-semibold text-primary'>{authorName}</h1>
           <h3 className='text-xs text-secondary'>
-            {timestamp.toLocaleString('en-GB', {
-              dateStyle: 'short',
-              timeStyle: 'short'
-            })}
+            {timestamp.toLocaleString()}
           </h3>
         </div>
         <hr />
@@ -35,17 +32,15 @@ export function Message({ message }: { message: MessageDetails }) {
 }
 
 export function StoryChunk({ storyChunk }: { storyChunk: StoryChunkDetails }) {
-  const { contents, imageURL } = storyChunk;
+  const { content, imageURL } = storyChunk;
   return (
     <div className='flex min-h-10 flex-col gap-4'>
-      <p className='text-md rounded-md bg-background p-4'>{contents}</p>
-      {imageURL ? (
+      <p className='text-md rounded-md bg-background p-4'>{content}</p>
+      {imageURL && (
         <img
           className='aspect-square max-h-96 max-w-96 self-center rounded-md'
           src={imageURL}
         />
-      ) : (
-        <></>
       )}
     </div>
   );

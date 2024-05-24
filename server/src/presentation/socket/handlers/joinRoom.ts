@@ -55,7 +55,8 @@ export function joinRoomHandler({
             socket.to(room.id).emit('newPlayer', {
                 id: character.id,
                 nick: character.getNick(),
-                profileIMG: character.profileIMG
+                profileIMG: characterDetails.profileIMG,
+                isReady: !!character.getTurnSubmit()
             });
 
             logger.info(

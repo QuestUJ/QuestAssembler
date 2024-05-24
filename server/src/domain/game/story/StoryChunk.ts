@@ -1,7 +1,7 @@
 export interface StoryChunkDetails {
     title: string;
     content: string;
-    imageUrl: string;
+    imageUrl?: string;
 }
 
 export class StoryChunk {

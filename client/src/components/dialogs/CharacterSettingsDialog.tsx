@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useSocket } from '@/lib/socketIOStore';
+import { SocketErrorToast } from '@/lib/toasters';
 
 import {
   Form,
@@ -68,39 +69,29 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
   });
 
   const formHandler: SubmitHandler<z.infer<typeof formSchema>> = data => {
-    if (roomId) {
-      if (!socket) {
-        toast({
-          title: 'Something went wrong!',
-          variant: 'destructive',
-          description: 'Socket is unavailable'
-        });
-      } else {
-        socket.emit(
-          'changeCharacterSettings',
-          { roomID: shortUUID().toUUID(roomId), ...data },
-          res => {
-            if (res.success) {
-              toast({
-                title: 'Character settings changed successfully'
-              });
-            } else {
-              toast({
-                title: 'Something went wrong!',
-                variant: 'destructive',
-                description: 'Server side error'
-              });
-            }
-          }
-        );
-      }
-    } else {
-      toast({
-        title: 'Something went wrong!',
-        variant: 'destructive',
-        description: 'Room id is unavailable'
-      });
+    if (!socket) {
+      toast(SocketErrorToast);
+      return;
     }
+
+    socket.emit(
+      'changeCharacterSettings',
+      { roomID: shortUUID().toUUID(roomId), ...data },
+      res => {
+        if (res.success) {
+          toast({
+            title: 'Character settings changed successfully'
+          });
+        } else {
+          toast({
+            title: 'Something went wrong!',
+            variant: 'destructive',
+            description: 'Server side error'
+          });
+        }
+      }
+    );
+
     form.reset(undefined, { keepDirtyValues: true }); // keepDirtyValues here, I don't feel like we should ever reset this (after unsuccessful change user probably wants to use existing input anyway)
     setOpen(false);
   };

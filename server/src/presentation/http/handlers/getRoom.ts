@@ -10,6 +10,8 @@ import { FastifyInstance } from 'fastify';
 import { logger } from '@/infrastructure/logger/Logger';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
+import { getRoomCheckUser } from './utils';
+
 export function addGetRoomHandler(
     fastify: FastifyInstance,
     dataAccess: DataAccessFacade
@@ -26,9 +28,11 @@ export function addGetRoomHandler(
             `${request.user.userID} | GET /getRoom RECEIVED ${request.params.roomID}`
         );
 
-        const room = await dataAccess.roomRepository.getRoomByID(
-            request.params.roomID as UUID
-        );
+        const room = await getRoomCheckUser({
+            roomID: request.params.roomID as UUID,
+            userID: request.user.userID,
+            roomRepo: dataAccess.roomRepository
+        });
 
         if (!room.characters.hasUser(request.user.userID)) {
             throw new QuasmError(
@@ -39,11 +43,11 @@ export function addGetRoomHandler(
             );
         }
 
-        const players = [...room.characters.getCharacters()];
-        const currentPlayer = players.splice(
-            players.findIndex(p => p.userID === request.user.userID),
-            1
-        )[0];
+        const players = room.characters.getCharacters();
+
+        const currentPlayer = players.find(
+            p => p.userID === request.user.userID
+        )!;
 
         await reply.send({
             success: true,
@@ -51,15 +55,11 @@ export function addGetRoomHandler(
                 id: room.id,
                 roomName: room.roomSettings.getName(),
                 gameMasterID: room.characters.getGameMaster().id,
-                players: players.map(p => ({
-                    id: p.id,
-                    nick: p.getNick(),
-                    profilePicture: p.profileIMG
-                })),
                 currentPlayer: {
                     id: currentPlayer.id,
                     nick: currentPlayer.getNick(),
-                    profilePicture: currentPlayer.profileIMG
+                    profileIMG: currentPlayer.profileIMG,
+                    isReady: !!currentPlayer.getTurnSubmit()
                 }
             }
         });

@@ -9,20 +9,8 @@ export type MessageDetails = {
 
 export type StoryChunkDetails = {
   type: 'storychunk';
-  contents: string;
-  imageURL: string | undefined;
-};
-
-export type TurnSubmitDetails = {
-  content: string | undefined;
-  timestamp: Date | undefined;
-};
-
-export type CharacterDetails = {
-  pictureURL: string | undefined;
-  name: string;
-  turnSubmit: TurnSubmitDetails;
-  id: number;
+  content: string;
+  imageURL?: string;
 };
 
 export type MessageTypes = MessageDetails | StoryChunkDetails;

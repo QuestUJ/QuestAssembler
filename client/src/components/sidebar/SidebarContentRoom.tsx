@@ -27,17 +27,24 @@ export function SidebarContentRoom() {
 
   const roomUUID = shortUUID().toUUID(roomId);
 
-  const { data } = useApiGet<RoomDetailsPayload>({
+  const { data: roomDetails } = useApiGet<RoomDetailsPayload>({
     path: `/getRoom/${roomUUID}`,
     queryKey: ['getRoom', roomUUID]
+  });
+
+  const { data: players } = useApiGet<ApiPlayerPayload[]>({
+    path: `/getRoomPlayers/${roomUUID}`,
+    queryKey: ['getRoomPlayers', roomUUID]
   });
 
   const { toast } = useToast();
 
   useEffect(() => {
-    setRoomName(data?.roomName);
-    setIsGameMaster(data?.currentPlayer.id === data?.gameMasterID);
-  }, [data, setRoomName, setIsGameMaster]);
+    setRoomName(roomDetails?.roomName);
+    setIsGameMaster(
+      roomDetails?.currentPlayer.id === roomDetails?.gameMasterID
+    );
+  }, [roomDetails, setRoomName, setIsGameMaster]);
 
   const queryClient = useQueryClient();
   const socket = useSocket();
@@ -55,18 +62,19 @@ export function SidebarContentRoom() {
   }, [socket, roomUUID, toast]);
 
   useSocketEvent('newPlayer', player => {
-    if (!data) return;
+    if (!players) return;
 
     const playerQueryData: ApiPlayerPayload = {
       id: player.id,
       nick: player.nick,
-      profilePicture: player.profileIMG
+      profileIMG: player.profileIMG,
+      isReady: player.isReady
     };
 
-    queryClient.setQueryData<RoomDetailsPayload>(['getRoom', roomUUID], {
-      ...data,
-      players: [playerQueryData, ...data.players]
-    });
+    queryClient.setQueryData<ApiPlayerPayload[]>(
+      ['getRoomPlayers', roomUUID],
+      [playerQueryData, ...players]
+    );
 
     toast({
       title: player.nick,
@@ -75,12 +83,12 @@ export function SidebarContentRoom() {
   });
 
   useSocketEvent('playerLeft', player => {
-    if (!data) return;
+    if (!players) return;
 
-    queryClient.setQueryData<RoomDetailsPayload>(['getRoom', roomUUID], {
-      ...data,
-      players: data.players.filter(arrayPlayer => arrayPlayer.id !== player.id)
-    });
+    queryClient.setQueryData<ApiPlayerPayload[]>(
+      ['getRoomPlayers', roomUUID],
+      players.filter(arrayPlayer => arrayPlayer.id !== player.id)
+    );
 
     toast({
       title: player.nick,
@@ -89,29 +97,46 @@ export function SidebarContentRoom() {
   });
 
   useSocketEvent('changeCharacterDetails', player => {
-    if (!data) return;
+    if (!roomDetails) {
+      return;
+    }
 
-    const playerQueryData: ApiPlayerPayload = {
-      id: player.id,
-      nick: player.nick,
-      profilePicture: player.profileIMG
-    };
+    if (player.id === roomDetails.currentPlayer.id) {
+      queryClient.setQueryData<RoomDetailsPayload>(['getRoom', roomUUID], {
+        ...roomDetails,
+        currentPlayer:
+          player.id === roomDetails.currentPlayer.id
+            ? player
+            : roomDetails.currentPlayer
+      });
+    } else {
+      if (!players) return;
 
-    queryClient.setQueryData<RoomDetailsPayload>(['getRoom', roomUUID], {
-      ...data,
-      currentPlayer:
-        player.id === data.currentPlayer.id
-          ? playerQueryData
-          : data.currentPlayer,
-      players: data.players.map(arrayPlayer =>
-        arrayPlayer.id === player.id ? playerQueryData : arrayPlayer
-      ) // have to destructure so that reference changes and UI reloads
-    });
+      queryClient.setQueryData<ApiPlayerPayload[]>(
+        ['getRoomPlayers', roomUUID],
+        players.map(p => (p.id === player.id ? player : p))
+      );
+    }
   });
 
   useSocketEvent('changeRoomSettings', roomData => {
-    if (!data) return;
+    if (!roomDetails) return;
     setRoomName(roomData.name);
+  });
+
+  useSocketEvent('playerReady', characterID => {
+    if (!players) return;
+
+    queryClient.setQueryData(
+      ['getRoomPlayers', roomUUID],
+      players.map(p => (p.id === characterID ? { ...p, isReady: true } : p))
+    );
+  });
+
+  useSocketEvent('newTurn', async () => {
+    await queryClient.invalidateQueries({
+      queryKey: ['getRoomPlayers', roomUUID]
+    });
   });
 
   return (
@@ -121,19 +146,22 @@ export function SidebarContentRoom() {
           <LogoWithText />
         </div>
         <Accordion type='multiple'>
-          <CharactersAccordion characters={data?.players} />
+          <CharactersAccordion
+            gameMaster={roomDetails?.gameMasterID}
+            characters={players}
+          />
           <ToolsAccordion />
         </Accordion>
       </div>
       <div className='w-full'>
         <div className='flex h-12 flex-row items-center justify-between'>
           <div className='flex h-full items-center'>
-            {!data ? (
+            {!roomDetails ? (
               <SvgSpinner className='ml-4 h-10 w-10' />
             ) : (
               <CharacterSettingsDialog
-                nick={data?.currentPlayer.nick}
-                profilePicture={data.currentPlayer.profilePicture}
+                nick={roomDetails?.currentPlayer.nick}
+                profilePicture={roomDetails.currentPlayer.profileIMG}
               />
             )}
           </div>

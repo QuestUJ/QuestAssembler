@@ -1,5 +1,5 @@
 import { Link, useParams } from '@tanstack/react-router';
-import { Crown, Reply, Scroll } from 'lucide-react';
+import { CheckCircle, Crown, Reply, Scroll } from 'lucide-react';
 import { ReactNode } from 'react';
 
 import {
@@ -80,10 +80,27 @@ export function ToolsAccordion() {
             </Link>
           </>
         ) : (
-          <ToolLink>
-            <Crown className='h-8 w-8 text-primary' />
-            <h1 className='font-decorative text-xl'>Contact game master</h1>
-          </ToolLink>
+          <>
+            <ToolLink>
+              <Crown className='h-8 w-8 text-primary' />
+              <h1 className='font-decorative text-xl'>Contact game master</h1>
+            </ToolLink>
+            <Link
+              to='/room/$roomId/submitAction'
+              params={{ roomId }}
+              activeProps={{
+                className: 'text-primary'
+              }}
+              activeOptions={{
+                exact: true
+              }}
+            >
+              <ToolLink>
+                <CheckCircle className='h-8 w-8 text-primary' />
+                <h1 className='font-decorative text-xl'>Submit action</h1>
+              </ToolLink>
+            </Link>
+          </>
         )}
       </AccordionContent>
     </AccordionItem>

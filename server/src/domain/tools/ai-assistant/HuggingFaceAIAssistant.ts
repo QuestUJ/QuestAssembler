@@ -10,7 +10,7 @@ type HuggingFaceAPIResponse = {
 export class HuggingFaceAiAssistant implements IAIAssistant {
     private token;
     private PROMPT_PREFIX =
-        'Can you please finish the story? It should be very long. You have to add a lot of words. ';
+        'Rewrite the following chapter to transform it into an engaging, detailed, and immersive narrative. Focus on enhancing the descriptions, developing the characters, and creating a vivid and compelling scene. Make sure to incorporate sensory details, emotions, and a sense of journey or discovery. It should be very long. Make sure the rewritten story captures the essence of the original but with added depth, emotion, and vivid imagery. The aim is to engage the reader and make them feel connected to the character and their journey. You have to add a lot of words. You can include fantastic events and characters. Story to rewrite:\n';
     /**
      * @param hgToken huggingface access token (it is not required but without huggingface is blocking requests almost imediately)
      */

@@ -16,6 +16,7 @@ import { CharacterRepositoryPostgres } from './repositories/character/CharacterR
 import { ChatRepositoryPostgres } from './repositories/chat/ChatRepositoryPostgres';
 import { DataAccessFacade } from './repositories/DataAccessFacade';
 import { RoomRepositoryPostgres } from './repositories/room/RoomRepositoryPostgres';
+import { StoryRepositoryPostgres } from './repositories/story/StoryRepositoryPostgres';
 
 const { PORT, AUTH0_DOMAIN, AUTH0_AUDIENCE, HUGGINGFACE_TOKEN } = config.pick([
     'PORT',
@@ -29,7 +30,8 @@ const { PORT, AUTH0_DOMAIN, AUTH0_AUDIENCE, HUGGINGFACE_TOKEN } = config.pick([
     const dataAccess = new DataAccessFacade(
         roomRepo,
         new CharacterRepositoryPostgres(db),
-        new ChatRepositoryPostgres(db)
+        new ChatRepositoryPostgres(db),
+        new StoryRepositoryPostgres(db)
     );
     roomRepo.provideDataAccess(dataAccess);
 

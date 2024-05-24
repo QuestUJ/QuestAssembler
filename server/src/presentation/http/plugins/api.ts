@@ -17,8 +17,12 @@ import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 import { addCreateRoomHandler } from '../handlers/createRoom';
 import { addFetchMessagesHandler } from '../handlers/fetchMessages';
 import { addFetchRoomsHandler } from '../handlers/fetchRooms';
+import { addFetchStoryHandler } from '../handlers/fetchStory';
+import { addFetchTurnSubmitsHandler } from '../handlers/fetchTurnSubmits';
+import { addGenerateTextHandler } from '../handlers/generateText';
 import { addGetRoomHandler } from '../handlers/getRoom';
-import { addLLMSupportHandler } from '../handlers/LLMSupport';
+import { addGetRoomPlayersHandler } from '../handlers/getRoomPlayers';
+import { addGetTurnSubmitHandler } from '../handlers/getTurnSubmit';
 
 export function apiRoutes(
     authProvider: IAuthProvider,
@@ -64,7 +68,11 @@ export function apiRoutes(
         addGetRoomHandler(fastify, dataAccess);
         addCreateRoomHandler(fastify, dataAccess);
         addFetchMessagesHandler(fastify, dataAccess);
-        addLLMSupportHandler(fastify, aiAssistant);
+        addGenerateTextHandler(fastify, aiAssistant);
+        addGetTurnSubmitHandler(fastify, dataAccess);
+        addFetchTurnSubmitsHandler(fastify, dataAccess);
+        addGetRoomPlayersHandler(fastify, dataAccess);
+        addFetchStoryHandler(fastify, dataAccess);
 
         done();
     };

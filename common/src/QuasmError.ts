@@ -47,7 +47,12 @@ export enum ErrorCode {
     MissingChat = 'missing.chat',
     MessagesLimit = 'messages.limit',
     MessageLength = 'message.length',
-    IncorrectMessageDetails = 'incorrect.message.details'
+    IncorrectMessageDetails = 'incorrect.message.details',
+
+    // Story related
+    MasterAction = 'master.action',
+    CantViewOtherActions = 'cant.view.other.actions',
+    UnauthorizedStorySubmit = 'unauthorized.story.submit'
 }
 
 /**
@@ -88,7 +93,11 @@ export const ErrorMap: Record<ErrorCode, string> = {
     [ErrorCode.MissingChat]: `Could not find appropriate chat`,
     [ErrorCode.MessagesLimit]: `Limit of messages per chat has been reached`,
     [ErrorCode.MessageLength]: `Message is too long`,
-    [ErrorCode.IncorrectMessageDetails]: `Message contains incorrect information`
+    [ErrorCode.IncorrectMessageDetails]: `Message contains incorrect information`,
+
+    [ErrorCode.MasterAction]: `Game master is not able to submit actions only Story`,
+    [ErrorCode.CantViewOtherActions]: `Regular player cannot view other players' turn submits`,
+    [ErrorCode.UnauthorizedStorySubmit]: `Only game master can submit story chunks`
 };
 
 export class QuasmError extends Error {
