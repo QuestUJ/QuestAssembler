@@ -31,7 +31,15 @@ const config = {
         },
         supporting: {
           DEFAULT: 'hsl(var(--supporting))',
-          foreground: 'hsl(var(--supporting'
+          foreground: 'hsl(var(--supporting))'
+        },
+        crust: {
+          DEFAULT: 'hsl(var(--crust))',
+          foreground: 'hsl(var(--crust))'
+        },
+        mantle: {
+          DEFAULT: 'hsl(var(--mantle))',
+          foreground: 'hsl(var(--mantle))'
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
@@ -83,8 +91,9 @@ const config = {
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui'],
-        medieval: ['MedievalSharp']
-      },
+        medieval: ['MedievalSharp'],
+        decorative: ['Fira Sans']
+      }
     }
   },
   plugins: [require('tailwindcss-animate')]

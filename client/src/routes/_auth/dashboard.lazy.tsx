@@ -1,6 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { ApiRoomPayload } from '@quasm/common';
-import { createFileRoute } from '@tanstack/react-router';
+import { createLazyFileRoute } from '@tanstack/react-router';
 
 import { RoomCard } from '@/components/RoomCard';
 import { SvgSpinner } from '@/components/Spinner';
@@ -59,6 +59,6 @@ function Dashboard() {
   );
 }
 
-export const Route = createFileRoute('/_auth/dashboard')({
+export const Route = createLazyFileRoute('/_auth/dashboard')({
   component: Dashboard
 });

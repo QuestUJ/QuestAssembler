@@ -5,7 +5,7 @@ import {
     QuasmError,
     type UserDetails
 } from '@quasm/common';
-import { createRemoteJWKSet, jwtVerify } from 'jose';
+import { createRemoteJWKSet, decodeJwt, jwtVerify } from 'jose';
 
 import { IAuthProvider } from './IAuthProvider';
 
@@ -13,6 +13,8 @@ interface Config {
     domain: string;
     audience: string;
 }
+
+const userDetailsCache = new Map<string, UserDetails>();
 
 /**
  * {@link IAuthProvider} implementation based on Auth0
@@ -66,7 +68,22 @@ export class Auth0Provider implements IAuthProvider {
 
     async fetchUserDetails(token: string): Promise<UserDetails> {
         try {
-            // Fetch user details from external endpoint
+            const { sub: userID } = decodeJwt(token);
+
+            if (!userID) {
+                throw new QuasmError(
+                    QuasmComponent.AUTH,
+                    400,
+                    ErrorCode.IncorrectAccessToken,
+                    'Decoding failed'
+                );
+            }
+
+            if (userDetailsCache.has(userID)) {
+                return userDetailsCache.get(userID)!;
+            }
+
+            // Access token doesn't contain user auth details'
             const { sub, nickname, picture, email } = (await fetch(
                 `${this.issuer}userinfo/`,
                 {
@@ -81,12 +98,16 @@ export class Auth0Provider implements IAuthProvider {
                 email: string;
             };
 
-            return {
+            const userDetails = {
                 userID: sub,
                 nickname,
                 email,
                 profileImg: picture
             };
+
+            userDetailsCache.set(sub, userDetails);
+
+            return userDetails;
         } catch (e) {
             // If error is already of proper format we don't have to process it'
             if (e instanceof QuasmError) {

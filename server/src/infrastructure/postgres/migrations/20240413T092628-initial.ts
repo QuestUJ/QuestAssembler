@@ -23,7 +23,7 @@ export async function up(db: Kysely<Database>): Promise<void> {
         .addColumn('title', 'varchar(256)', col => col.notNull())
         .addColumn('content', 'varchar', col => col.notNull())
         .addColumn('imageURL', 'varchar')
-        .addColumn('timestamp', 'timestamp', col =>
+        .addColumn('timestamp', 'timestamptz', col =>
             col.notNull().defaultTo(sql`NOW()`)
         )
         .execute();
@@ -53,13 +53,21 @@ export async function up(db: Kysely<Database>): Promise<void> {
         .createTable('ChatMessages')
         .addColumn('messageID', 'serial', col => col.primaryKey())
         .addColumn('from', 'varchar(36)', col =>
-            col.notNull().references('Characters.id')
+            col
+                .notNull()
+                .references('Characters.id')
+                .onUpdate('cascade')
+                .onDelete('cascade')
         )
         .addColumn('to', 'varchar(36)', col =>
-            col.notNull().references('Characters.id')
+            col
+                .notNull()
+                .references('Characters.id')
+                .onUpdate('cascade')
+                .onDelete('cascade')
         )
         .addColumn('content', 'varchar', col => col.notNull())
-        .addColumn('timestamp', 'timestamp', col =>
+        .addColumn('timestamp', 'timestamptz', col =>
             col.notNull().defaultTo(sql`NOW()`)
         )
         .execute();

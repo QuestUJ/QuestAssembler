@@ -1,8 +1,7 @@
 import { ApiPlayerPayload, RoomDetailsPayload } from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
-import { Link, useParams } from '@tanstack/react-router';
-import { Crown, Reply, Scroll } from 'lucide-react';
-import { ReactNode, useEffect } from 'react';
+import { useParams } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import shortUUID from 'short-uuid';
 
 import { useApiGet } from '@/lib/api';
@@ -10,152 +9,17 @@ import { useQuasmStore } from '@/lib/quasmStore';
 import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
 
 import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
+import { LeaveRoomDialog } from '../dialogs/LeaveRoomDialog';
 import { RoomSettingsDialog } from '../dialogs/RoomSettingsDialog';
 import LogoWithText from '../LogoWithText';
 import { SvgSpinner } from '../Spinner';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from '../ui/accordion';
+import { Accordion } from '../ui/accordion';
 import { useToast } from '../ui/use-toast';
-
-function Character({ characterInfo }: { characterInfo: ApiPlayerPayload }) {
-  const { nick, profilePicture } = characterInfo;
-
-  const { roomId }: { roomId: string } = useParams({ strict: false });
-
-  return (
-    <Link
-      to='/room/$roomId/chat/$characterId'
-      activeProps={{
-        className: 'text-primary'
-      }}
-      params={{
-        roomId,
-        characterId: shortUUID().fromUUID(characterInfo.id)
-      }}
-    >
-      <div className='my-1 flex h-10 flex-row items-center rounded-xl p-1 hover:cursor-pointer hover:bg-highlight'>
-        <img
-          src={profilePicture}
-          className='mr-4 aspect-square h-full rounded-full'
-        />
-        <h1 className='text-2xl'>{nick}</h1>
-      </div>
-    </Link>
-  );
-}
-
-function ToolLink({ children }: { children: ReactNode }) {
-  return (
-    <div className='my-2 flex h-10 items-center rounded-xl hover:bg-highlight-foreground'>
-      {children}
-    </div>
-  );
-}
-
-function ToolsAccordion() {
-  const isGameMaster = useQuasmStore(state => state.isGameMaster);
-  const { roomId }: { roomId: string } = useParams({ strict: false });
-
-  return (
-    <AccordionItem value='tools'>
-      <AccordionTrigger className='w-full text-2xl text-primary hover:text-primary-shaded'>
-        Tools
-      </AccordionTrigger>
-      <AccordionContent className=''>
-        <Link
-          to='/room/$roomId'
-          params={{
-            roomId
-          }}
-          activeProps={{
-            className: 'text-primary'
-          }}
-          activeOptions={{
-            exact: true
-          }}
-        >
-          <ToolLink>
-            <Scroll className='mr-2 h-8 w-8 text-primary' />
-            <h1 className='text-xl'>View story</h1>
-          </ToolLink>
-        </Link>
-        {isGameMaster ? (
-          <>
-            <Link
-              to='/room/$roomId/'
-              params={{
-                roomId
-              }}
-              activeProps={{
-                className: 'text-primary'
-              }}
-            >
-              <ToolLink>
-                <Crown className='mr-2 h-8 w-8 text-primary' />
-                <h1 className='text-xl'>AI support</h1>
-              </ToolLink>
-            </Link>
-
-            <Link
-              to='/room/$roomId/submitStory'
-              params={{
-                roomId
-              }}
-              activeProps={{
-                className: 'text-primary'
-              }}
-              activeOptions={{
-                exact: true
-              }}
-            >
-              <ToolLink>
-                <Reply className='mr-2 h-8 w-8 text-primary' />
-                <h1 className='text-xl'>Submit story chunk</h1>
-              </ToolLink>
-            </Link>
-          </>
-        ) : (
-          <ToolLink>
-            <Crown className='mr-2 h-8 w-8 text-primary' />
-            <h1 className='text-xl'>Contact game master</h1>
-          </ToolLink>
-        )}
-      </AccordionContent>
-    </AccordionItem>
-  );
-}
-
-function CharactersAccordion({
-  characters
-}: {
-  characters: ApiPlayerPayload[] | undefined;
-}) {
-  return (
-    <AccordionItem value='players'>
-      <AccordionTrigger className='w-full text-2xl text-primary hover:text-primary-shaded'>
-        Players
-      </AccordionTrigger>
-      <AccordionContent>
-        {!characters ? (
-          <SvgSpinner className='mx-auto h-10 w-10' />
-        ) : characters.length === 0 ? (
-          <h1 className='text-secondary'>No more players in this room :(</h1>
-        ) : (
-          characters.map(character => (
-            <Character characterInfo={character} key={character.id} />
-          ))
-        )}
-      </AccordionContent>
-    </AccordionItem>
-  );
-}
+import { CharactersAccordion } from './content/CharactersAccordion';
+import { ToolsAccordion } from './content/ToolsAccordion';
 
 export function SidebarContentRoom() {
-  const { setRoomName, setIsGameMaster } = useQuasmStore();
+  const { setRoomName, setIsGameMaster, isGameMaster } = useQuasmStore();
 
   const { roomId }: { roomId: string } = useParams({
     strict: false
@@ -163,17 +27,24 @@ export function SidebarContentRoom() {
 
   const roomUUID = shortUUID().toUUID(roomId);
 
-  const { data } = useApiGet<RoomDetailsPayload>({
+  const { data: roomDetails } = useApiGet<RoomDetailsPayload>({
     path: `/getRoom/${roomUUID}`,
     queryKey: ['getRoom', roomUUID]
+  });
+
+  const { data: players } = useApiGet<ApiPlayerPayload[]>({
+    path: `/getRoomPlayers/${roomUUID}`,
+    queryKey: ['getRoomPlayers', roomUUID]
   });
 
   const { toast } = useToast();
 
   useEffect(() => {
-    setRoomName(data?.roomName);
-    setIsGameMaster(data?.currentPlayer.id === data?.gameMasterID);
-  }, [data, setRoomName, setIsGameMaster]);
+    setRoomName(roomDetails?.roomName);
+    setIsGameMaster(
+      roomDetails?.currentPlayer.id === roomDetails?.gameMasterID
+    );
+  }, [roomDetails, setRoomName, setIsGameMaster]);
 
   const queryClient = useQueryClient();
   const socket = useSocket();
@@ -191,19 +62,80 @@ export function SidebarContentRoom() {
   }, [socket, roomUUID, toast]);
 
   useSocketEvent('newPlayer', player => {
-    if (!data) return;
+    if (!players) return;
 
-    queryClient.setQueryData(['getRoom', roomUUID], {
-      ...data,
-      players: [
-        { ...player, profilePicture: player.profileIMG },
-        ...data.players
-      ]
-    });
+    const playerQueryData: ApiPlayerPayload = {
+      id: player.id,
+      nick: player.nick,
+      profileIMG: player.profileIMG,
+      isReady: player.isReady
+    };
+
+    queryClient.setQueryData<ApiPlayerPayload[]>(
+      ['getRoomPlayers', roomUUID],
+      [playerQueryData, ...players]
+    );
 
     toast({
       title: player.nick,
       description: 'has joined the game!'
+    });
+  });
+
+  useSocketEvent('playerLeft', player => {
+    if (!players) return;
+
+    queryClient.setQueryData<ApiPlayerPayload[]>(
+      ['getRoomPlayers', roomUUID],
+      players.filter(arrayPlayer => arrayPlayer.id !== player.id)
+    );
+
+    toast({
+      title: player.nick,
+      description: 'has left the game!'
+    });
+  });
+
+  useSocketEvent('changeCharacterDetails', player => {
+    if (!roomDetails) {
+      return;
+    }
+
+    if (player.id === roomDetails.currentPlayer.id) {
+      queryClient.setQueryData<RoomDetailsPayload>(['getRoom', roomUUID], {
+        ...roomDetails,
+        currentPlayer:
+          player.id === roomDetails.currentPlayer.id
+            ? player
+            : roomDetails.currentPlayer
+      });
+    } else {
+      if (!players) return;
+
+      queryClient.setQueryData<ApiPlayerPayload[]>(
+        ['getRoomPlayers', roomUUID],
+        players.map(p => (p.id === player.id ? player : p))
+      );
+    }
+  });
+
+  useSocketEvent('changeRoomSettings', roomData => {
+    if (!roomDetails) return;
+    setRoomName(roomData.name);
+  });
+
+  useSocketEvent('playerReady', characterID => {
+    if (!players) return;
+
+    queryClient.setQueryData(
+      ['getRoomPlayers', roomUUID],
+      players.map(p => (p.id === characterID ? { ...p, isReady: true } : p))
+    );
+  });
+
+  useSocketEvent('newTurn', async () => {
+    await queryClient.invalidateQueries({
+      queryKey: ['getRoomPlayers', roomUUID]
     });
   });
 
@@ -214,23 +146,26 @@ export function SidebarContentRoom() {
           <LogoWithText />
         </div>
         <Accordion type='multiple'>
-          <CharactersAccordion characters={data?.players} />
+          <CharactersAccordion
+            gameMaster={roomDetails?.gameMasterID}
+            characters={players}
+          />
           <ToolsAccordion />
         </Accordion>
       </div>
       <div className='w-full'>
         <div className='flex h-12 flex-row items-center justify-between'>
           <div className='flex h-full items-center'>
-            {!data ? (
+            {!roomDetails ? (
               <SvgSpinner className='ml-4 h-10 w-10' />
             ) : (
               <CharacterSettingsDialog
-                nick={data?.currentPlayer.nick}
-                profilePicture={data.currentPlayer.profilePicture}
+                nick={roomDetails?.currentPlayer.nick}
+                profilePicture={roomDetails.currentPlayer.profileIMG}
               />
             )}
           </div>
-          <RoomSettingsDialog />
+          {isGameMaster ? <RoomSettingsDialog /> : <LeaveRoomDialog />}
         </div>
       </div>
     </div>

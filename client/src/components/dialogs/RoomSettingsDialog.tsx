@@ -2,14 +2,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   ErrorCode,
   ErrorMap,
-  MAX_CHARACTER_DESCRIPTION_LENGTH,
-  MAX_CHARACTER_NICK_LENGTH,
   MAX_ROOM_NAME_LENGTH,
   MAX_ROOM_PLAYERS
 } from '@quasm/common';
+import { useParams } from '@tanstack/react-router';
 import { Settings } from 'lucide-react';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import shortUUID from 'short-uuid';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,8 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
+import { useSocket } from '@/lib/socketIOStore';
+import { getResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
 
 import {
   Form,
@@ -31,9 +32,11 @@ import {
   FormItem,
   FormMessage
 } from '../ui/form';
+import { useToast } from '../ui/use-toast';
+import { DeleteRoomDialog } from './DeleteRoomDialog';
 
 const formSchema = z.object({
-  nick: z
+  name: z
     .string()
     .min(1, {
       message: ErrorMap[ErrorCode.RoomNameEmpty]
@@ -41,7 +44,7 @@ const formSchema = z.object({
     .max(MAX_ROOM_NAME_LENGTH, {
       message: ErrorMap[ErrorCode.MaxRoomName]
     }),
-  description: z.coerce
+  maxPlayers: z.coerce
     .number()
     .int({
       message: ErrorMap[ErrorCode.MaxPlayersNotInteger]
@@ -56,19 +59,47 @@ const formSchema = z.object({
 
 export function RoomSettingsDialog() {
   const [open, setOpen] = useState(false);
+  const { roomId }: { roomId: string } = useParams({
+    strict: false
+  });
+  const socket = useSocket();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      maxPlayers: ''
+      maxPlayers: 0
     }
   });
 
   // override and fill with actual settings change on the backend
-  const changeCharacterSettingsHandler = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+  const formHandler: SubmitHandler<z.infer<typeof formSchema>> = data => {
+    if (!socket) {
+      toast(SocketErrorToast);
+      return;
+    }
+
+    socket.emit(
+      'changeRoomSettings',
+      {
+        roomID: shortUUID().toUUID(roomId),
+        name: data.name,
+        maxPlayers: data.maxPlayers
+      },
+      res => {
+        if (res.success) {
+          toast({
+            title: 'Room settings changed successfully'
+          });
+        } else {
+          toast(getResponseErrorToast(res.error));
+        }
+      }
+    );
+
+    form.reset(undefined, { keepDirtyValues: true }); // keepDirtyValues here, I don't feel like we should ever reset this (after unsuccessful change user probably wants to use existing input anyway)
+    setOpen(false);
   };
 
   return (
@@ -84,16 +115,10 @@ export function RoomSettingsDialog() {
           <DialogDescription>Change your room settings</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit((data: z.infer<typeof formSchema>) => {
-              form.reset(undefined, { keepDirtyValues: true }); // keepDirtyValues here, I don't feel like we should ever reset this (after unsuccessful change user probably wants to use existing input anyway)
-              changeCharacterSettingsHandler(data); // if we want to reset to default after successful change, we need to add a success handler with form.reset() in it (refer to create game dialog)
-              setOpen(false);
-            })}
-          >
+          <form onSubmit={e => void form.handleSubmit(formHandler)(e)}>
             <FormField
               control={form.control}
-              name='nick'
+              name='name'
               render={({ field }) => (
                 <FormItem className='mb-4'>
                   <FormControl>
@@ -105,7 +130,7 @@ export function RoomSettingsDialog() {
             />
             <FormField
               control={form.control}
-              name='description'
+              name='maxPlayers'
               render={({ field }) => (
                 <FormItem className='mb-4'>
                   <FormControl>
@@ -116,6 +141,7 @@ export function RoomSettingsDialog() {
               )}
             />
             <div className='flex justify-between'>
+              <DeleteRoomDialog />
               <Button
                 className='bg-supporting'
                 type='button'

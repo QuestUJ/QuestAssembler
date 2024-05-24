@@ -1,5 +1,5 @@
+import { QuasmComponent } from './QuasmComponent';
 import { ErrorCode, QuasmError } from './QuasmError';
-import { QuasmComponent } from './Structure';
 
 type ConfigField = number | string | boolean | undefined;
 

@@ -6,7 +6,7 @@ import {
     MAX_ROOM_PLAYERS,
     MAX_STORY_CHUNK_LENGTH
 } from './constant';
-import { QuasmComponent } from './Structure';
+import { QuasmComponent } from './QuasmComponent';
 
 /**
  * Indicates what type of error we'are facing'
@@ -32,6 +32,9 @@ export enum ErrorCode {
     MaxPlayersTooFew = 'max.players.too.few',
     UserExists = 'user.exists',
     ChunkLengthExceeded = 'chunk.length.exceeded',
+    UnauthorizedSettingsChange = 'unauthorized.settings.change',
+    UnauthorizedRoomDeletion = 'unauthorized.room.deletion',
+    PlayerLimitTooSmallForCurrentPlayerCount = 'player.limit.too.small.for.current.player.count',
 
     // Character related
     NickLengthTooLong = 'nick.length.too.long',
@@ -43,7 +46,13 @@ export enum ErrorCode {
     // Chat related,
     MissingChat = 'missing.chat',
     MessagesLimit = 'messages.limit',
-    MessageLength = 'message.length'
+    MessageLength = 'message.length',
+    IncorrectMessageDetails = 'incorrect.message.details',
+
+    // Story related
+    MasterAction = 'master.action',
+    CantViewOtherActions = 'cant.view.other.actions',
+    UnauthorizedStorySubmit = 'unauthorized.story.submit'
 }
 
 /**
@@ -71,6 +80,9 @@ export const ErrorMap: Record<ErrorCode, string> = {
     [ErrorCode.MaxPlayersTooFew]: `Player limit must be bigger or equal to 2`,
     [ErrorCode.UserExists]: `You have already joined this room`,
     [ErrorCode.ChunkLengthExceeded]: `Story Chunk length cannot be longer than ${MAX_STORY_CHUNK_LENGTH}`,
+    [ErrorCode.UnauthorizedSettingsChange]: `This user can't update room settings!`,
+    [ErrorCode.UnauthorizedRoomDeletion]: `This user cannot delete the room!`,
+    [ErrorCode.PlayerLimitTooSmallForCurrentPlayerCount]: `You can't change player limit below the current number of players!`,
 
     [ErrorCode.NickLengthEmpty]: `Player nick cannot be empty`,
     [ErrorCode.NickLengthTooLong]: `Player nick cannot be longer than ${MAX_CHARACTER_NICK_LENGTH}`,
@@ -80,7 +92,12 @@ export const ErrorMap: Record<ErrorCode, string> = {
 
     [ErrorCode.MissingChat]: `Could not find appropriate chat`,
     [ErrorCode.MessagesLimit]: `Limit of messages per chat has been reached`,
-    [ErrorCode.MessageLength]: `Message is too long`
+    [ErrorCode.MessageLength]: `Message is too long`,
+    [ErrorCode.IncorrectMessageDetails]: `Message contains incorrect information`,
+
+    [ErrorCode.MasterAction]: `Game master is not able to submit actions only Story`,
+    [ErrorCode.CantViewOtherActions]: `Regular player cannot view other players' turn submits`,
+    [ErrorCode.UnauthorizedStorySubmit]: `Only game master can submit story chunks`
 };
 
 export class QuasmError extends Error {

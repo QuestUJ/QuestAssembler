@@ -1,0 +1,52 @@
+import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
+import {
+    QuasmSocket,
+    QuasmSocketServer
+} from '@/presentation/socket/socketServer';
+import { DataAccessFacade } from '@/repositories/DataAccessFacade';
+
+import { changeCharacterSettingsHandler } from './handlers/changeCharacterSettings';
+import { changeRoomSettingsHandler } from './handlers/changeRoomSettings';
+import { deleteRoomHandler } from './handlers/deleteRoom';
+import { joinRoomHandler } from './handlers/joinRoom';
+import { leaveRoomHandler } from './handlers/leaveRoom';
+import { sendMessageHandler } from './handlers/sendMessage';
+import { submitActionHandler } from './handlers/submitAction';
+import { submitStoryHandler } from './handlers/submitStory';
+import { subscribeToRoomHandler } from './handlers/subscribeToRoom';
+
+export class User {
+    constructor(
+        socket: QuasmSocket,
+        io: QuasmSocketServer,
+        dataAccess: DataAccessFacade,
+        authProvider: IAuthProvider
+    ) {
+        const handlers = [
+            joinRoomHandler,
+            subscribeToRoomHandler,
+            sendMessageHandler,
+            changeCharacterSettingsHandler,
+            changeRoomSettingsHandler,
+            submitActionHandler,
+            leaveRoomHandler,
+            submitStoryHandler
+        ];
+
+        handlers.forEach(handler => {
+            handler({
+                io,
+                socket,
+                dataAccess,
+                authProvider
+            });
+        });
+
+        deleteRoomHandler({
+            io,
+            socket,
+            dataAccess,
+            authProvider
+        });
+    }
+}

@@ -6,9 +6,10 @@ import FastifyIO from 'fastify-socket.io';
 import path from 'path';
 
 import { config } from '@/config';
+import { IAIAssistant } from '@/domain/tools/ai-assistant/IAIAssistant';
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
 import { logger } from '@/infrastructure/logger/Logger';
-import { IRoomRepository } from '@/repositories/room/IRoomRepository';
+import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 import { apiRoutes } from './plugins/api';
 
@@ -21,8 +22,9 @@ const { ALLOWED_ORIGIN, NODE_ENV } = config.pick([
  * it will spin up an fastify HTTP server for REST API and serving prebuilt static files
  */
 export async function startHTTPServer(
-    roomRepository: IRoomRepository,
-    authProvider: IAuthProvider
+    dataAccess: DataAccessFacade,
+    authProvider: IAuthProvider,
+    aiAssistant: IAIAssistant
 ) {
     const app = Fastify();
 
@@ -72,7 +74,7 @@ export async function startHTTPServer(
         root: staticPath
     });
 
-    await app.register(apiRoutes(authProvider, roomRepository), {
+    await app.register(apiRoutes(authProvider, dataAccess, aiAssistant), {
         prefix: '/api/v1'
     });
 

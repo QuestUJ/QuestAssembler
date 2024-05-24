@@ -1,12 +1,11 @@
 import { expect } from '@playwright/test';
 import { testWithRooms } from './fixtures/Room';
 import { randomBytes } from 'crypto';
+import { BASE_URL } from './const';
 
 testWithRooms.describe('[FM3, FM4] Dashboard', () => {
-    // testWithRooms.describe.configure({ mode: 'serial' });
-
     testWithRooms('should be able to create a game', async ({ auth }) => {
-        const page = await auth.useAuth('User');
+        const page = await auth.authenticate('User');
 
         const createGameButton = page.getByRole('button', {
             name: 'Create game'
@@ -41,54 +40,54 @@ testWithRooms.describe('[FM3, FM4] Dashboard', () => {
 
         const roomCard = page.getByText(rnd);
 
-        await expect(roomCard).toBeVisible({timeout: 20000});
+        await expect(roomCard).toBeVisible();
     });
 
     testWithRooms(
         'should be able to get into the room',
         async ({ auth, room }) => {
-            const page = await auth.useAuth('User');
+            const page = await auth.authenticate('User');
 
-            const name = randomBytes(10).toString('base64');
-            await room.createRoom('User', name, 5);
+            const name = randomBytes(11).toString('base64');
+            await room.createRoom(page, name, 5);
 
             await page.reload();
 
             const roomCard = page.getByText(name);
             await roomCard.click();
 
-            expect(page.url()).toMatch(/http:\/\/localhost:3000\/.+/);
+            expect(page.url()).toMatch(new RegExp(`${BASE_URL}/.+`));
         }
     );
 
     testWithRooms('should be able to sign out', async ({ auth }) => {
-        const page = await auth.useAuth('User');
+        const page = await auth.authenticate('User');
 
         await page.getByRole('button', { name: 'Log out' }).click();
         await page.waitForLoadState('domcontentloaded');
-        expect(page.url()).toMatch('http://localhost:3000/');
+        expect(page.url()).toMatch('http://localhost:3000'); // Auth0 callback
         await expect(page.getByText('Join the game')).toBeVisible();
     });
 
-    testWithRooms('should be able to join the game', async ({ room, auth }) => {
-        const name = randomBytes(10).toString('base64')
-        await room.createRoom('Bob',name, 10);
-        const bob = await auth.useAuth('Bob');
-        const user = await auth.useAuth('User');
+    testWithRooms('should be able to join the game', async ({ auth, room }) => {
+        const bob = await auth.authenticate('Bob');
+        const user = await auth.authenticate('User');
+        const name = randomBytes(10).toString('base64');
 
-        await bob.goto('http://localhost:3000/dashboard');
-        await bob.getByText(name).click();
+        await room.createRoom(bob, name, 5);
 
-        bob.getByRole('button', { name: 'Invite to game' });
-        const gameCode = await bob.getByTestId('game-code').textContent();
+        await bob.getByRole('link', { name }).click();
 
-        expect(gameCode).toBeTruthy();
+        await bob.getByRole('button', { name: 'Players' }).click();
 
-        await user.getByRole('button', { name: 'Join game' }).click();
+        const gameCode = await room.getRoomCode(bob);
 
-        await user.getByRole('textbox', { name: 'Game code' }).fill(gameCode!);
-        await user.getByRole('button', { name: 'Join' }).click();
+        await room.joinRoom(user, gameCode);
 
-        expect(user.getByText(name)).toBeVisible();
+        await expect(bob.getByRole('link', { name: 'user' })).toBeVisible();
+        const userRoom = user.getByRole('link', { name });
+        await expect(userRoom).toBeVisible();
+        await userRoom.click();
+        await expect(user.getByText(name)).toBeVisible();
     });
 });
