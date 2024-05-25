@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { useApiPost } from '@/lib/api';
+import { useCreateGame } from '@/lib/api/createGame';
 
 import {
   Form,
@@ -64,20 +64,12 @@ export function CreateGameDialog() {
     }
   });
 
-  const { mutate: createGame } = useApiPost<
-    string,
-    { name: string; maxPlayers: number }
-  >({
-    path: '/createRoom',
-    invalidate: ['roomFetch'],
-
-    onSuccess: code => {
-      toast({
-        title: 'Room created succcessfully',
-        description: `Your room game code is ${code} `
-      });
-      form.reset();
-    }
+  const { mutate: createGame } = useCreateGame(code => {
+    toast({
+      title: 'Room created succcessfully',
+      description: `Your room game code is ${code} `
+    });
+    form.reset();
   });
 
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = data => {

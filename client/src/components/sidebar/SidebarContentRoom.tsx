@@ -4,7 +4,8 @@ import { useParams } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import shortUUID from 'short-uuid';
 
-import { useApiGet } from '@/lib/api';
+import { useGetRoom } from '@/lib/api/getRoom';
+import { useGetRoomPlayers } from '@/lib/api/getRoomPlayers';
 import { useQuasmStore } from '@/lib/stores/quasmStore';
 import { useSocket, useSocketEvent } from '@/lib/stores/socketIOStore';
 
@@ -27,15 +28,8 @@ export function SidebarContentRoom() {
 
   const roomUUID = shortUUID().toUUID(roomId);
 
-  const { data: roomDetails } = useApiGet<RoomDetailsPayload>({
-    path: `/getRoom/${roomUUID}`,
-    queryKey: ['getRoom', roomUUID]
-  });
-
-  const { data: players } = useApiGet<ApiPlayerPayload[]>({
-    path: `/getRoomPlayers/${roomUUID}`,
-    queryKey: ['getRoomPlayers', roomUUID]
-  });
+  const { data: roomDetails } = useGetRoom(roomUUID);
+  const { data: players } = useGetRoomPlayers(roomUUID);
 
   const { toast } = useToast();
 

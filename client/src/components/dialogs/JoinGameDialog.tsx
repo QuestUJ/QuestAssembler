@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { useSocket } from '@/lib/stores/socketIOStore';
-import { getResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
+import { buildResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
 
 export function JoinGameDialog() {
   const [gameCode, setGameCode] = useState('');
@@ -41,7 +41,7 @@ export function JoinGameDialog() {
           queryKey: ['roomFetch']
         });
       } else {
-        toast(getResponseErrorToast(res.error));
+        toast(buildResponseErrorToast(res.error));
       }
     });
   };

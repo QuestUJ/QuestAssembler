@@ -10,7 +10,7 @@ import {
 import { InputBar } from '@/components/InputBar';
 import { SvgSpinner } from '@/components/Spinner';
 import { StoryChunkContainer } from '@/components/story-utitlities/StoryChunks';
-import { useApiGet } from '@/lib/api';
+import { useFetchStory } from '@/lib/api/fetchStory';
 import { useSocketEvent } from '@/lib/stores/socketIOStore';
 
 const route = getRouteApi('/_auth/room/$roomId/');
@@ -20,10 +20,7 @@ function Story() {
 
   const roomUUID = shortUUID().toUUID(roomId);
 
-  const { data: story } = useApiGet<ApiStoryChunk[]>({
-    path: `/fetchStory/${roomUUID}`,
-    queryKey: ['fetchStory', roomUUID]
-  });
+  const { data: story } = useFetchStory(roomUUID);
 
   const queryClient = useQueryClient();
 

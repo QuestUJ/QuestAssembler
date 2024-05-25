@@ -1,8 +1,3 @@
-import {
-  ApiGenerateTextPayload,
-  ApiTurnSubmitWithCharacterPayload,
-  GenerateTextBody
-} from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   createLazyFileRoute,
@@ -26,12 +21,13 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { useApiGet, useApiPost } from '@/lib/api';
-import { useWindowSize } from '@/lib/hooks/windowSize';
+import { useFetchTurnSubmits } from '@/lib/api/fetchTurnSubmits';
+import { useGenerateText } from '@/lib/api/generateText';
+import { useWindowSize } from '@/lib/misc/windowSize';
 import { useQuasmStore } from '@/lib/stores/quasmStore';
 import { useSocket, useSocketEvent } from '@/lib/stores/socketIOStore';
 import { useStoryChunkStore } from '@/lib/stores/storyChunkStore';
-import { getResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
+import { buildResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
 import { cn } from '@/lib/utils';
 
 interface TurnSubmitDetails {
@@ -120,7 +116,6 @@ function StoryTextArea() {
 }
 
 function LLMAssistanceButton() {
-  const setStoryWithLLM = useStoryChunkStore(state => state.setNewStoryWithLLM);
   const story = useStoryChunkStore(state => state.story);
   const setGeneratingStatus = useStoryChunkStore(
     state => state.setGeneratingStatus
@@ -128,22 +123,12 @@ function LLMAssistanceButton() {
   const isGeneratingWithLLM = useStoryChunkStore(
     state => state.isGeneratingWithLLM
   );
-  // a bit quirky as the mutation does not really mutate anything, but the interaction is just a prototype
-  // TODO: rethink which method to use for AI assistance
-  const { mutate: LLMSupportMutation } = useApiPost<
-    ApiGenerateTextPayload,
-    GenerateTextBody
-  >({
-    path: '/generateText',
-    invalidate: [],
-    onSuccess: text => {
-      setStoryWithLLM(text.generatedText);
-    }
-  });
+
+  const { mutate: callLLMSupport } = useGenerateText();
 
   const handleLLMSupport = () => {
     setGeneratingStatus();
-    LLMSupportMutation({
+    callLLMSupport({
       prompt: story
     });
   };
@@ -220,10 +205,7 @@ function SubmitStory() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const { data } = useApiGet<ApiTurnSubmitWithCharacterPayload[]>({
-    path: `/fetchTurnSubmits/${roomUUID}`,
-    queryKey: ['fetchTurnSubmits', roomUUID]
-  });
+  const { data } = useFetchTurnSubmits(roomUUID);
 
   useSocketEvent('newPlayer', ({ id, nick, profileIMG }) => {
     if (!data) {
@@ -304,7 +286,7 @@ function SubmitStory() {
             }
           });
         } else {
-          toast(getResponseErrorToast(res.error));
+          toast(buildResponseErrorToast(res.error));
         }
       }
     );

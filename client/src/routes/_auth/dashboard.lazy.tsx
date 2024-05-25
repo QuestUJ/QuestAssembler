@@ -1,19 +1,15 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { ApiRoomPayload } from '@quasm/common';
 import { createLazyFileRoute } from '@tanstack/react-router';
 
 import { RoomCard } from '@/components/RoomCard';
 import { SvgSpinner } from '@/components/Spinner';
 import { Button } from '@/components/ui/button';
-import { useApiGet } from '@/lib/api';
+import { useFetchRooms } from '@/lib/api/fetchRooms';
 
 function RoomOverview() {
   const { loginWithRedirect } = useAuth0();
 
-  const { isPending, isError, data, error } = useApiGet<ApiRoomPayload[]>({
-    path: '/fetchRooms',
-    queryKey: ['roomFetch']
-  });
+  const { isPending, isError, data, error } = useFetchRooms();
 
   if (isError) {
     return (
