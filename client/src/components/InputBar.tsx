@@ -13,8 +13,10 @@ export function InputBar({
   const [inputValue, setInputValue] = useState('');
 
   const handleClick = () => {
-    setInputValue('');
-    handleSend(inputValue);
+    if (inputValue) {
+      setInputValue('');
+      handleSend(inputValue);
+    }
   };
 
   return (
@@ -22,6 +24,7 @@ export function InputBar({
       <Textarea
         placeholder='Type your message here...'
         value={inputValue}
+        required={true}
         onChange={e => setInputValue(e.target.value)}
       />
       <Button
