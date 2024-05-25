@@ -53,7 +53,7 @@ function RoomOverview() {
 
 function Dashboard() {
   return (
-    <div className='flex w-full flex-wrap md:p-10'>
+    <div className='flex w-full flex-wrap md:p-2'>
       <RoomOverview />
     </div>
   );

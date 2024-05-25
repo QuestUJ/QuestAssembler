@@ -139,7 +139,7 @@ function AuthLayout() {
           <div className='col-span-4'>
             <TopBarExpanded />
           </div>
-          <div className='col-span-4 col-start-2 row-span-7 row-start-2'>
+          <div className='col-span-4 col-start-2 row-span-7 row-start-2 overflow-y-auto'>
             <Outlet />
           </div>
         </div>
@@ -148,7 +148,7 @@ function AuthLayout() {
           <div>
             <TopBar />
           </div>
-          <div className='row-span-7 bg-crust from-[#222] to-[#111]'>
+          <div className='row-span-7 overflow-y-auto bg-crust from-[#222] to-[#111]'>
             <Outlet />
           </div>
         </div>
