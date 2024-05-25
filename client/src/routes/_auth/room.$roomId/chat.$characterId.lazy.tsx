@@ -6,12 +6,12 @@ import shortUUID from 'short-uuid';
 import {
   MessageContainer,
   OutletWrapper
-} from '@/components/chatUtilities/Messages';
+} from '@/components/chat-utilities/Messages';
 import { InputBar } from '@/components/InputBar';
 import { SvgSpinner } from '@/components/Spinner';
 import { useApiGet } from '@/lib/api';
 import { useSocketChat } from '@/lib/chat/socketChat';
-import { useSocketEvent } from '@/lib/socketIOStore';
+import { useSocketEvent } from '@/lib/stores/socketIOStore';
 
 //TODO: redirect when chat with givent character doesn't exist (user typed something random into url)
 

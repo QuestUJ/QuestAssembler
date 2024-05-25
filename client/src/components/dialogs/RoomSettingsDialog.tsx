@@ -22,7 +22,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useSocket } from '@/lib/socketIOStore';
+import { useSocket } from '@/lib/stores/socketIOStore';
 import { getResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
 
 import {

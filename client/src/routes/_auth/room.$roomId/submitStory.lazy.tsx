@@ -26,11 +26,11 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { useWindowSize } from '@/hooks/windowSize';
 import { useApiGet, useApiPost } from '@/lib/api';
-import { useQuasmStore } from '@/lib/quasmStore';
-import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
-import { useStoryChunkStore } from '@/lib/storyChunkStore';
+import { useWindowSize } from '@/lib/hooks/windowSize';
+import { useQuasmStore } from '@/lib/stores/quasmStore';
+import { useSocket, useSocketEvent } from '@/lib/stores/socketIOStore';
+import { useStoryChunkStore } from '@/lib/stores/storyChunkStore';
 import { getResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
 import { cn } from '@/lib/utils';
 

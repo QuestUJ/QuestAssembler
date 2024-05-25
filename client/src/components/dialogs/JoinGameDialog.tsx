@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { useSocket } from '@/lib/socketIOStore';
+import { useSocket } from '@/lib/stores/socketIOStore';
 import { getResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
 
 export function JoinGameDialog() {

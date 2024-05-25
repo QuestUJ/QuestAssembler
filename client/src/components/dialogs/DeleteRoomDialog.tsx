@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
-import { useSocket } from '@/lib/socketIOStore';
+import { useSocket } from '@/lib/stores/socketIOStore';
 import { SocketErrorToast } from '@/lib/toasters';
 
 import { useToast } from '../ui/use-toast';

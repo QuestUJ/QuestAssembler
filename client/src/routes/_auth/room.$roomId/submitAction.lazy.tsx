@@ -17,7 +17,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useApiGet } from '@/lib/api';
-import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
+import { useSocket, useSocketEvent } from '@/lib/stores/socketIOStore';
 import { getResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
 
 const route = getRouteApi('/_auth/room/$roomId/submitAction');

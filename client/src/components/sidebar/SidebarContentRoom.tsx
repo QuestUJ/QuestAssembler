@@ -5,8 +5,8 @@ import { useEffect } from 'react';
 import shortUUID from 'short-uuid';
 
 import { useApiGet } from '@/lib/api';
-import { useQuasmStore } from '@/lib/quasmStore';
-import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
+import { useQuasmStore } from '@/lib/stores/quasmStore';
+import { useSocket, useSocketEvent } from '@/lib/stores/socketIOStore';
 
 import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
 import { LeaveRoomDialog } from '../dialogs/LeaveRoomDialog';

@@ -14,7 +14,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { useSocket } from '@/lib/socketIOStore';
+import { useSocket } from '@/lib/stores/socketIOStore';
 
 export function LeaveRoomDialog() {
   const [open, setOpen] = useState(false);
