@@ -1,3 +1,4 @@
+import { TabsTrigger } from '../ui/tabs';
 import { CharacterDetails } from './types';
 
 export function PlayersTabNavigation({
