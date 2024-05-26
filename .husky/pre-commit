@@ -1,10 +1,10 @@
-pnpm --prefix server lint
 pnpm --prefix server format
+pnpm --prefix server lint
 
-pnpm --prefix client lint
 pnpm --prefix client format
+pnpm --prefix client lint
 
-pnpm --prefix common lint
 pnpm --prefix common format
+pnpm --prefix common lint
 
 git add -A .
