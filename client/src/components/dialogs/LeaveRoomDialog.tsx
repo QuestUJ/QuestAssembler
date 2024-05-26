@@ -14,7 +14,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { useSocket } from '@/lib/socketIOStore';
+import { useSocket } from '@/lib/stores/socketIOStore';
 
 export function LeaveRoomDialog() {
   const [open, setOpen] = useState(false);
@@ -49,7 +49,7 @@ export function LeaveRoomDialog() {
         toast({
           title: 'Something went wrong!',
           variant: 'destructive',
-          description: res.error
+          description: res.error?.message
         });
       }
     });

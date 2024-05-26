@@ -15,9 +15,9 @@ import { SidebarFixed } from '@/components/sidebar/SidebarFixed';
 import { SvgSpinner } from '@/components/Spinner';
 import { useToast } from '@/components/ui/use-toast';
 import { User } from '@/components/User';
-import { useWindowSize } from '@/hooks/windowSize';
-import { useQuasmStore } from '@/lib/quasmStore';
-import { useIOStore, useSocketEvent } from '@/lib/socketIOStore';
+import { useWindowSize } from '@/lib/misc/windowSize';
+import { useQuasmStore } from '@/lib/stores/quasmStore';
+import { useIOStore, useSocketEvent } from '@/lib/stores/socketIOStore';
 import { cn } from '@/lib/utils';
 
 function RoomIcon({ isGameMaster }: { isGameMaster: boolean }) {
@@ -97,13 +97,7 @@ function AuthLayout() {
     (async () => {
       const token = await getAccessTokenSilently();
 
-      connectSocket(token, err => {
-        toast({
-          title: 'Server connection problem',
-          variant: 'destructive',
-          description: err
-        });
-      });
+      connectSocket(token);
     })().catch(err => {
       const msg = err instanceof Error ? err.message : (err as string);
 

@@ -1,4 +1,3 @@
-import { ApiMessagePayload } from '@quasm/common';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
 import shortUUID from 'short-uuid';
@@ -6,14 +5,12 @@ import shortUUID from 'short-uuid';
 import {
   MessageContainer,
   OutletWrapper
-} from '@/components/chatUtilities/Messages';
+} from '@/components/chat-utilities/Messages';
 import { InputBar } from '@/components/InputBar';
 import { SvgSpinner } from '@/components/Spinner';
-import { useApiGet } from '@/lib/api';
+import { useFetchMessages } from '@/lib/api/fetchMessages';
 import { useSocketChat } from '@/lib/chat/socketChat';
-import { useSocketEvent } from '@/lib/socketIOStore';
-
-//TODO: redirect when chat with givent character doesn't exist (user typed something random into url)
+import { useSocketEvent } from '@/lib/stores/socketIOStore';
 
 function PlayerChat() {
   const { roomId, characterId } = Route.useParams();
@@ -28,10 +25,7 @@ function PlayerChat() {
     characterUUID
   });
 
-  const { data, isPending } = useApiGet<ApiMessagePayload[]>({
-    path: `/fetchMessages/${roomUUID}?other=${characterUUID}`,
-    queryKey: ['fetchMessages', roomUUID, characterUUID]
-  });
+  const { data, isPending } = useFetchMessages(roomUUID, characterUUID);
 
   useSocketEvent('playerLeft', async player => {
     if (characterUUID == player.id) {

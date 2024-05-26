@@ -3,7 +3,7 @@ export const SocketErrorToast: { title: string; variant: 'destructive' } = {
   variant: 'destructive'
 };
 
-export function getResponseErrorToast(error?: string): {
+export function buildResponseErrorToast(error?: string): {
   title: string;
   variant: 'destructive';
   description: string | undefined;

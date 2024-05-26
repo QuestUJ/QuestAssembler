@@ -15,8 +15,8 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { useSocket } from '@/lib/socketIOStore';
-import { getResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
+import { useSocket } from '@/lib/stores/socketIOStore';
+import { buildResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
 
 export function JoinGameDialog() {
   const [gameCode, setGameCode] = useState('');
@@ -38,10 +38,10 @@ export function JoinGameDialog() {
         });
 
         await queryClient.invalidateQueries({
-          queryKey: ['roomFetch']
+          queryKey: ['fetchRooms']
         });
       } else {
-        toast(getResponseErrorToast(res.error));
+        toast(buildResponseErrorToast(res.error?.message));
       }
     });
   };

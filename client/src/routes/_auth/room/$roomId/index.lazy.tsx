@@ -5,28 +5,22 @@ import shortUUID from 'short-uuid';
 
 import {
   BroadcastChat,
-  OutletWrapper,
-  StoryChunkContainer
-} from '@/components/chatUtilities/Messages';
+  OutletWrapper
+} from '@/components/chat-utilities/Messages';
 import { InputBar } from '@/components/InputBar';
 import { SvgSpinner } from '@/components/Spinner';
-import { useApiGet } from '@/lib/api';
-import { useQuasmStore } from '@/lib/quasmStore';
-import { useSocketEvent } from '@/lib/socketIOStore';
+import { StoryChunkContainer } from '@/components/story-utilities/StoryChunks';
+import { useFetchStory } from '@/lib/api/fetchStory';
+import { useSocketEvent } from '@/lib/stores/socketIOStore';
 
 const route = getRouteApi('/_auth/room/$roomId/');
 
 function Story() {
-  const messages = useQuasmStore(state => state.messages);
-
   const { roomId } = route.useParams();
 
   const roomUUID = shortUUID().toUUID(roomId);
 
-  const { data: story } = useApiGet<ApiStoryChunk[]>({
-    path: `/fetchStory/${roomUUID}`,
-    queryKey: ['fetchStory', roomUUID]
-  });
+  const { data: story } = useFetchStory(roomUUID);
 
   const queryClient = useQueryClient();
 
@@ -56,7 +50,7 @@ function Story() {
         <StoryChunkContainer
           story={story.map(s => ({ type: 'storychunk', ...s }))}
         />
-        <BroadcastChat messages={messages} />
+        <BroadcastChat messages={[]} />
       </OutletWrapper>
       <InputBar
         handleSend={() => console.log('send handled')}

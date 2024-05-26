@@ -22,8 +22,8 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useSocket } from '@/lib/socketIOStore';
-import { getResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
+import { useSocket } from '@/lib/stores/socketIOStore';
+import { buildResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
 
 import {
   Form,
@@ -93,7 +93,7 @@ export function RoomSettingsDialog() {
             title: 'Room settings changed successfully'
           });
         } else {
-          toast(getResponseErrorToast(res.error));
+          toast(buildResponseErrorToast(res.error?.message));
         }
       }
     );

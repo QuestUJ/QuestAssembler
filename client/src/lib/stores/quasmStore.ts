@@ -1,19 +1,8 @@
 import { create } from 'zustand';
 
-import {
-  PLACEHOLDER_DUMMY_MESSAGES,
-  PLACEHOLDER_DUMMY_STORY,
-  PLACEHOLDER_ROOM_PLAYERS
-} from './dummyData';
-import { MessageDetails, StoryChunkDetails } from './sharedTypes';
-
 type QuasmState = {
   roomName: string | undefined;
   isGameMaster: boolean;
-  currentPlayerName: string;
-  currentPlayerURLImage: string | undefined;
-  messages: MessageDetails[];
-  story: StoryChunkDetails[];
 };
 
 type QuasmActions = {
@@ -26,10 +15,7 @@ export const useQuasmStore = create<QuasmState & QuasmActions>()(set => ({
   isGameMaster: true,
 
   roomID: undefined,
-  roomCharacters: PLACEHOLDER_ROOM_PLAYERS,
   currentPlayerName: 'adam',
-  messages: PLACEHOLDER_DUMMY_MESSAGES,
-  story: PLACEHOLDER_DUMMY_STORY,
   currentPlayerURLImage:
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRY3q3HgtsmQrYhiCava6te52P-YM6roY_m1-u4vyR_vQ&s',
   setRoomName: (name: string | undefined) => set(() => ({ roomName: name })),

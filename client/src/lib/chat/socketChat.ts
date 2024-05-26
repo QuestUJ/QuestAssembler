@@ -1,9 +1,9 @@
-import { ApiMessagePayload, MsgEvent } from '@quasm/common';
+import { ApiMessagePayload } from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '@/components/ui/use-toast';
-import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
 
+import { useSocket, useSocketEvent } from '../stores/socketIOStore';
 import { SocketErrorToast } from '../toasters';
 
 interface Props {
@@ -34,12 +34,15 @@ export function useSocketChat({ roomUUID, characterUUID }: Props) {
           toast({
             title: 'Sending failed',
             variant: 'destructive',
-            description: res.error
+            description: res.error!.message
           });
           return;
         }
 
-        const msg: MsgEvent = res.payload!;
+        const msg: ApiMessagePayload = {
+          ...res.payload!,
+          timestamp: new Date(res.payload!.timestamp)
+        };
 
         queryClient.setQueryData<ApiMessagePayload[]>(
           ['fetchMessages', roomUUID, characterUUID],
@@ -55,9 +58,14 @@ export function useSocketChat({ roomUUID, characterUUID }: Props) {
       description: data.content
     });
 
+    const msg: ApiMessagePayload = {
+      ...data,
+      timestamp: new Date(data.timestamp)
+    };
+
     queryClient.setQueryData<ApiMessagePayload[]>(
       ['fetchMessages', roomUUID, data.from],
-      old => (old ? [...old, data] : [data])
+      old => (old ? [...old, msg] : [msg])
     );
   });
 

@@ -1,4 +1,3 @@
-import { ApiTurnSubmitPayload } from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createLazyFileRoute, getRouteApi } from '@tanstack/react-router';
 import { CheckCircle } from 'lucide-react';
@@ -16,9 +15,9 @@ import {
 } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { useApiGet } from '@/lib/api';
-import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
-import { getResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
+import { useGetTurnSubmit } from '@/lib/api/getTurnSubmit';
+import { useSocket, useSocketEvent } from '@/lib/stores/socketIOStore';
+import { buildResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
 
 const route = getRouteApi('/_auth/room/$roomId/submitAction');
 
@@ -33,10 +32,7 @@ function PlayerSubmit() {
   const { roomId } = route.useParams();
   const roomUUID = shortUUID().toUUID(roomId);
 
-  const { data, isPending } = useApiGet<ApiTurnSubmitPayload>({
-    path: `/getTurnSubmit/${roomUUID}`,
-    queryKey: ['getTurnSubmit', roomUUID]
-  });
+  const { data, isPending } = useGetTurnSubmit(roomUUID);
 
   const submit = () => {
     if (!socket) {
@@ -62,7 +58,7 @@ function PlayerSubmit() {
             timestamp
           });
         } else {
-          toast(getResponseErrorToast(res.error));
+          toast(buildResponseErrorToast(res.error?.message));
         }
       }
     );

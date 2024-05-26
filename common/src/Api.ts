@@ -1,11 +1,12 @@
 import { QuasmComponent } from './QuasmComponent';
+import { ErrorCode } from './QuasmError';
 
 export interface ApiResponse<Payload> {
     success: boolean;
     payload?: Payload;
     error?: {
         location: QuasmComponent;
-        code: number;
+        code: ErrorCode;
         message: string;
     };
 }
@@ -38,14 +39,14 @@ export interface ApiPlayerPayload {
     isReady: boolean;
 }
 
-export interface RoomDetailsPayload {
+export interface ApiRoomDetailsPayload {
     id: string;
     roomName: string;
     gameMasterID: string;
     currentPlayer: ApiPlayerPayload;
 }
 
-export type GetRoomResponse = ApiResponse<RoomDetailsPayload>;
+export type GetRoomResponse = ApiResponse<ApiRoomDetailsPayload>;
 
 // =======================
 // /getRoomPlayers/

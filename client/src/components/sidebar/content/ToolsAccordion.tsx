@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger
 } from '@/components/ui/accordion';
-import { useQuasmStore } from '@/lib/quasmStore';
+import { useQuasmStore } from '@/lib/stores/quasmStore';
 
 function ToolLink({ children }: { children: ReactNode }) {
   return (
