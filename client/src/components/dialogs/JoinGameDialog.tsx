@@ -38,7 +38,7 @@ export function JoinGameDialog() {
         });
 
         await queryClient.invalidateQueries({
-          queryKey: ['roomFetch']
+          queryKey: ['fetchRooms']
         });
       } else {
         toast(buildResponseErrorToast(res.error));

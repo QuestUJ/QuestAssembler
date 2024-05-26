@@ -4,12 +4,6 @@ import shortUUID from 'short-uuid';
 
 import { useGetRoom } from '@/lib/api/getRoom';
 import { useGetRoomPlayers } from '@/lib/api/getRoomPlayers';
-import { useChangeCharacterDetailsEvent } from '@/lib/socket/changeCharacterDetailsEvent';
-import { useChangeRoomSettingsEvent } from '@/lib/socket/changeRoomSettingsEvent';
-import { useNewPlayerEvent } from '@/lib/socket/newPlayerEvent';
-import { useNewTurnEvent } from '@/lib/socket/newTurnEvent';
-import { usePlayerReadyEvent } from '@/lib/socket/playerReadyEvent';
-import { useSubscribeToRoom } from '@/lib/socket/subscribeToRoom';
 import { useQuasmStore } from '@/lib/stores/quasmStore';
 
 import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
@@ -39,13 +33,6 @@ export function SidebarContentRoom() {
       roomDetails?.currentPlayer.id === roomDetails?.gameMasterID
     );
   }, [roomDetails, setRoomName, setIsGameMaster]);
-
-  useSubscribeToRoom(roomUUID);
-  useNewPlayerEvent(roomUUID);
-  useChangeCharacterDetailsEvent(roomUUID);
-  useChangeRoomSettingsEvent(roomUUID);
-  usePlayerReadyEvent(roomUUID);
-  useNewTurnEvent(roomUUID);
 
   return (
     <div className='flex h-full flex-col justify-between p-4'>
