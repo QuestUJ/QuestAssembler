@@ -4,197 +4,26 @@ import {
   getRouteApi,
   useNavigate
 } from '@tanstack/react-router';
-import { Bot, CheckCircle, RotateCcw } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import { useEffect } from 'react';
 import shortUUID from 'short-uuid';
 
 import { SvgSpinner } from '@/components/Spinner';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from '@/components/ui/accordion';
+import { ActionsAccordion } from '@/components/submit-story-utilities/ActionsAccordion';
+import { CharacterSubmitTab } from '@/components/submit-story-utilities/CharactersTurnSubmitTab';
+import { ImageHandler } from '@/components/submit-story-utilities/ImageHandler';
+import { LLMAssistanceButton } from '@/components/submit-story-utilities/LLMAssistanceButton';
+import { StoryTextArea } from '@/components/submit-story-utilities/StoryTextArea';
+import { TurnSubmitCard } from '@/components/submit-story-utilities/TurnSubmitCard';
+import { CharacterDetails } from '@/components/submit-story-utilities/types';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useFetchTurnSubmits } from '@/lib/api/fetchTurnSubmits';
-import { useGenerateText } from '@/lib/api/generateText';
 import { useWindowSize } from '@/lib/misc/windowSize';
 import { useQuasmStore } from '@/lib/stores/quasmStore';
 import { useSocket, useSocketEvent } from '@/lib/stores/socketIOStore';
 import { useStoryChunkStore } from '@/lib/stores/storyChunkStore';
 import { buildResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
-import { cn } from '@/lib/utils';
-
-interface TurnSubmitDetails {
-  content: string;
-  timestamp: string;
-}
-
-interface CharacterDetails {
-  profileIMG?: string;
-  nick: string;
-  characterID: string;
-  submit: TurnSubmitDetails | null;
-}
-
-function TabNavigation({ characterInfo }: { characterInfo: CharacterDetails }) {
-  const { characterID, profileIMG } = characterInfo;
-  return (
-    <TabsTrigger value={characterID}>
-      <img src={profileIMG} className='mx-1 h-7 w-7 rounded-full' />
-    </TabsTrigger>
-  );
-}
-
-function TurnSubmitCard({
-  characterInfo
-}: {
-  characterInfo: CharacterDetails;
-}) {
-  const { profileIMG, submit, nick } = characterInfo;
-  return (
-    <Card className='overflow-auto'>
-      <CardHeader className='lg:p-2'>
-        <div className='flex items-center gap-2'>
-          <img className='h-10 w-10 rounded-full' src={profileIMG} />
-          <h1 className='text-md font-decorative text-primary lg:text-lg'>
-            {nick}
-          </h1>
-        </div>
-        <Separator className='w-full' />
-      </CardHeader>
-      <CardContent
-        className={cn(
-          'lg:text-md p-4 pt-0 text-sm',
-          !submit && 'text-secondary'
-        )}
-      >
-        {submit ? submit.content : "Player hasn't submitted yet"}
-      </CardContent>
-    </Card>
-  );
-}
-
-function ImageHandler() {
-  return (
-    <div className='flex h-80 w-80 items-center justify-center rounded-md bg-background lg:h-full lg:w-full'>
-      Image Handler Component
-    </div>
-  );
-}
-
-function StoryTextArea() {
-  const setStory = useStoryChunkStore(state => state.setStory);
-  const story = useStoryChunkStore(state => state.story);
-  const oldStory = useStoryChunkStore(state => state.oldStory);
-  const reverseStory = useStoryChunkStore(state => state.revertStory);
-  return (
-    <div className='relative lg:h-full lg:w-full'>
-      <Textarea
-        placeholder='Type your story here...'
-        value={story}
-        onChange={e => setStory(e.target.value)}
-        className='min-h-60 lg:h-full lg:w-full'
-      />
-      {oldStory ? (
-        <Button
-          className='absolute bottom-2 right-2 h-10 w-10 p-2 lg:bottom-1 lg:right-1'
-          onClick={reverseStory}
-        >
-          <RotateCcw className='h-full w-full' />
-        </Button>
-      ) : (
-        <></>
-      )}
-    </div>
-  );
-}
-
-function LLMAssistanceButton() {
-  const story = useStoryChunkStore(state => state.story);
-  const setGeneratingStatus = useStoryChunkStore(
-    state => state.setGeneratingStatus
-  );
-  const isGeneratingWithLLM = useStoryChunkStore(
-    state => state.isGeneratingWithLLM
-  );
-
-  const { mutate: callLLMSupport } = useGenerateText();
-
-  const handleLLMSupport = () => {
-    setGeneratingStatus();
-    callLLMSupport({
-      prompt: story
-    });
-  };
-
-  return (
-    <Button
-      className='flex w-full items-center gap-2 bg-white p-2 text-xs'
-      onClick={handleLLMSupport}
-      disabled={isGeneratingWithLLM}
-    >
-      {isGeneratingWithLLM ? (
-        <>Generating...</>
-      ) : (
-        <>
-          <Bot className='' />
-          Rewrite with LLM
-        </>
-      )}
-    </Button>
-  );
-}
-
-function ActionsAccordion() {
-  return (
-    <Accordion type='multiple' className='w-4/5'>
-      <AccordionItem value='story'>
-        <AccordionTrigger className='flex w-full flex-row items-center text-2xl text-primary'>
-          Story
-        </AccordionTrigger>
-        <AccordionContent className='flex flex-col gap-2'>
-          <StoryTextArea />
-          <LLMAssistanceButton />
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value='image'>
-        <AccordionTrigger className='flex w-full flex-row items-center text-2xl text-primary'>
-          Image
-        </AccordionTrigger>
-        <AccordionContent className=''>
-          <ImageHandler />
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  );
-}
-
-function CharacterSubmitTab({
-  roomCharacters
-}: {
-  roomCharacters: CharacterDetails[];
-}) {
-  return (
-    <Tabs defaultValue={roomCharacters[0].characterID} className='w-4/5'>
-      <TabsList className='w-full'>
-        {roomCharacters.map(character => (
-          <TabNavigation characterInfo={character} />
-        ))}
-      </TabsList>
-      {roomCharacters.map(character => (
-        <TabsContent value={character.characterID}>
-          <TurnSubmitCard characterInfo={character} />
-        </TabsContent>
-      ))}
-    </Tabs>
-  );
-}
 
 const route = getRouteApi('/_auth/room/$roomId/submitStory');
 
