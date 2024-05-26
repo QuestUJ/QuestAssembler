@@ -1,5 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { RoomDetailsPayload } from '@quasm/common';
+import { ApiRoomDetailsPayload } from '@quasm/common';
 import { useQuery } from '@tanstack/react-query';
 
 import { useErrorToast } from '../misc/errorToast';
@@ -13,7 +13,7 @@ export function useGetRoom(roomUUID: string) {
   const queryFn = async () => {
     const token = await getAccessTokenSilently();
 
-    return fetchGET<RoomDetailsPayload>({
+    return fetchGET<ApiRoomDetailsPayload>({
       path,
       token
     });

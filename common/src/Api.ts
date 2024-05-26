@@ -39,14 +39,14 @@ export interface ApiPlayerPayload {
     isReady: boolean;
 }
 
-export interface RoomDetailsPayload {
+export interface ApiRoomDetailsPayload {
     id: string;
     roomName: string;
     gameMasterID: string;
     currentPlayer: ApiPlayerPayload;
 }
 
-export type GetRoomResponse = ApiResponse<RoomDetailsPayload>;
+export type GetRoomResponse = ApiResponse<ApiRoomDetailsPayload>;
 
 // =======================
 // /getRoomPlayers/

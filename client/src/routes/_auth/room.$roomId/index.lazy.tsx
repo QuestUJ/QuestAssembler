@@ -9,7 +9,7 @@ import {
 } from '@/components/chat-utilities/Messages';
 import { InputBar } from '@/components/InputBar';
 import { SvgSpinner } from '@/components/Spinner';
-import { StoryChunkContainer } from '@/components/story-utitlities/StoryChunks';
+import { StoryChunkContainer } from '@/components/story-utilities/StoryChunks';
 import { useFetchStory } from '@/lib/api/fetchStory';
 import { useSocketEvent } from '@/lib/stores/socketIOStore';
 
