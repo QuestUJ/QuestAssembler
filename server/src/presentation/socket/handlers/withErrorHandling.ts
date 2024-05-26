@@ -1,4 +1,4 @@
-import { Ack, ErrorMap, QuasmError } from '@quasm/common';
+import { Ack, ErrorCode, ErrorMap, QuasmError } from '@quasm/common';
 
 import { logger } from '@/infrastructure/logger/Logger';
 
@@ -14,14 +14,20 @@ export function withErrorHandling<T>(
             );
 
             respond({
-                error: ErrorMap[error.errorCode],
+                error: {
+                    code: error.errorCode,
+                    message: ErrorMap[error.errorCode]
+                },
                 success: false
             });
         } else {
             console.log(error);
             respond({
                 success: false,
-                error: 'Unexpected error!'
+                error: {
+                    code: ErrorCode.Unexpected,
+                    message: ErrorMap[ErrorCode.Unexpected]
+                }
             });
         }
     };

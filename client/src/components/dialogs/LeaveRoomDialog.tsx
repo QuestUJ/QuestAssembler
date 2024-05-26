@@ -49,7 +49,7 @@ export function LeaveRoomDialog() {
         toast({
           title: 'Something went wrong!',
           variant: 'destructive',
-          description: res.error
+          description: res.error?.message
         });
       }
     });

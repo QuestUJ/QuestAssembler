@@ -34,7 +34,7 @@ export function useSocketChat({ roomUUID, characterUUID }: Props) {
           toast({
             title: 'Sending failed',
             variant: 'destructive',
-            description: res.error
+            description: res.error!.message
           });
           return;
         }

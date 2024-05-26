@@ -1,6 +1,11 @@
+import { ErrorCode } from './QuasmError';
+
 export interface Ack<T = undefined> {
     success: boolean;
-    error?: string;
+    error?: {
+        code: ErrorCode;
+        message: string;
+    };
     payload?: T;
 }
 

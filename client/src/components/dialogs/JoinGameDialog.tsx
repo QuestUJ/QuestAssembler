@@ -41,7 +41,7 @@ export function JoinGameDialog() {
           queryKey: ['fetchRooms']
         });
       } else {
-        toast(buildResponseErrorToast(res.error));
+        toast(buildResponseErrorToast(res.error?.message));
       }
     });
   };

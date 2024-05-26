@@ -58,7 +58,7 @@ function PlayerSubmit() {
             timestamp
           });
         } else {
-          toast(buildResponseErrorToast(res.error));
+          toast(buildResponseErrorToast(res.error?.message));
         }
       }
     );

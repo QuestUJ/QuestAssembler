@@ -115,7 +115,7 @@ function SubmitStory() {
             }
           });
         } else {
-          toast(buildResponseErrorToast(res.error));
+          toast(buildResponseErrorToast(res.error?.message));
         }
       }
     );

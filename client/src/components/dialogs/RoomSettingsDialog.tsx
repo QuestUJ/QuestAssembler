@@ -93,7 +93,7 @@ export function RoomSettingsDialog() {
             title: 'Room settings changed successfully'
           });
         } else {
-          toast(buildResponseErrorToast(res.error));
+          toast(buildResponseErrorToast(res.error?.message));
         }
       }
     );
