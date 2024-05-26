@@ -52,6 +52,7 @@ export interface SubmitActionAck {
 export interface SubmitStoryPayload {
     roomID: string;
     story: string;
+    image: Buffer | undefined;
 }
 
 export interface SubmitStoryAck {

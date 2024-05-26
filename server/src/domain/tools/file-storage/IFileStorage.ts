@@ -5,5 +5,5 @@ export interface IFileStorage {
     /**
      * uploads Image
      */
-    uploadImage(image: Buffer): Promise<string>;
+    uploadImage(image: Buffer, roomId: string): Promise<string>;
 }

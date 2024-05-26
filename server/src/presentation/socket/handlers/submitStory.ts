@@ -4,7 +4,12 @@ import { UUID } from 'crypto';
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
 
-export function submitStoryHandler({ socket, dataAccess, io }: HandlerConfig) {
+export function submitStoryHandler({
+    socket,
+    dataAccess,
+    io,
+    fileStorageProvider
+}: HandlerConfig) {
     socket.on('submitStory', (submit, respond) => {
         withErrorHandling(respond, async () => {
             const room = await dataAccess.roomRepository.getRoomByID(
@@ -24,9 +29,18 @@ export function submitStoryHandler({ socket, dataAccess, io }: HandlerConfig) {
                 );
             }
 
+            let imageUrl = '';
+            if (submit.image) {
+                imageUrl = await fileStorageProvider.uploadImage(
+                    submit.image,
+                    submit.roomID
+                );
+            }
+
             const chunk = await room.story.addStoryChunk({
                 title: 'test ',
-                content: submit.story
+                content: submit.story,
+                imageUrl
             });
 
             respond({
