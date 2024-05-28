@@ -5,7 +5,7 @@ import {
   useNavigate
 } from '@tanstack/react-router';
 import { CheckCircle } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import shortUUID from 'short-uuid';
 
 import { SvgSpinner } from '@/components/Spinner';
@@ -88,6 +88,8 @@ function SubmitStory() {
 
   const socket = useSocket();
 
+  const [submitInProgress, setSubmitInProgress] = useState(false);
+
   const handleSubmit = () => {
     if (story.length <= 0) return;
     if (!socket) {
@@ -119,6 +121,8 @@ function SubmitStory() {
         }
       }
     );
+
+    setSubmitInProgress(true);
   };
 
   useSocketEvent('newTurn', async () => {
@@ -163,7 +167,7 @@ function SubmitStory() {
           <div className='col-span-2 col-start-1 row-span-3 row-start-4'>
             <ImageHandler />
           </div>
-          <div className='col-span-2 col-start-4 row-span-6 row-start-1 h-full overflow-y-auto rounded-md border-2 border-secondary p-2'>
+          <div className='col-span-2 col-start-4 row-span-6 row-start-1 h-full overflow-y-auto rounded-md border-2 p-2'>
             <h1 className='font-decorative text-2xl text-primary'>
               Player's turn submits
             </h1>
@@ -185,13 +189,19 @@ function SubmitStory() {
           </div>
           <div className='col-start-3 row-span-3 row-start-4 flex flex-col gap-2'>
             <LLMAssistanceButton />
-            <Button
-              className='flex w-full items-center gap-2 p-2 text-xs'
-              onClick={handleSubmit}
-            >
-              <CheckCircle className='' />
-              Submit story chunk
-            </Button>
+            {submitInProgress ? (
+              <div className='flex w-full justify-center'>
+                <SvgSpinner className='h-10 w-10' />
+              </div>
+            ) : (
+              <Button
+                className='flex w-full items-center gap-2 p-2 text-xs'
+                onClick={handleSubmit}
+              >
+                <CheckCircle className='' />
+                Submit story chunk
+              </Button>
+            )}
           </div>
         </div>
       ) : (
@@ -204,10 +214,21 @@ function SubmitStory() {
             </div>
           )}
           <ActionsAccordion />
-          <Button className='flex w-4/5 items-center' onClick={handleSubmit}>
-            <CheckCircle className='' />
-            Submit story chunk
-          </Button>
+          {submitInProgress ? (
+            <div className='flex w-full justify-center'>
+              <SvgSpinner className='h-10 w-10' />
+            </div>
+          ) : (
+            <div className='w-full px-10'>
+              <Button
+                className='flex w-full items-center gap-2 p-2 text-xs'
+                onClick={handleSubmit}
+              >
+                <CheckCircle className='' />
+                Submit story chunk
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </>
