@@ -3,7 +3,7 @@ import {
   AccordionContent,
   AccordionItem
 } from '@radix-ui/react-accordion';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 
 import { AccordionTrigger } from '../ui/accordion';
 
@@ -37,6 +37,14 @@ export function Message({ message }: { message: MessageDetails }) {
 }
 
 export function MessageContainer({ messages }: { messages: MessageDetails[] }) {
+  const scrollToRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    scrollToRef.current?.scrollIntoView({
+      behavior: 'smooth'
+    });
+  }, [scrollToRef]);
+
   return (
     <div className='flex flex-col gap-2'>
       {messages.length <= 0 && (
@@ -45,6 +53,7 @@ export function MessageContainer({ messages }: { messages: MessageDetails[] }) {
       {messages.map(message => (
         <Message key={message.timestamp.toISOString()} message={message} />
       ))}
+      <span ref={scrollToRef}></span>
     </div>
   );
 }
