@@ -1,13 +1,15 @@
-import { ApiPlayerPayload } from '@quasm/common';
+import { ApiPlayerPayload, SocketPlayerDetails } from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
-
-import { useToast } from '@/components/ui/use-toast';
+import { ReactNode } from 'react';
+import { toast } from 'sonner';
 
 import { useSocketEvent } from '../stores/socketIOStore';
 
-export function useNewPlayerEvent(roomUUID: string) {
+export function useNewPlayerEvent(
+  roomUUID: string,
+  avatar: (player: SocketPlayerDetails) => ReactNode
+) {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   useSocketEvent('newPlayer', player => {
     const players = queryClient.getQueryData<ApiPlayerPayload[]>([
@@ -29,9 +31,9 @@ export function useNewPlayerEvent(roomUUID: string) {
       [playerQueryData, ...players]
     );
 
-    toast({
-      title: player.nick,
-      description: 'has joined the game!'
+    toast(player.nick, {
+      description: 'has joined the game',
+      icon: avatar(player)
     });
   });
 }

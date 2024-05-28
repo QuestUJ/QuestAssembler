@@ -12,7 +12,7 @@ interface SocketIOState {
 }
 
 interface SocketIOActions {
-  connectSocket: (token: string, onErr: (err: string) => void) => void;
+  connectSocket: (token: string) => void;
 }
 
 const { SOCKET_URL } = config.pick(['SOCKET_URL']);

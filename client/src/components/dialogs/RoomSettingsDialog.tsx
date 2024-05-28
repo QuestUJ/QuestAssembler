@@ -10,6 +10,7 @@ import { Settings } from 'lucide-react';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import shortUUID from 'short-uuid';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -23,7 +24,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useSocket } from '@/lib/stores/socketIOStore';
-import { buildResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
+import { buildResponseErrorToast, SocketErrorTxt } from '@/lib/toasters';
 
 import {
   Form,
@@ -32,7 +33,6 @@ import {
   FormItem,
   FormMessage
 } from '../ui/form';
-import { useToast } from '../ui/use-toast';
 import { DeleteRoomDialog } from './DeleteRoomDialog';
 
 const formSchema = z.object({
@@ -63,7 +63,6 @@ export function RoomSettingsDialog() {
     strict: false
   });
   const socket = useSocket();
-  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -76,7 +75,7 @@ export function RoomSettingsDialog() {
   // override and fill with actual settings change on the backend
   const formHandler: SubmitHandler<z.infer<typeof formSchema>> = data => {
     if (!socket) {
-      toast(SocketErrorToast);
+      toast.error(SocketErrorTxt);
       return;
     }
 
@@ -89,11 +88,9 @@ export function RoomSettingsDialog() {
       },
       res => {
         if (res.success) {
-          toast({
-            title: 'Room settings changed successfully'
-          });
+          toast('Room settings changed successfully');
         } else {
-          toast(buildResponseErrorToast(res.error?.message));
+          toast.error(...buildResponseErrorToast(res.error?.message));
         }
       }
     );

@@ -1,15 +1,13 @@
 import { ErrorCode } from '@quasm/common';
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
-
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 
 import { useSocket } from '../stores/socketIOStore';
 import { buildResponseErrorToast } from '../toasters';
 
 export function useSubscribeToRoom(roomUUID: string) {
   const socket = useSocket();
-  const { toast } = useToast();
 
   const navigate = useNavigate();
 
@@ -18,7 +16,7 @@ export function useSubscribeToRoom(roomUUID: string) {
 
     socket.emit('subscribeToRoom', roomUUID, async res => {
       if (!res.success) {
-        toast(buildResponseErrorToast(res.error?.message));
+        toast.error(...buildResponseErrorToast(res.error?.message));
 
         if (res.error?.code === ErrorCode.RoomNotFound) {
           await navigate({
@@ -27,5 +25,5 @@ export function useSubscribeToRoom(roomUUID: string) {
         }
       }
     });
-  }, [socket, roomUUID, toast, navigate]);
+  }, [socket, roomUUID, navigate]);
 }

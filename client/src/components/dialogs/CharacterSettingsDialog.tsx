@@ -9,6 +9,7 @@ import { useParams } from '@tanstack/react-router';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import shortUUID from 'short-uuid';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -22,7 +23,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useSocket } from '@/lib/stores/socketIOStore';
-import { SocketErrorToast } from '@/lib/toasters';
+import { buildResponseErrorToast, SocketErrorTxt } from '@/lib/toasters';
 
 import {
   Form,
@@ -31,7 +32,6 @@ import {
   FormItem,
   FormMessage
 } from '../ui/form';
-import { useToast } from '../ui/use-toast';
 
 const formSchema = z.object({
   nick: z
@@ -58,7 +58,6 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
   const { roomId }: { roomId: string } = useParams({
     strict: false
   });
-  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -70,7 +69,7 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
 
   const formHandler: SubmitHandler<z.infer<typeof formSchema>> = data => {
     if (!socket) {
-      toast(SocketErrorToast);
+      toast.error(SocketErrorTxt);
       return;
     }
 
@@ -79,15 +78,9 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
       { roomID: shortUUID().toUUID(roomId), ...data },
       res => {
         if (res.success) {
-          toast({
-            title: 'Character settings changed successfully'
-          });
+          toast('Character settings changed successfully');
         } else {
-          toast({
-            title: 'Something went wrong!',
-            variant: 'destructive',
-            description: 'Server side error'
-          });
+          toast.error(...buildResponseErrorToast(res.error?.message));
         }
       }
     );
