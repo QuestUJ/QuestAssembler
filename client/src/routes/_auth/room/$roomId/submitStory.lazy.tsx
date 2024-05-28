@@ -7,6 +7,7 @@ import {
 import { CheckCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import shortUUID from 'short-uuid';
+import { toast } from 'sonner';
 
 import { SvgSpinner } from '@/components/Spinner';
 import { ActionsAccordion } from '@/components/submit-story-utilities/ActionsAccordion';
@@ -17,13 +18,12 @@ import { StoryTextArea } from '@/components/submit-story-utilities/StoryTextArea
 import { TurnSubmitCard } from '@/components/submit-story-utilities/TurnSubmitCard';
 import { CharacterDetails } from '@/components/submit-story-utilities/types';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
 import { useFetchTurnSubmits } from '@/lib/api/fetchTurnSubmits';
 import { useWindowSize } from '@/lib/misc/windowSize';
 import { useQuasmStore } from '@/lib/stores/quasmStore';
 import { useSocket, useSocketEvent } from '@/lib/stores/socketIOStore';
 import { useStoryChunkStore } from '@/lib/stores/storyChunkStore';
-import { buildResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
+import { buildResponseErrorToast, SocketErrorTxt } from '@/lib/toasters';
 
 const route = getRouteApi('/_auth/room/$roomId/submitStory');
 
@@ -32,7 +32,6 @@ function SubmitStory() {
   const roomUUID = shortUUID().toUUID(roomId);
 
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const { data } = useFetchTurnSubmits(roomUUID);
 
@@ -57,8 +56,8 @@ function SubmitStory() {
   useSocketEvent(
     'turnSubmit',
     ({ characterID, nick, profileIMG, content, timestamp }) => {
-      toast({
-        title: `${nick} ended his turn`
+      toast(`${nick} ended his turn`, {
+        icon: <img src={profileIMG} />
       });
 
       if (!data) {
@@ -93,7 +92,7 @@ function SubmitStory() {
   const handleSubmit = () => {
     if (story.length <= 0) return;
     if (!socket) {
-      toast(SocketErrorToast);
+      toast.error(SocketErrorTxt);
       return;
     }
 
@@ -106,9 +105,7 @@ function SubmitStory() {
       async res => {
         if (res.success) {
           setStory('');
-          toast({
-            title: 'Story submitted'
-          });
+          toast.success('Story submitted');
 
           await navigate({
             to: '/room/$roomId',
@@ -117,7 +114,7 @@ function SubmitStory() {
             }
           });
         } else {
-          toast(buildResponseErrorToast(res.error?.message));
+          toast.error(...buildResponseErrorToast(res.error?.message));
         }
       }
     );

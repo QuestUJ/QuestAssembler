@@ -3,6 +3,7 @@ import { useNavigate, useParams } from '@tanstack/react-router';
 import { LogOut } from 'lucide-react';
 import { useState } from 'react';
 import shortUUID from 'short-uuid';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -13,12 +14,11 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
-import { useToast } from '@/components/ui/use-toast';
 import { useSocket } from '@/lib/stores/socketIOStore';
+import { buildResponseErrorToast, SocketErrorTxt } from '@/lib/toasters';
 
 export function LeaveRoomDialog() {
   const [open, setOpen] = useState(false);
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const socket = useSocket();
   const { roomId }: { roomId: string } = useParams({
@@ -28,29 +28,20 @@ export function LeaveRoomDialog() {
 
   const leaveRoom = () => {
     if (!socket) {
-      toast({
-        title: 'Connection error! Try again.',
-        variant: 'destructive'
-      });
+      toast.error(SocketErrorTxt);
       return;
     }
 
     socket.emit('leaveRoom', shortUUID().toUUID(roomId), async res => {
       if (res.success) {
-        toast({
-          title: 'You have left the room!'
-        });
+        toast('You have left the room!');
         await navigate({ to: '/dashboard' });
 
         await queryClient.invalidateQueries({
           queryKey: ['roomFetch']
         });
       } else {
-        toast({
-          title: 'Something went wrong!',
-          variant: 'destructive',
-          description: res.error?.message
-        });
+        toast.error(...buildResponseErrorToast(res.error?.message));
       }
     });
   };

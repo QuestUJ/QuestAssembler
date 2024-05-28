@@ -7,6 +7,8 @@ import {
 } from '@quasm/common';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import shortUUID from 'short-uuid';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -19,7 +21,6 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
 import { useCreateGame } from '@/lib/api/createGame';
 
 import {
@@ -54,7 +55,6 @@ const formSchema = z.object({
 
 export function CreateGameDialog() {
   const [open, setOpen] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,9 +65,16 @@ export function CreateGameDialog() {
   });
 
   const { mutate: createGame } = useCreateGame(code => {
-    toast({
-      title: 'Room created succcessfully',
-      description: `Your room game code is ${code} `
+    const shortCode = shortUUID().fromUUID(code);
+    toast.success('Room created!', {
+      description: `You code: ${shortCode}`,
+      action: {
+        label: 'Copy code',
+        onClick: () =>
+          void navigator.clipboard.writeText(shortCode).then(() => {
+            toast('Code copied!');
+          })
+      }
     });
     form.reset();
   });

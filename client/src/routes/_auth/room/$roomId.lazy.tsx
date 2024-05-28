@@ -1,3 +1,4 @@
+import { SocketPlayerDetails } from '@quasm/common';
 import {
   createLazyFileRoute,
   getRouteApi,
@@ -9,17 +10,25 @@ import { useChangeCharacterDetailsEvent } from '@/lib/socket/changeCharacterDeta
 import { useChangeRoomSettingsEvent } from '@/lib/socket/changeRoomSettingsEvent';
 import { useNewPlayerEvent } from '@/lib/socket/newPlayerEvent';
 import { useNewTurnEvent } from '@/lib/socket/newTurnEvent';
+import { usePlayerLeftEvent } from '@/lib/socket/playerLeftEvent';
 import { usePlayerReadyEvent } from '@/lib/socket/playerReadyEvent';
 import { useSubscribeToRoom } from '@/lib/socket/subscribeToRoom';
 
 const route = getRouteApi('/_auth/room/$roomId');
+
+function Avatar(player: SocketPlayerDetails) {
+  return (
+    <img className='rounded-full' src={player.profileIMG} alt={player.nick} />
+  );
+}
 
 function RoomLayout() {
   const { roomId } = route.useParams();
   const roomUUID = shortUUID().toUUID(roomId);
 
   useSubscribeToRoom(roomUUID);
-  useNewPlayerEvent(roomUUID);
+  useNewPlayerEvent(roomUUID, Avatar);
+  usePlayerLeftEvent(roomUUID, Avatar);
   useChangeCharacterDetailsEvent(roomUUID);
   useChangeRoomSettingsEvent(roomUUID);
   usePlayerReadyEvent(roomUUID);

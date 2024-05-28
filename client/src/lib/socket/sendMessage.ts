@@ -1,10 +1,9 @@
 import { ApiMessagePayload } from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
-
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 
 import { useSocket } from '../stores/socketIOStore';
-import { buildResponseErrorToast, SocketErrorToast } from '../toasters';
+import { buildResponseErrorToast, SocketErrorTxt } from '../toasters';
 
 interface Options {
   roomUUID: string;
@@ -13,12 +12,11 @@ interface Options {
 
 export function useSendMessage({ roomUUID, receiver }: Options) {
   const socket = useSocket();
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const sendMessage = (content: string) => {
     if (!socket) {
-      toast(SocketErrorToast);
+      toast(SocketErrorTxt);
       return;
     }
 
@@ -31,7 +29,7 @@ export function useSendMessage({ roomUUID, receiver }: Options) {
       },
       res => {
         if (!res.success) {
-          toast(buildResponseErrorToast(res.error?.message));
+          toast.error(...buildResponseErrorToast(res.error?.message));
           return;
         }
 

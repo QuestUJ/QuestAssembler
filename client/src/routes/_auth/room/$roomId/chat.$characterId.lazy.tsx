@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
 import shortUUID from 'short-uuid';
+import { toast } from 'sonner';
 
 import {
   MessageContainer,
@@ -10,7 +11,6 @@ import {
 } from '@/components/chat-utilities/Messages';
 import { InputBar } from '@/components/InputBar';
 import { SvgSpinner } from '@/components/Spinner';
-import { useToast } from '@/components/ui/use-toast';
 import { useFetchMessages } from '@/lib/api/fetchMessages';
 import { useSendMessage } from '@/lib/socket/sendMessage';
 import { useSocketEvent } from '@/lib/stores/socketIOStore';
@@ -30,13 +30,18 @@ function PlayerChat() {
 
   const { data, isPending } = useFetchMessages(roomUUID, characterUUID);
 
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   useSocketEvent('message', data => {
-    toast({
-      title: data.authorName,
-      description: data.content
+    toast(data.authorName, {
+      description: data.content,
+      icon: (
+        <img
+          className='rounded-full'
+          src={data.characterPictureURL}
+          alt={data.authorName}
+        />
+      )
     });
 
     const msg: ApiMessagePayload = {

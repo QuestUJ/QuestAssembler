@@ -3,6 +3,7 @@ import { createLazyFileRoute, getRouteApi } from '@tanstack/react-router';
 import { CheckCircle } from 'lucide-react';
 import { useState } from 'react';
 import shortUUID from 'short-uuid';
+import { toast } from 'sonner';
 
 import { SvgSpinner } from '@/components/Spinner';
 import { Button } from '@/components/ui/button';
@@ -14,10 +15,9 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/components/ui/use-toast';
 import { useGetTurnSubmit } from '@/lib/api/getTurnSubmit';
 import { useSocket, useSocketEvent } from '@/lib/stores/socketIOStore';
-import { buildResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
+import { buildResponseErrorToast, SocketErrorTxt } from '@/lib/toasters';
 
 const route = getRouteApi('/_auth/room/$roomId/submitAction');
 
@@ -27,8 +27,6 @@ function PlayerSubmit() {
   const socket = useSocket();
   const queryClient = useQueryClient();
 
-  const { toast } = useToast();
-
   const { roomId } = route.useParams();
   const roomUUID = shortUUID().toUUID(roomId);
 
@@ -36,7 +34,7 @@ function PlayerSubmit() {
 
   const submit = () => {
     if (!socket) {
-      toast(SocketErrorToast);
+      toast(SocketErrorTxt);
       return;
     }
 
@@ -48,9 +46,7 @@ function PlayerSubmit() {
       },
       res => {
         if (res.success) {
-          toast({
-            title: 'Action submitted!'
-          });
+          toast.success('Action submitted!');
 
           const { content, timestamp } = res.payload!;
           queryClient.setQueryData(['getTurnSubmit', roomUUID], {
@@ -58,7 +54,7 @@ function PlayerSubmit() {
             timestamp
           });
         } else {
-          toast(buildResponseErrorToast(res.error?.message));
+          toast.error(...buildResponseErrorToast(res.error?.message));
         }
       }
     );
