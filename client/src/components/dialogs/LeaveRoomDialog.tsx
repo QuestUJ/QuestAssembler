@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from '@tanstack/react-router';
-import { X } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useState } from 'react';
 import shortUUID from 'short-uuid';
 
@@ -58,8 +58,8 @@ export function LeaveRoomDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className='m-0 h-12 w-12 rounded bg-destructive p-2'>
-          <X className='h-full w-full' />
+        <Button className='m-0 h-10 w-10 rounded p-2'>
+          <LogOut className='h-full w-full' />
         </Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
