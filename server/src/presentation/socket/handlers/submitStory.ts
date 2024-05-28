@@ -3,6 +3,7 @@ import { UUID } from 'crypto';
 
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
+import { logger } from '@/infrastructure/logger/Logger';
 
 export function submitStoryHandler({
     socket,
@@ -29,18 +30,18 @@ export function submitStoryHandler({
                 );
             }
 
-            let imageUrl = '';
+            let imageURL = '';
             if (submit.image) {
-                imageUrl = await fileStorageProvider.uploadImage(
+                imageURL = await fileStorageProvider.uploadImage(
                     submit.image,
                     submit.roomID
                 );
             }
-
+            logger.debug(QuasmComponent.STORAGE, imageURL);
             const chunk = await room.story.addStoryChunk({
                 title: 'test ',
                 content: submit.story,
-                imageUrl
+                imageURL: imageURL
             });
 
             respond({
@@ -49,7 +50,7 @@ export function submitStoryHandler({
                     id: chunk.id,
                     title: chunk.title,
                     content: chunk.content,
-                    imageURL: chunk.imageUrl
+                    imageURL: chunk.imageURL
                 }
             });
 
@@ -57,7 +58,7 @@ export function submitStoryHandler({
                 id: chunk.id,
                 title: chunk.title,
                 story: chunk.content,
-                imageURL: chunk.imageUrl
+                imageURL: chunk.imageURL
             });
         });
     });

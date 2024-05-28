@@ -18,6 +18,7 @@ export class StoryRepositoryPostgres implements IStoryRepository {
             .insertInto('StoryChunks')
             .values({
                 roomID,
+                imageURL: chunk.imageURL,
                 ...chunk
             })
             .returningAll()

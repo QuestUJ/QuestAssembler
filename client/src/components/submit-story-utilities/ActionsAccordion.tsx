@@ -8,7 +8,7 @@ import { ImageHandler } from './ImageHandler';
 import { LLMAssistanceButton } from './LLMAssistanceButton';
 import { StoryTextArea } from './StoryTextArea';
 
-export function ActionsAccordion() {
+export function ActionsAccordion({saveImageCallback} : {saveImageCallback: (imageBlob: Blob, imageURL: string) => void}) {
   return (
     <Accordion type='multiple' className='w-4/5'>
       <AccordionItem value='story'>
@@ -25,7 +25,7 @@ export function ActionsAccordion() {
           Image
         </AccordionTrigger>
         <AccordionContent className=''>
-          <ImageHandler />
+          <ImageHandler callback={saveImageCallback} width={250} height={250}/>
         </AccordionContent>
       </AccordionItem>
     </Accordion>

@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 import { randomUUID, UUID } from 'crypto';
 
 import { IFileStorage } from './IFileStorage';
+import { logger } from '@/infrastructure/logger/Logger';
+import { Readable } from 'stream';
 /**
  * Supabase based file storage
  */
@@ -17,12 +19,12 @@ export class SupabaseStorageProvider implements IFileStorage {
         this.client = createClient(supabaseConnectionUrl, serviceKey);
     }
 
-    validateImage(image: Buffer): boolean {
+    validateImage(image: Blob): boolean {
         image;
         return true;
     }
 
-    async uploadImage(image: Buffer, roomId: string): Promise<string> {
+    async uploadImage(image: Blob, roomId: string): Promise<string> {
         //validate
         if (!this.validateImage(image)) {
             throw new QuasmError(
@@ -32,21 +34,18 @@ export class SupabaseStorageProvider implements IFileStorage {
                 'Story chunk image validation failed'
             );
         }
+        const file = new File([image], "image");
 
-        const { data, error } = await this.client.storage
-            .from('story_images')
-            .upload(`${roomId}/${randomUUID()}`, image); // currently insert at random created UUID, may later be correlated to the story chunk ID
-
-        if (error) {
-            throw new QuasmError(
-                QuasmComponent.STORAGE,
-                500,
-                ErrorCode.StorageAPI,
-                error.message
-            );
-        }
-
-        return `${this.url}/${data?.path}`;
+        const response = await fetch(`${this.url}/object/story_images/${roomId}/${randomUUID()}`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${this.serviceKey}`
+            },
+            body: file
+        })
+        const data = await response.json();
+        //validate if error
+        return `${this.url}/object/public/${data?.Key}`;
     }
 
     async uploadAvatar(
@@ -69,6 +68,6 @@ export class SupabaseStorageProvider implements IFileStorage {
             );
         }
 
-        return `${this.url}/${data?.path}`;
+        return `${this.url}/object/${data?.path}`;
     }
 }
