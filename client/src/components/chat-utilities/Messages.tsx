@@ -43,7 +43,7 @@ export function MessageContainer({ messages }: { messages: MessageDetails[] }) {
     scrollToRef.current?.scrollIntoView({
       behavior: 'smooth'
     });
-  }, [scrollToRef]);
+  }, [scrollToRef, messages]);
 
   return (
     <div className='flex flex-col gap-2'>

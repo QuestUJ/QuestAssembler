@@ -1,3 +1,5 @@
+import { ApiMessagePayload } from '@quasm/common';
+import { useQueryClient } from '@tanstack/react-query';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
 import shortUUID from 'short-uuid';
@@ -8,8 +10,9 @@ import {
 } from '@/components/chat-utilities/Messages';
 import { InputBar } from '@/components/InputBar';
 import { SvgSpinner } from '@/components/Spinner';
+import { useToast } from '@/components/ui/use-toast';
 import { useFetchMessages } from '@/lib/api/fetchMessages';
-import { useSocketChat } from '@/lib/chat/socketChat';
+import { useSendMessage } from '@/lib/socket/sendMessage';
 import { useSocketEvent } from '@/lib/stores/socketIOStore';
 
 function PlayerChat() {
@@ -20,12 +23,32 @@ function PlayerChat() {
 
   const navigate = useNavigate();
 
-  const sendMessage = useSocketChat({
+  const sendMessage = useSendMessage({
     roomUUID,
-    characterUUID
+    receiver: characterUUID
   });
 
   const { data, isPending } = useFetchMessages(roomUUID, characterUUID);
+
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  useSocketEvent('message', data => {
+    toast({
+      title: data.authorName,
+      description: data.content
+    });
+
+    const msg: ApiMessagePayload = {
+      ...data,
+      timestamp: new Date(data.timestamp)
+    };
+
+    queryClient.setQueryData<ApiMessagePayload[]>(
+      ['fetchMessages', roomUUID, data.from],
+      old => (old ? [...old, msg] : [msg])
+    );
+  });
 
   useSocketEvent('playerLeft', async player => {
     if (characterUUID == player.id) {

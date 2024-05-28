@@ -28,7 +28,7 @@ export function StoryChunkContainer({ story }: { story: StoryChunkDetails[] }) {
     scrollToRef.current?.scrollIntoView({
       behavior: 'smooth'
     });
-  }, [scrollToRef]);
+  }, [scrollToRef, story]);
 
   return (
     <div className='flex flex-col gap-4'>
