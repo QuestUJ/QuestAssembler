@@ -1,10 +1,10 @@
+import { ImageHandler } from '../ImageHandler';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger
 } from '../ui/accordion';
-import { ImageHandler } from './ImageHandler';
 import { LLMAssistanceButton } from './LLMAssistanceButton';
 import { StoryTextArea } from './StoryTextArea';
 

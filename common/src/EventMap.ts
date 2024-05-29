@@ -27,6 +27,7 @@ export interface ChangeCharacterSettingsPayload {
     roomID: string;
     nick: string;
     description: string;
+    avatar: Blob | undefined;
 }
 
 export interface ChangeRoomSettingsPayload {

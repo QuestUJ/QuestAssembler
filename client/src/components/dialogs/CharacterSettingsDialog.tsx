@@ -21,9 +21,11 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useQuasmStore } from '@/lib/stores/quasmStore';
 import { useSocket } from '@/lib/stores/socketIOStore';
 import { SocketErrorToast } from '@/lib/toasters';
 
+import { ImageHandler } from '../ImageHandler';
 import {
   Form,
   FormControl,
@@ -60,6 +62,11 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
   });
   const { toast } = useToast();
 
+  const selectedImage = useQuasmStore(state => state.currentImageBlob);
+  const setSelectedImageBlob = useQuasmStore(
+    state => state.setCurrentImageBlob
+  );
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -76,7 +83,7 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
 
     socket.emit(
       'changeCharacterSettings',
-      { roomID: shortUUID().toUUID(roomId), ...data },
+      { roomID: shortUUID().toUUID(roomId), avatar: selectedImage, ...data },
       res => {
         if (res.success) {
           toast({
@@ -94,6 +101,10 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
 
     form.reset(undefined, { keepDirtyValues: true }); // keepDirtyValues here, I don't feel like we should ever reset this (after unsuccessful change user probably wants to use existing input anyway)
     setOpen(false);
+  };
+
+  const imageHandlerCallback = (imageBlob: Blob) => {
+    setSelectedImageBlob(imageBlob);
   };
 
   return (
@@ -141,6 +152,14 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
                 </FormItem>
               )}
             />
+            <div className='my-12 flex w-full justify-center'>
+              <ImageHandler
+                width={64}
+                height={64}
+                className='max-h-32 max-w-32'
+                callback={imageHandlerCallback}
+              />
+            </div>
             <div className='flex justify-between'>
               <Button
                 className='bg-supporting'

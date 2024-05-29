@@ -8,10 +8,10 @@ import { CheckCircle } from 'lucide-react';
 import { useEffect } from 'react';
 import shortUUID from 'short-uuid';
 
+import { ImageHandler } from '@/components/ImageHandler';
 import { SvgSpinner } from '@/components/Spinner';
 import { ActionsAccordion } from '@/components/submit-story-utilities/ActionsAccordion';
 import { CharacterSubmitTab } from '@/components/submit-story-utilities/CharactersTurnSubmitTab';
-import { ImageHandler } from '@/components/submit-story-utilities/ImageHandler';
 import { LLMAssistanceButton } from '@/components/submit-story-utilities/LLMAssistanceButton';
 import { StoryTextArea } from '@/components/submit-story-utilities/StoryTextArea';
 import { TurnSubmitCard } from '@/components/submit-story-utilities/TurnSubmitCard';
@@ -36,7 +36,7 @@ function SubmitStory() {
 
   const { data } = useFetchTurnSubmits(roomUUID);
 
-  const currentImageBlob = useStoryChunkStore(state => state.currentImageBlob);
+  const currentImageBlob = useQuasmStore(state => state.currentImageBlob);
 
   useSocketEvent('newPlayer', ({ id, nick, profileIMG }) => {
     if (!data) {
@@ -148,12 +148,8 @@ function SubmitStory() {
     }
   }, [isGameMaster, navigate]);
 
-  const setCurrentImageUrl = useStoryChunkStore(
-    state => state.setCurrentImageURL
-  );
-  const setCurrentImageBlob = useStoryChunkStore(
-    state => state.setCurrentImageBlob
-  );
+  const setCurrentImageUrl = useQuasmStore(state => state.setCurrentImageURL);
+  const setCurrentImageBlob = useQuasmStore(state => state.setCurrentImageBlob);
 
   if (!isGameMaster) {
     return (
@@ -164,7 +160,6 @@ function SubmitStory() {
   }
 
   const saveImageCallback = (imageBlob: Blob, imageURL: string) => {
-    console.log('got here save image callback');
     setCurrentImageBlob(imageBlob);
     setCurrentImageUrl(imageURL);
   };

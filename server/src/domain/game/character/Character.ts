@@ -85,6 +85,10 @@ export class Character {
         return this.description;
     }
 
+    getProfileImageURL(): string | undefined {
+        return this.profileIMG;
+    }
+
     async setDescription(newDescription: string) {
         this.validateDescription(newDescription);
 
@@ -93,6 +97,13 @@ export class Character {
         });
 
         this.description = newDescription;
+    }
+
+    async setProfileImage(newProfileImageURL: string) {
+        await this.characterRepository.updateCharacter(this.id, {
+            profileIMG: newProfileImageURL
+        });
+        this.profileIMG = newProfileImageURL;
     }
 
     /**
