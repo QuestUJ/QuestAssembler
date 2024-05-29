@@ -1,3 +1,1 @@
-export function ImageEditDialog() {
-    
-}
+export function ImageEditDialog() {}

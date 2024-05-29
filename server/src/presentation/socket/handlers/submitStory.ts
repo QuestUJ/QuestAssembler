@@ -1,9 +1,10 @@
 import { ErrorCode, QuasmComponent, QuasmError } from '@quasm/common';
 import { UUID } from 'crypto';
 
+import { logger } from '@/infrastructure/logger/Logger';
+
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
-import { logger } from '@/infrastructure/logger/Logger';
 
 export function submitStoryHandler({
     socket,

@@ -148,6 +148,13 @@ function SubmitStory() {
     }
   }, [isGameMaster, navigate]);
 
+  const setCurrentImageUrl = useStoryChunkStore(
+    state => state.setCurrentImageURL
+  );
+  const setCurrentImageBlob = useStoryChunkStore(
+    state => state.setCurrentImageBlob
+  );
+
   if (!isGameMaster) {
     return (
       <div className='flex items-center justify-center p-10'>
@@ -156,15 +163,8 @@ function SubmitStory() {
     );
   }
 
-  const setCurrentImageUrl = useStoryChunkStore(
-    state => state.setCurrentImageURL
-  );
-  const setCurrentImageBlob = useStoryChunkStore(
-    state => state.setCurrentImageBlob
-  );
-
   const saveImageCallback = (imageBlob: Blob, imageURL: string) => {
-    console.log("got here save image callback")
+    console.log('got here save image callback');
     setCurrentImageBlob(imageBlob);
     setCurrentImageUrl(imageURL);
   };
@@ -177,7 +177,11 @@ function SubmitStory() {
             <StoryTextArea />
           </div>
           <div className='col-span-2 col-start-1 row-span-3 row-start-4'>
-            <ImageHandler callback={saveImageCallback} width={250} height={250}/>
+            <ImageHandler
+              callback={saveImageCallback}
+              width={250}
+              height={250}
+            />
           </div>
           <div className='col-span-2 col-start-4 row-span-6 row-start-1 h-full overflow-y-auto rounded-md border-2 border-secondary p-2'>
             <h1 className='font-decorative text-2xl text-primary'>
@@ -219,7 +223,7 @@ function SubmitStory() {
               <SvgSpinner className='h-20 w-20' />
             </div>
           )}
-          <ActionsAccordion saveImageCallback={saveImageCallback}/>
+          <ActionsAccordion saveImageCallback={saveImageCallback} />
           <Button className='flex w-4/5 items-center' onClick={handleSubmit}>
             <CheckCircle className='' />
             Submit story chunk

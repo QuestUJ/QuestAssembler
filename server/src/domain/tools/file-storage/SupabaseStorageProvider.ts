@@ -3,8 +3,6 @@ import { createClient } from '@supabase/supabase-js';
 import { randomUUID, UUID } from 'crypto';
 
 import { IFileStorage } from './IFileStorage';
-import { logger } from '@/infrastructure/logger/Logger';
-import { Readable } from 'stream';
 /**
  * Supabase based file storage
  */
@@ -34,16 +32,19 @@ export class SupabaseStorageProvider implements IFileStorage {
                 'Story chunk image validation failed'
             );
         }
-        const file = new File([image], "image");
+        const file = new File([image], 'image');
 
-        const response = await fetch(`${this.url}/object/story_images/${roomId}/${randomUUID()}`, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${this.serviceKey}`
-            },
-            body: file
-        })
-        const data = await response.json();
+        const response = await fetch(
+            `${this.url}/object/story_images/${roomId}/${randomUUID()}`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${this.serviceKey}`
+                },
+                body: file
+            }
+        );
+        const data = (await response.json()) as { Id: string; Key: string };
         //validate if error
         return `${this.url}/object/public/${data?.Key}`;
     }
@@ -53,7 +54,7 @@ export class SupabaseStorageProvider implements IFileStorage {
         userId: UUID,
         roomId: UUID
     ): Promise<string> {
-        // validate bla bla bla
+        // validate
         const { data, error } = await this.client.storage
             .from('avatars')
             .upload(`${userId}/${roomId}`, image, {

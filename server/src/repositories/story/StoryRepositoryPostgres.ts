@@ -42,7 +42,13 @@ export class StoryRepositoryPostgres implements IStoryRepository {
             .execute();
 
         return storyChunkData.map(
-            ch => new StoryChunk(ch.chunkID, ch.title, ch.content)
+            ch =>
+                new StoryChunk(
+                    ch.chunkID,
+                    ch.title,
+                    ch.content,
+                    ch.imageURL ? ch.imageURL : ''
+                )
         );
     }
 }
