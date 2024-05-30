@@ -14,6 +14,7 @@ import { SvgSpinner } from '../Spinner';
 import { Accordion } from '../ui/accordion';
 import { CharactersAccordion } from './content/CharactersAccordion';
 import { ToolsAccordion } from './content/ToolsAccordion';
+import { CopyGameCode } from '../CopyGameCode';
 
 export function SidebarContentRoom() {
   const { setRoomName, setIsGameMaster, isGameMaster } = useQuasmStore();
@@ -60,8 +61,11 @@ export function SidebarContentRoom() {
               />
             )}
           </div>
-          {isGameMaster ? <RoomSettingsDialog /> : <LeaveRoomDialog />}
-        </div>
+            <div className='flex items-center space-x-2'>
+              {<CopyGameCode gameCode={roomId} />}
+              {isGameMaster ? <RoomSettingsDialog /> : <LeaveRoomDialog />}
+            </div>
+          </div>
       </div>
     </div>
   );
