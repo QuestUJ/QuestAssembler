@@ -3,6 +3,11 @@ import { Link } from '@tanstack/react-router';
 import { Crown, Swords } from 'lucide-react';
 import shortUUID from 'short-uuid';
 
+import {
+  displayNickname,
+  NicknameDisplayStyle
+} from '@/lib/misc/displayNickname';
+
 export function RoomCard({ room }: { room: ApiRoomPayload }) {
   return (
     <Link
@@ -23,7 +28,7 @@ export function RoomCard({ room }: { room: ApiRoomPayload }) {
           <h1 className='text-xl lg:text-3xl'>{room.roomName}</h1>
           <h4 className='text-xs lg:text-sm'>
             <span className='text-secondary'>Game Master:</span>{' '}
-            {room.gameMasterName}
+            {displayNickname(room.gameMasterName, NicknameDisplayStyle.SHORT)}
           </h4>
         </div>
         <div className='col-span-1 row-span-1 flex flex-col items-center justify-center border-l-2 p-1'>

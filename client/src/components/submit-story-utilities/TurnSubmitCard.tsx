@@ -1,3 +1,7 @@
+import {
+  displayNickname,
+  NicknameDisplayStyle
+} from '@/lib/misc/displayNickname';
 import { cn } from '@/lib/utils';
 
 import { Card, CardContent, CardHeader } from '../ui/card';
@@ -16,7 +20,7 @@ export function TurnSubmitCard({
         <div className='flex items-center gap-2'>
           <img className='h-10 w-10 rounded-full' src={profileIMG} />
           <h1 className='text-md font-decorative text-primary lg:text-lg'>
-            {nick}
+            {displayNickname(nick, NicknameDisplayStyle.MEDIUM)}
           </h1>
         </div>
         <Separator className='w-full' />

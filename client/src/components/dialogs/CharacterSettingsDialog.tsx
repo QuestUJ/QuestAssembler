@@ -25,6 +25,10 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import {
+  displayNickname,
+  NicknameDisplayStyle
+} from '@/lib/misc/displayNickname';
 import { useSocket } from '@/lib/stores/socketIOStore';
 import { buildResponseErrorToast, SocketErrorTxt } from '@/lib/toasters';
 
@@ -127,7 +131,9 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
             className='mr-2 aspect-square h-full rounded-full'
             alt='current player character picture'
           />
-          <h1 className='font-decorative text-2xl'>{props.nick}</h1>
+          <h1 className='font-decorative text-2xl'>
+            {displayNickname(props.nick, NicknameDisplayStyle.SHORT)}
+          </h1>
         </div>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
