@@ -1,8 +1,6 @@
 import { ErrorCode, QuasmComponent, QuasmError } from '@quasm/common';
 import { UUID } from 'crypto';
 
-import { logger } from '@/infrastructure/logger/Logger';
-
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
 
@@ -38,7 +36,6 @@ export function submitStoryHandler({
                     submit.roomID
                 );
             }
-            logger.debug(QuasmComponent.STORAGE, imageURL);
             const chunk = await room.story.addStoryChunk({
                 title: 'test ',
                 content: submit.story,
