@@ -28,8 +28,8 @@ export function ActionsAccordion({
         <AccordionTrigger className='flex w-full flex-row items-center text-2xl text-primary'>
           Image
         </AccordionTrigger>
-        <AccordionContent className=''>
-          <ImageHandler callback={saveImageCallback} width={250} height={250} />
+        <AccordionContent className='flex h-80 w-80'>
+          <ImageHandler callback={saveImageCallback} width={256} height={256} />
         </AccordionContent>
       </AccordionItem>
     </Accordion>

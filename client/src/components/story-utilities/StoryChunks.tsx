@@ -11,7 +11,7 @@ export function StoryChunk({ storyChunk }: { storyChunk: StoryChunkDetails }) {
       <p className='text-md rounded-md bg-background p-4'>{content}</p>
       {imageURL && (
         <img
-          className='aspect-square max-h-96 max-w-96 self-center rounded-md'
+          className='aspect-square h-full max-h-56 w-full max-w-56 self-center rounded-md'
           src={imageURL}
         />
       )}

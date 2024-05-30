@@ -1,3 +1,4 @@
+import { MAX_STORY_IMAGE_FILE_SIZE_IN_BYTES } from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   createLazyFileRoute,
@@ -90,19 +91,34 @@ function SubmitStory() {
 
   const socket = useSocket();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (story.length <= 0) return;
     if (!socket) {
       toast(SocketErrorToast);
       return;
     }
 
+    if (
+      currentImageBlob !== undefined &&
+      currentImageBlob.size > MAX_STORY_IMAGE_FILE_SIZE_IN_BYTES
+    ) {
+      toast(
+        buildResponseErrorToast(
+          'Image is too big! Modify the image with the Modify Image button.'
+        )
+      );
+      return;
+    }
+    // prepare image for being sent over the network
+    const convertedSelectedImage = currentImageBlob
+      ? new Uint8Array(await currentImageBlob.arrayBuffer())
+      : undefined;
     socket.emit(
       'submitStory',
       {
         roomID: roomUUID,
         story,
-        image: currentImageBlob // change buffer
+        image: convertedSelectedImage
       },
       async res => {
         if (res.success) {
@@ -174,8 +190,8 @@ function SubmitStory() {
           <div className='col-span-2 col-start-1 row-span-3 row-start-4'>
             <ImageHandler
               callback={saveImageCallback}
-              width={250}
-              height={250}
+              width={256}
+              height={256}
             />
           </div>
           <div className='col-span-2 col-start-4 row-span-6 row-start-1 h-full overflow-y-auto rounded-md border-2 border-secondary p-2'>
@@ -202,7 +218,7 @@ function SubmitStory() {
             <LLMAssistanceButton />
             <Button
               className='flex w-full items-center gap-2 p-2 text-xs'
-              onClick={handleSubmit}
+              onClick={() => void handleSubmit()}
             >
               <CheckCircle className='' />
               Submit story chunk
@@ -219,7 +235,10 @@ function SubmitStory() {
             </div>
           )}
           <ActionsAccordion saveImageCallback={saveImageCallback} />
-          <Button className='flex w-4/5 items-center' onClick={handleSubmit}>
+          <Button
+            className='flex w-4/5 items-center'
+            onClick={() => void handleSubmit()}
+          >
             <CheckCircle className='' />
             Submit story chunk
           </Button>

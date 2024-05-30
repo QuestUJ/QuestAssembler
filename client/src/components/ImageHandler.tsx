@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { ImageEditDialog } from './dialogs/ImageEditDialog';
+import { Button } from './ui/button';
 
 interface ImageHandlerProps {
   callback?: (imageBlob: Blob, imageURL: string) => void;
@@ -47,7 +48,7 @@ export function ImageHandler({
   return (
     <div
       className={twMerge(
-        `flex max-h-80 max-w-80 items-center justify-center rounded-md bg-background lg:h-full lg:w-full ${className}`
+        `flex h-80 h-full w-80 w-full items-center justify-center rounded-md bg-background ${className}`
       )}
     >
       {selectedImage ? (
@@ -62,12 +63,23 @@ export function ImageHandler({
             width={width}
             height={height}
           />
+          <Button
+            className='my-1 w-full bg-white text-sm'
+            onClick={() => {
+              setSelectedImage(undefined);
+              setSelectedImageURL(undefined);
+            }}
+          >
+            Remove image selection
+          </Button>
         </div>
       ) : (
         <>
           <input
+            id='image_picker'
             type='file'
             accept='image/png, image/gif, image/jpeg'
+            className=''
             ref={filePickerRef}
             onChange={e => imageInputChangeHandler(e.target.files)}
           />

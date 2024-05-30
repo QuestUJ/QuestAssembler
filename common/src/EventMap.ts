@@ -27,7 +27,7 @@ export interface ChangeCharacterSettingsPayload {
     roomID: string;
     nick: string;
     description: string;
-    avatar: Blob | undefined;
+    avatar: Uint8Array | undefined;
 }
 
 export interface ChangeRoomSettingsPayload {
@@ -53,7 +53,7 @@ export interface SubmitActionAck {
 export interface SubmitStoryPayload {
     roomID: string;
     story: string;
-    image: Blob | undefined;
+    image: Uint8Array | undefined;
 }
 
 export interface SubmitStoryAck {

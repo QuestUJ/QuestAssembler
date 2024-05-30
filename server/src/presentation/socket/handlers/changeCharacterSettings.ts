@@ -25,9 +25,10 @@ export function changeCharacterSettingsHandler({
 
             let profileImageURL = '';
             if (data.avatar) {
-                profileImageURL = await fileStorageProvider.uploadImage(
+                profileImageURL = await fileStorageProvider.uploadAvatar(
                     data.avatar,
-                    data.roomID
+                    data.roomID,
+                    currentCharacter.getProfileImageURL()
                 );
                 await currentCharacter.setProfileImage(profileImageURL);
             }

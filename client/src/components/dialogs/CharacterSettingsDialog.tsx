@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   ErrorCode,
   ErrorMap,
+  MAX_AVATAR_FILE_SIZE_IN_BYTES,
   MAX_CHARACTER_DESCRIPTION_LENGTH,
   MAX_CHARACTER_NICK_LENGTH
 } from '@quasm/common';
@@ -21,9 +22,8 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useQuasmStore } from '@/lib/stores/quasmStore';
 import { useSocket } from '@/lib/stores/socketIOStore';
-import { SocketErrorToast } from '@/lib/toasters';
+import { buildResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
 
 import { ImageHandler } from '../ImageHandler';
 import {
@@ -62,10 +62,11 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
   });
   const { toast } = useToast();
 
-  const selectedImage = useQuasmStore(state => state.currentImageBlob);
-  const setSelectedImageBlob = useQuasmStore(
-    state => state.setCurrentImageBlob
-  );
+  //const selectedImage = useQuasmStore(state => state.currentImageBlob);
+  //const setSelectedImageBlob = useQuasmStore(
+  //  state => state.setCurrentImageBlob
+  //);
+  const [selectedImage, setSelectedImageBlob] = useState<Blob>();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,15 +76,34 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
     }
   });
 
-  const formHandler: SubmitHandler<z.infer<typeof formSchema>> = data => {
+  const formHandler: SubmitHandler<z.infer<typeof formSchema>> = async data => {
     if (!socket) {
       toast(SocketErrorToast);
       return;
     }
 
+    if (
+      selectedImage !== undefined &&
+      selectedImage.size > MAX_AVATAR_FILE_SIZE_IN_BYTES
+    ) {
+      toast(
+        buildResponseErrorToast(
+          'The file is too big! Modify it by clicking Modify image button.'
+        )
+      );
+      return;
+    }
+    // prepare image for being sent over the network
+    const convertedSelectedImage = selectedImage
+      ? new Uint8Array(await selectedImage.arrayBuffer())
+      : undefined;
     socket.emit(
       'changeCharacterSettings',
-      { roomID: shortUUID().toUUID(roomId), avatar: selectedImage, ...data },
+      {
+        roomID: shortUUID().toUUID(roomId),
+        avatar: convertedSelectedImage,
+        ...data
+      },
       res => {
         if (res.success) {
           toast({
@@ -156,7 +176,7 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
               <ImageHandler
                 width={64}
                 height={64}
-                className='max-h-32 max-w-32'
+                className='max-h-44 max-w-44'
                 callback={imageHandlerCallback}
               />
             </div>

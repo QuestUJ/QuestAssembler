@@ -1,4 +1,10 @@
-import { ErrorCode, QuasmComponent, QuasmError } from '@quasm/common';
+import {
+    ErrorCode,
+    MAX_AVATAR_FILE_SIZE_IN_BYTES,
+    MAX_STORY_IMAGE_FILE_SIZE_IN_BYTES,
+    QuasmComponent,
+    QuasmError
+} from '@quasm/common';
 import { randomUUID } from 'crypto';
 
 import { IFileStorage } from './IFileStorage';
@@ -21,13 +27,16 @@ export class SupabaseStorageProvider implements IFileStorage {
         this.serviceKey = serviceKey;
     }
 
-    static validateImage(image: Blob): boolean {
-        image;
-        return true;
+    static validateImage(image: Uint8Array): boolean {
+        return image.byteLength < MAX_STORY_IMAGE_FILE_SIZE_IN_BYTES;
+    }
+
+    static validateAvatar(image: Uint8Array): boolean {
+        return image.byteLength < MAX_AVATAR_FILE_SIZE_IN_BYTES;
     }
 
     // wrapper method for easy access to supabase and uploading images
-    async uploadImage(image: Blob, roomId: string): Promise<string> {
+    async uploadImage(image: Uint8Array, roomId: string): Promise<string> {
         //validate
         if (!SupabaseStorageProvider.validateImage(image)) {
             throw new QuasmError(
@@ -48,16 +57,16 @@ export class SupabaseStorageProvider implements IFileStorage {
     }
 
     async uploadAvatar(
-        image: Blob,
+        image: Uint8Array,
         roomId: string,
         oldAvatarURL?: string
     ): Promise<string> {
-        if (!SupabaseStorageProvider.validateImage(image)) {
+        if (!SupabaseStorageProvider.validateAvatar(image)) {
             throw new QuasmError(
                 QuasmComponent.STORAGE,
                 400,
                 ErrorCode.StorageValidationFailed,
-                'Story chunk image validation failed'
+                'Avatar image validation failed'
             );
         }
 
@@ -74,7 +83,11 @@ export class SupabaseStorageProvider implements IFileStorage {
 
     // helper method, returns object URL if succeded in creating an item and throws error if it failed
     // in current version it is made for public resources
-    async requestObjectCreation(bucket: string, roomId: string, image: Blob) {
+    async requestObjectCreation(
+        bucket: string,
+        roomId: string,
+        image: Uint8Array
+    ) {
         const file = new File([image], 'image');
 
         const supabaseResponse = await fetch(
@@ -90,11 +103,12 @@ export class SupabaseStorageProvider implements IFileStorage {
 
         //validate if error
         if (supabaseResponse.status !== 200) {
+            const body = (await supabaseResponse.json()) as { error: string };
             throw new QuasmError(
                 QuasmComponent.STORAGE,
                 400,
                 ErrorCode.StorageAPI,
-                supabaseResponse.statusText
+                body.error
             );
         }
 
@@ -105,6 +119,9 @@ export class SupabaseStorageProvider implements IFileStorage {
     }
 
     async deleteImageAtPublicURL(url: string) {
+        if (!url.includes(this.url)) {
+            return;
+        }
         const requestURL = url.replace('public/', '');
         const response = await fetch(requestURL, {
             method: 'DELETE',
