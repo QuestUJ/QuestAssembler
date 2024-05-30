@@ -1,5 +1,6 @@
-import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
 
 export function CopyGameCode({ gameCode }: { gameCode: string }) {
   const handleCopy = async () => {

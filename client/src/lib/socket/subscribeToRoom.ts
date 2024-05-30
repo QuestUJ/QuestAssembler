@@ -23,8 +23,9 @@ export function useSubscribeToRoom(roomUUID: string) {
         toast.error(...buildResponseErrorToast(res.error?.message));
 
         if (res.error?.code === ErrorCode.RoomNotFound) {
+          console.log('the case');
           await navigate({
-            to: '/joinRoom/$roomID',
+            to: '/joinRoom/$roomId',
             params: {
               roomId
             }
