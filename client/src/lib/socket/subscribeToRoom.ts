@@ -5,9 +5,13 @@ import { toast } from 'sonner';
 
 import { useSocket } from '../stores/socketIOStore';
 import { buildResponseErrorToast } from '../toasters';
+import { useParams } from '@tanstack/react-router';
 
 export function useSubscribeToRoom(roomUUID: string) {
   const socket = useSocket();
+  const { roomId }: { roomId: string } = useParams({
+    strict: false
+  });
 
   const navigate = useNavigate();
 
@@ -20,7 +24,10 @@ export function useSubscribeToRoom(roomUUID: string) {
 
         if (res.error?.code === ErrorCode.RoomNotFound) {
           await navigate({
-            to: '/dashboard'
+            to: '/joinRoom/$roomID',
+            params: {
+              roomId
+            }
           });
         }
       }
