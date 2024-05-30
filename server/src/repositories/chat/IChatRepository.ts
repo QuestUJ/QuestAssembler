@@ -20,6 +20,7 @@ export interface IChatRepository {
 
     fetchMessages(
         chatParticipants: ChatParticipants,
+        roomID: UUID,
         range: ChunkRange
     ): Promise<ChatMessage[]>;
 }

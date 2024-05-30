@@ -1,15 +1,20 @@
 import { ErrorCode, QuasmComponent, QuasmError } from '@quasm/common';
 import { UUID } from 'crypto';
 
+import { Chat } from '@/domain/game/chat/Chat';
 import { logger } from '@/infrastructure/logger/Logger';
 
 import { isMemberOf } from '../utils';
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
 
-export function subscribeToRoomHandler({ socket, dataAccess }: HandlerConfig) {
+export function subscribeToRoomHandler({
+    socket,
+    dataAccess,
+    io
+}: HandlerConfig) {
     socket.on('subscribeToRoom', (id, respond) => {
-        withErrorHandling(respond, async () => {
+        withErrorHandling(async () => {
             logger.info(
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET subscribeToRoom RECEIVED ${id}`
@@ -32,6 +37,20 @@ export function subscribeToRoomHandler({ socket, dataAccess }: HandlerConfig) {
                 socket.data.userID
             );
 
+            const roomSockets = await io.in(room.id).fetchSockets();
+
+            roomSockets.forEach(socket => {
+                const other = room.characters.getCharacterByUserID(
+                    socket.data.userID
+                );
+
+                socket.leave(
+                    JSON.stringify(Chat.toId([other.id, character.id]))
+                );
+            });
+
+            await socket.leave(room.id);
+
             // Subsribe to room events
             await socket.join(room.id);
             await Promise.all(
@@ -45,6 +64,6 @@ export function subscribeToRoomHandler({ socket, dataAccess }: HandlerConfig) {
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET subscribeToRoom SUCCESS ${id}`
             );
-        });
+        }, respond);
     });
 }

@@ -13,7 +13,7 @@ export function changeCharacterSettingsHandler({
     fileStorageProvider
 }: HandlerConfig) {
     socket.on('changeCharacterSettings', (data, respond) => {
-        withErrorHandling(respond, async () => {
+        withErrorHandling(async () => {
             logger.info(
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET changeCharacterSettings RECEIVED ${data.roomID}`
@@ -51,6 +51,6 @@ export function changeCharacterSettingsHandler({
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET changeCharacterSettings SUCCESS ${data.roomID}`
             );
-        });
+        }, respond);
     });
 }

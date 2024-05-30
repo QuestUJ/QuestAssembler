@@ -1,4 +1,4 @@
-import { GetUnreadResponse } from '@quasm/common';
+import { GetUnreadMessagesResponse } from '@quasm/common';
 import { UUID } from 'crypto';
 import { FastifyInstance } from 'fastify';
 
@@ -6,7 +6,7 @@ import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 import { getRoomCheckUser } from './utils';
 
-export function addGetUnreadHandler(
+export function addGetUnreadMessagesHandler(
     fastify: FastifyInstance,
     dataAccess: DataAccessFacade
 ) {
@@ -14,8 +14,8 @@ export function addGetUnreadHandler(
         Params: {
             roomId: string;
         };
-        Reply: GetUnreadResponse;
-    }>('/getUnread/:roomId', async (request, reply) => {
+        Reply: GetUnreadMessagesResponse;
+    }>('/getUnreadMessages/:roomId', async (request, reply) => {
         const room = await getRoomCheckUser({
             roomID: request.params.roomId as UUID,
             userID: request.user.userID,
@@ -30,16 +30,9 @@ export function addGetUnreadHandler(
             character.id
         );
 
-        const unreadStory = await room.notifier.getNumberOfUnreadStoryChunks(
-            character.id
-        );
-
         await reply.send({
             success: true,
-            payload: {
-                chats: unreadMessages,
-                story: unreadStory
-            }
+            payload: unreadMessages
         });
     });
 }

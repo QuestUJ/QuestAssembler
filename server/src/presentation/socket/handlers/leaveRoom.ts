@@ -15,7 +15,7 @@ export function leaveRoomHandler({
     fileStorageProvider
 }: HandlerConfig) {
     socket.on('leaveRoom', (roomID, respond) => {
-        withErrorHandling(respond, async () => {
+        withErrorHandling(async () => {
             authProvider;
 
             logger.info(
@@ -43,6 +43,8 @@ export function leaveRoomHandler({
                 );
             });
 
+            await socket.leave(room.id);
+
             socket.to(room.id).emit('playerLeft', {
                 id: character.id,
                 nick: character.getNick(),
@@ -65,6 +67,6 @@ export function leaveRoomHandler({
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET leaveRoom SUCCESS ${roomID} `
             );
-        });
+        }, respond);
     });
 }

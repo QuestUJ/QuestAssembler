@@ -137,11 +137,12 @@ export interface ApiStoryChunk {
 export type FetchStoryResponse = ApiResponse<ApiStoryChunk[]>;
 
 // ======================
-// /getUnread/
+// /getUnreadMessages/
 // ======================
-export interface ApiUnreadPayload {
-    chats: Record<string, number>;
-    story: number;
-}
 
-export type GetUnreadResponse = ApiResponse<ApiUnreadPayload>;
+export type GetUnreadMessagesResponse = ApiResponse<Record<string, number>>;
+
+// ======================
+// /getUnreadStory/
+// ======================
+export type GetUnreadStoryResponse = ApiResponse<number>;

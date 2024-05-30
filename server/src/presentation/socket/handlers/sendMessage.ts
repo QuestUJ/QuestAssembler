@@ -9,7 +9,7 @@ import { withErrorHandling } from './withErrorHandling';
 
 export function sendMessageHandler({ socket, dataAccess }: HandlerConfig) {
     socket.on('sendMessage', ({ roomID, receiver, content }, respond) => {
-        withErrorHandling(respond, async () => {
+        withErrorHandling(async () => {
             logger.info(
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET sendMessage RECEIVED receiver: ${receiver}`
@@ -21,8 +21,6 @@ export function sendMessageHandler({ socket, dataAccess }: HandlerConfig) {
             const myCharacter = room.characters.getCharacterByUserID(
                 socket.data.userID
             );
-
-            console.log(receiver === 'broadcast');
 
             const msg = await room.chats
                 .getChat(
@@ -38,6 +36,7 @@ export function sendMessageHandler({ socket, dataAccess }: HandlerConfig) {
 
             const payload: MsgEvent = {
                 id: msg.id,
+                broadcast: receiver === 'broadcast',
                 roomID: room.id,
                 from: msg.from,
                 authorName: myCharacter.getNick(),
@@ -63,6 +62,6 @@ export function sendMessageHandler({ socket, dataAccess }: HandlerConfig) {
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET sendMessage SUCCESS receiver: ${receiver}`
             );
-        });
+        }, respond);
     });
 }

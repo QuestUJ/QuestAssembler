@@ -1,25 +1,24 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { ApiUnreadPayload } from '@quasm/common';
 import { useQuery } from '@tanstack/react-query';
 
 import { fetchGET } from './core/fetchGET';
 
-export function useGetUnread(roomUUID: string) {
-  const path = `/getUnread/${roomUUID}`;
+export function useGetUnreadStory(roomUUID: string) {
+  const path = `/getUnreadStory/${roomUUID}`;
 
   const { getAccessTokenSilently } = useAuth0();
 
   const queryFn = async () => {
     const token = await getAccessTokenSilently();
 
-    return fetchGET<ApiUnreadPayload>({
+    return fetchGET<number>({
       path,
       token
     });
   };
 
   const query = useQuery({
-    queryKey: ['getUnread', roomUUID],
+    queryKey: ['getUnreadStory', roomUUID],
     queryFn
   });
 

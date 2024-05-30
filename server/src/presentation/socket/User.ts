@@ -11,6 +11,8 @@ import { changeRoomSettingsHandler } from './handlers/changeRoomSettings';
 import { deleteRoomHandler } from './handlers/deleteRoom';
 import { joinRoomHandler } from './handlers/joinRoom';
 import { leaveRoomHandler } from './handlers/leaveRoom';
+import { markMessageReadHandler } from './handlers/markMessageRead';
+import { markStoryReadHandler } from './handlers/marStoryRead';
 import { sendMessageHandler } from './handlers/sendMessage';
 import { submitActionHandler } from './handlers/submitAction';
 import { submitStoryHandler } from './handlers/submitStory';
@@ -33,7 +35,9 @@ export class User {
             submitActionHandler,
             leaveRoomHandler,
             submitStoryHandler,
-            deleteRoomHandler
+            deleteRoomHandler,
+            markStoryReadHandler,
+            markMessageReadHandler
         ];
 
         handlers.forEach(handler => {

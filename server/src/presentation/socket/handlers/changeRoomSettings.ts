@@ -12,7 +12,7 @@ export function changeRoomSettingsHandler({
     dataAccess
 }: HandlerConfig) {
     socket.on('changeRoomSettings', (data, respond) => {
-        withErrorHandling(respond, async () => {
+        withErrorHandling(async () => {
             logger.info(
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET changeRoomSettings RECEIVED ${data.roomID}`
@@ -59,6 +59,6 @@ export function changeRoomSettingsHandler({
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET changeRoomSettings SUCCESS ${data.roomID}`
             );
-        });
+        }, respond);
     });
 }

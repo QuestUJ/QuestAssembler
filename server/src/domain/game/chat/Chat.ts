@@ -97,6 +97,7 @@ export class Chat {
     async fetchMessages(range: ChunkRange): Promise<ChatMessage[]> {
         const fetchedMessages = await this.chatRepository.fetchMessages(
             this.chatters,
+            this.roomID,
             range
         );
 

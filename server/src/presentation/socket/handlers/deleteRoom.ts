@@ -13,7 +13,7 @@ export function deleteRoomHandler({
     fileStorageProvider
 }: HandlerConfig) {
     socket.on('deleteRoom', (data, respond) => {
-        withErrorHandling(respond, async () => {
+        withErrorHandling(async () => {
             logger.info(
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET deleteRoom RECEIVED ${data.roomID}`
@@ -71,6 +71,6 @@ export function deleteRoomHandler({
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET deleteRoom SUCCESS ${data.roomID}`
             );
-        });
+        }, respond);
     });
 }

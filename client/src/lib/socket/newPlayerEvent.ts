@@ -28,7 +28,7 @@ export function useNewPlayerEvent(
 
     queryClient.setQueryData<ApiPlayerPayload[]>(
       ['getRoomPlayers', roomUUID],
-      [playerQueryData, ...players]
+      [...players, playerQueryData]
     );
 
     toast(player.nick, {

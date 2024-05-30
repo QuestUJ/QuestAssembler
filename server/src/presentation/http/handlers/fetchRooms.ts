@@ -25,7 +25,6 @@ export function addFetchRoomsHandler(
             success: true,
             payload: await Promise.all(
                 rooms.map(async r => {
-                    console.log(await r.story.fetchStory({ count: 1 }));
                     const lastChunk = (
                         await r.story.fetchStory({ count: 1 })
                     ).shift();
