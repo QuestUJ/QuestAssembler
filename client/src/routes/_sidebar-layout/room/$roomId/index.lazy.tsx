@@ -10,6 +10,7 @@ import {
 import { InputBar } from '@/components/InputBar';
 import { SvgSpinner } from '@/components/Spinner';
 import { StoryChunkContainer } from '@/components/story-utilities/StoryChunks';
+import { useFetchMessages } from '@/lib/api/fetchMessages';
 import { useFetchStory } from '@/lib/api/fetchStory';
 import { useSocketEvent } from '@/lib/stores/socketIOStore';
 
@@ -36,6 +37,8 @@ function Story() {
     );
   });
 
+  const { data: messages } = useFetchMessages(roomUUID, 'broadcast');
+
   if (!story) {
     return (
       <div className='flex h-full w-full justify-center pt-20'>
@@ -50,7 +53,13 @@ function Story() {
         <StoryChunkContainer
           story={story.map(s => ({ type: 'storychunk', ...s }))}
         />
-        <BroadcastChat messages={[]} />
+        {messages ? (
+          <BroadcastChat messages={messages} />
+        ) : (
+          <div className='flex h-full w-full justify-center'>
+            <SvgSpinner className='h-20 w-20' />
+          </div>
+        )}
       </OutletWrapper>
       <InputBar
         handleSend={() => console.log('send handled')}

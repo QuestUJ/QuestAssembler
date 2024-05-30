@@ -43,8 +43,6 @@ export function addFetchMessagesHandler(
 
         logger.info(QuasmComponent.HTTP, '/fetchMessages Character found');
 
-        const otherCharacter = room.characters.getCharacterByID(other as UUID);
-
         let result;
 
         if (!other) {
@@ -61,6 +59,10 @@ export function addFetchMessagesHandler(
                 });
             }
         } else {
+            const otherCharacter = room.characters.getCharacterByID(
+                other as UUID
+            );
+
             result = await room.chats
                 .getChat([myCharacter.id, other] as [UUID, UUID])
                 .fetchMessages({ count, offset });
@@ -80,14 +82,10 @@ export function addFetchMessagesHandler(
                 id: m.id,
                 content: m.content,
                 timestamp: m.timestamp,
-                authorName:
-                    m.from === other
-                        ? otherCharacter.getNick()
-                        : myCharacter.getNick(),
-                characterPictureURL:
-                    m.from === other
-                        ? otherCharacter.getProfileImageURL()
-                        : myCharacter.getProfileImageURL()
+                authorName: room.characters.getCharacterByID(m.from).getNick(),
+                characterPictureURL: room.characters
+                    .getCharacterByID(m.from)
+                    .getProfileImageURL()
             }))
         });
 
