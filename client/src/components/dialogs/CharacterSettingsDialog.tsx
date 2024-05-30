@@ -134,7 +134,7 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
         <DialogHeader>
           <DialogTitle>Character settings</DialogTitle>
           <DialogDescription>
-            Customize your character nick and descreption
+            Customize your character nick and description
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
