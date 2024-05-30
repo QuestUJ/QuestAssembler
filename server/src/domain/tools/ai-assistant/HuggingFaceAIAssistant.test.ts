@@ -23,11 +23,15 @@ function isJPEG(buffer: Buffer) {
 describe('HuggingFaceAIAssistant', () => {
     const hug = new HuggingFaceAiAssistant(HUGGINGFACE_TOKEN);
 
-    it('should generate text', async () => {
-        const response = await hug.getText('Write me a story about a dog!');
+    it(
+        'should generate text',
+        async () => {
+            const response = await hug.getText('Write me a story about a dog!');
 
-        expect(response).toMatch(/.*dog.*/);
-    });
+            expect(response).toMatch(/.*dog.*/);
+        },
+        { timeout: 20000 }
+    );
 
     it('should generate image', async () => {
         const img = await hug.getImage('Fantasy epic castle');
