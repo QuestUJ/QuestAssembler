@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { ConfirmJoinGameDialog } from '@/components/dialogs/ConfirmJoinGameDialog';
 import { useParams } from '@tanstack/react-router';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
@@ -15,6 +15,6 @@ function joinRoom() {
   );
 }
 
-export const Route = createLazyFileRoute('/_auth/joinRoom/$roomId')({
+export const Route = createFileRoute('/joinRoom/$roomId')({
   component: withAuthenticationRequired(joinRoom)
 });
