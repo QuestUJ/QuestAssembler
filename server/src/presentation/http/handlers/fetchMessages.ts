@@ -81,7 +81,7 @@ export function addFetchMessagesHandler(
             payload: result.map(m => ({
                 id: m.id,
                 content: m.content,
-                timestamp: m.timestamp,
+                timestamp: m.timestamp.toISOString(),
                 authorName: room.characters.getCharacterByID(m.from).getNick(),
                 characterPictureURL: room.characters
                     .getCharacterByID(m.from)

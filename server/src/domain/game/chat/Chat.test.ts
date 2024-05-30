@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import { describe, expect, it, vi } from 'vitest';
 
+import { AsyncEventEmitter } from '@/domain/core/AsyncEventEmitter';
 import { IChatRepository } from '@/repositories/chat/IChatRepository';
 
 import { Chat } from './Chat';
@@ -35,7 +36,12 @@ describe('Basic chat actions', async () => {
     const p1 = randomUUID();
     const p2 = randomUUID();
 
-    const chat = new Chat(fakeRepo, [p1, p2], randomUUID());
+    const chat = new Chat(
+        fakeRepo,
+        [p1, p2],
+        randomUUID(),
+        new AsyncEventEmitter()
+    );
 
     await chat.addMessage({
         from: p1,

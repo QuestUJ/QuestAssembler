@@ -35,7 +35,7 @@ export function useSendMessage({ roomUUID, receiver }: Options) {
 
         const msg: ApiMessagePayload = {
           ...res.payload!,
-          timestamp: new Date(res.payload!.timestamp)
+          timestamp: res.payload!.timestamp
         };
 
         queryClient.setQueryData<ApiMessagePayload[]>(
