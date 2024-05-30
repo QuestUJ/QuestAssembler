@@ -31,6 +31,10 @@ export function SidebarContentRoom() {
   const { data: unreadMessages } = useGetUnread(roomUUID);
 
   useEffect(() => {
+    console.log(unreadMessages);
+  }, [unreadMessages]);
+
+  useEffect(() => {
     setRoomName(roomDetails?.roomName);
     setIsGameMaster(
       roomDetails?.currentPlayer.id === roomDetails?.gameMasterID

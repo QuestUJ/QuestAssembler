@@ -177,9 +177,15 @@ export class NotifierRepositoryPostgres implements INotifierRepository {
                     .where('receiver', '=', characterID)
                     .select('lastRead as id')
             )
-            .selectFrom(['StoryChunks', 'lastRead'])
+            .selectFrom('StoryChunks')
+            .leftJoin('lastRead', join => join.onTrue())
             .where('StoryChunks.roomID', '=', roomID)
-            .whereRef('StoryChunks.chunkID', '>', 'lastRead.id')
+            .where(eb =>
+                eb.or([
+                    eb('lastRead.id', 'is', null),
+                    eb('StoryChunks.chunkID', '>', eb.ref('lastRead.id'))
+                ])
+            )
             .select(eb => [
                 eb.fn.count('StoryChunks.chunkID').as('numOfChunks')
             ])
