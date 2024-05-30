@@ -1,5 +1,11 @@
 import { Link, useParams } from '@tanstack/react-router';
-import { BookOpenText, CheckCircle, Crown, MessageSquare, Scroll } from 'lucide-react';
+import {
+  BookOpenText,
+  CheckCircle,
+  Crown,
+  MessageSquare,
+  Scroll
+} from 'lucide-react';
 import { ReactNode } from 'react';
 
 import {

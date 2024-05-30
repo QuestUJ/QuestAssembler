@@ -48,17 +48,16 @@ export function SidebarContentRoom() {
           <LogoWithText />
         </div>
         <Accordion type='multiple'>
-          <ToolsAccordion />
-          <CharactersAccordion
-            gameMaster={roomDetails?.gameMasterID}
-            characters={players}
-            unreadMessages={unreadMessages?.chats}
-          />
           <ToolsAccordion
             numOfUnreadBroadcast={
               unreadMessages ? unreadMessages.chats['broadcast'] : undefined
             }
             numOfUnreadStory={unreadMessages?.story}
+          />
+          <CharactersAccordion
+            gameMaster={roomDetails?.gameMasterID}
+            characters={players}
+            unreadMessages={unreadMessages?.chats}
           />
         </Accordion>
       </div>
