@@ -1,34 +1,48 @@
 import { ErrorCode, QuasmComponent, QuasmError } from '@quasm/common';
 import { UUID } from 'crypto';
 
+import { AsyncEventEmitter } from '@/domain/core/AsyncEventEmitter';
+import { IQuasmEventEmitter } from '@/domain/core/IQuasmEventEmitter';
 import { IChatRepository } from '@/repositories/chat/IChatRepository';
 
 import { CharactersComponent } from '../character/CharactersComponent';
 import { Chat } from './Chat';
 import { ChatMessage, ChatParticipants } from './ChatMessage';
 
-export class ChatsComponent {
+export interface ChatsEventMap {
+    newMessage: (message: ChatMessage) => void;
+}
+
+export class ChatsComponent implements IQuasmEventEmitter<ChatsEventMap> {
     private broadcast: Chat;
     private chats: Map<string, Chat>;
+    private emitter: AsyncEventEmitter<ChatsEventMap>;
 
     constructor(
         private chatRepository: IChatRepository,
         private roomID: UUID,
         private charactersComponent: CharactersComponent
     ) {
+        this.emitter = new AsyncEventEmitter();
+
         this.broadcast = new Chat(
             this.chatRepository,
             'broadcast',
-            this.roomID
+            this.roomID,
+            this.emitter
         );
         this.chats = new Map();
 
-        this.charactersComponent.onCharacterJoin(character => {
+        this.charactersComponent.on('playerJoined', character => {
             this.addChat(character.id);
         });
-        this.charactersComponent.onCharacterLeave(character => {
+        this.charactersComponent.on('playerLeft', character => {
             this.removeChats(character.id);
         });
+    }
+
+    on<T extends 'newMessage'>(event: T, handler: ChatsEventMap[T]): void {
+        this.emitter.on(event, handler);
     }
 
     /**
@@ -42,7 +56,8 @@ export class ChatsComponent {
                 const chat = new Chat(
                     this.chatRepository,
                     [characters[i].id, characters[j].id],
-                    this.roomID
+                    this.roomID,
+                    this.emitter
                 );
                 this.chats.set(JSON.stringify(chat.chatters), chat);
             }
@@ -51,7 +66,8 @@ export class ChatsComponent {
         this.broadcast = new Chat(
             this.chatRepository,
             'broadcast',
-            this.roomID
+            this.roomID,
+            this.emitter
         );
     }
 
@@ -61,7 +77,8 @@ export class ChatsComponent {
             const chat = new Chat(
                 this.chatRepository,
                 [other.id, characterID],
-                this.roomID
+                this.roomID,
+                this.emitter
             );
             this.chats.set(JSON.stringify(chat.chatters), chat);
         });
@@ -69,10 +86,6 @@ export class ChatsComponent {
 
     getBroadcast(): Chat {
         return this.broadcast;
-    }
-
-    async addBrodcastMessage(message: ChatMessage): Promise<void> {
-        await this.broadcast.addMessage(message);
     }
 
     getPrivateChats() {

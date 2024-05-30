@@ -43,11 +43,9 @@ export function addGetRoomHandler(
             );
         }
 
-        const players = room.characters.getCharacters();
-
-        const currentPlayer = players.find(
-            p => p.userID === request.user.userID
-        )!;
+        const currentPlayer = room.characters.getCharacterByUserID(
+            request.user.userID
+        );
 
         await reply.send({
             success: true,

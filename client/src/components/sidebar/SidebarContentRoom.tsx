@@ -4,6 +4,7 @@ import shortUUID from 'short-uuid';
 
 import { useGetRoom } from '@/lib/api/getRoom';
 import { useGetRoomPlayers } from '@/lib/api/getRoomPlayers';
+import { useGetUnread } from '@/lib/api/getUnread';
 import { useQuasmStore } from '@/lib/stores/quasmStore';
 
 import { CopyGameCode } from '../CopyGameCode';
@@ -27,6 +28,11 @@ export function SidebarContentRoom() {
 
   const { data: roomDetails } = useGetRoom(roomUUID);
   const { data: players } = useGetRoomPlayers(roomUUID);
+  const { data: unreadMessages } = useGetUnread(roomUUID);
+
+  useEffect(() => {
+    console.log(unreadMessages);
+  }, [unreadMessages]);
 
   useEffect(() => {
     setRoomName(roomDetails?.roomName);
@@ -46,6 +52,13 @@ export function SidebarContentRoom() {
           <CharactersAccordion
             gameMaster={roomDetails?.gameMasterID}
             characters={players}
+            unreadMessages={unreadMessages?.chats}
+          />
+          <ToolsAccordion
+            numOfUnreadBroadcast={
+              unreadMessages ? unreadMessages.chats['broadcast'] : undefined
+            }
+            numOfUnreadStory={unreadMessages?.story}
           />
         </Accordion>
       </div>

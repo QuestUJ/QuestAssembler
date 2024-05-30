@@ -16,6 +16,7 @@ import {
 import { CharacterRepositoryPostgres } from './repositories/character/CharacterRepositoryPostgres';
 import { ChatRepositoryPostgres } from './repositories/chat/ChatRepositoryPostgres';
 import { DataAccessFacade } from './repositories/DataAccessFacade';
+import { NotifierRepositoryPostgres } from './repositories/notifier/NotifierRepositoryPostgres';
 import { RoomRepositoryPostgres } from './repositories/room/RoomRepositoryPostgres';
 import { StoryRepositoryPostgres } from './repositories/story/StoryRepositoryPostgres';
 
@@ -41,8 +42,10 @@ const {
         roomRepo,
         new CharacterRepositoryPostgres(db),
         new ChatRepositoryPostgres(db),
-        new StoryRepositoryPostgres(db)
+        new StoryRepositoryPostgres(db),
+        new NotifierRepositoryPostgres(db)
     );
+
     roomRepo.provideDataAccess(dataAccess);
 
     const auth0 = new Auth0Provider({

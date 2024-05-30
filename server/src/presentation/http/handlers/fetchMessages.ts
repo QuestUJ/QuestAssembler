@@ -43,6 +43,8 @@ export function addFetchMessagesHandler(
 
         logger.info(QuasmComponent.HTTP, '/fetchMessages Character found');
 
+        const otherCharacter = room.characters.getCharacterByID(other as UUID);
+
         let result;
 
         if (!other) {
@@ -50,13 +52,27 @@ export function addFetchMessagesHandler(
                 count,
                 offset
             });
+
+            if (result.length > 0) {
+                await room.notifier.markMessageAsRead({
+                    characterID: myCharacter.id,
+                    messageID: result[result.length - 1].id,
+                    senderID: 'broadcast'
+                });
+            }
         } else {
             result = await room.chats
                 .getChat([myCharacter.id, other] as [UUID, UUID])
                 .fetchMessages({ count, offset });
-        }
 
-        const otherCharacter = room.characters.getCharacterByID(other as UUID);
+            if (result.length > 0) {
+                await room.notifier.markMessageAsRead({
+                    characterID: myCharacter.id,
+                    messageID: result[result.length - 1].id,
+                    senderID: otherCharacter.id
+                });
+            }
+        }
 
         await reply.send({
             success: true,

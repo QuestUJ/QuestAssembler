@@ -16,10 +16,12 @@ import {
 
 function Character({
   characterInfo,
-  isGameMaster
+  isGameMaster,
+  unreadMessages
 }: {
   characterInfo: ApiPlayerPayload;
   isGameMaster: boolean;
+  unreadMessages: number;
 }) {
   const { nick, profileIMG, id: characterID, isReady } = characterInfo;
 
@@ -37,9 +39,16 @@ function Character({
       }}
     >
       <div className='flex h-14 flex-row items-center gap-2 rounded-xl p-2 hover:cursor-pointer hover:bg-highlight'>
-        <img src={profileIMG} className='aspect-square h-full rounded-full' />
+        <div className='relative h-full flex-shrink-0'>
+          {unreadMessages && unreadMessages > 0 && (
+            <span className='absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary font-bold text-black'>
+              {unreadMessages}
+            </span>
+          )}
+          <img src={profileIMG} className='aspect-square h-full rounded-full' />
+        </div>
         <div className='flex w-full items-center justify-between'>
-          <h1 className='font-decorative text-2xl'>
+          <h1 className='relative font-decorative text-2xl'>
             {displayNickname(nick, NicknameDisplayStyle.SHORT)}
           </h1>
           {isGameMaster ? (
@@ -57,10 +66,12 @@ function Character({
 
 export function CharactersAccordion({
   characters,
-  gameMaster
+  gameMaster,
+  unreadMessages
 }: {
   characters: ApiPlayerPayload[] | undefined;
   gameMaster: string | undefined;
+  unreadMessages: Record<string, number> | undefined;
 }) {
   return (
     <AccordionItem value='players'>
@@ -77,6 +88,7 @@ export function CharactersAccordion({
             <Character
               isGameMaster={gameMaster === character.id}
               characterInfo={character}
+              unreadMessages={unreadMessages ? unreadMessages[character.id] : 0}
               key={character.id}
             />
           ))

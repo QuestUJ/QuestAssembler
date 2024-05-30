@@ -23,6 +23,7 @@ import { addGenerateTextHandler } from '../handlers/generateText';
 import { addGetRoomHandler } from '../handlers/getRoom';
 import { addGetRoomPlayersHandler } from '../handlers/getRoomPlayers';
 import { addGetTurnSubmitHandler } from '../handlers/getTurnSubmit';
+import { addGetUnreadHandler } from '../handlers/getUnread';
 
 export function apiRoutes(
     authProvider: IAuthProvider,
@@ -73,6 +74,7 @@ export function apiRoutes(
         addFetchTurnSubmitsHandler(fastify, dataAccess);
         addGetRoomPlayersHandler(fastify, dataAccess);
         addFetchStoryHandler(fastify, dataAccess);
+        addGetUnreadHandler(fastify, dataAccess);
 
         done();
     };

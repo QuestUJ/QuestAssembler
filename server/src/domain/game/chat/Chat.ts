@@ -1,11 +1,14 @@
 import {
     ChunkRange,
     ErrorCode,
+    MAX_CHAT_MESSAGE_LENGTH,
+    MAX_CHAT_MESSAGES,
     QuasmComponent,
     QuasmError
 } from '@quasm/common';
 import { UUID } from 'crypto';
 
+import { AsyncEventEmitter } from '@/domain/core/AsyncEventEmitter';
 import { IChatRepository } from '@/repositories/chat/IChatRepository';
 
 import {
@@ -13,9 +16,7 @@ import {
     ChatMessageDetails,
     ChatParticipants
 } from './ChatMessage';
-
-const MAX_CHAT_MESSAGES: number = 500;
-const MAX_CHAT_MESSAGE_LENGTH: number = 280;
+import { ChatsEventMap } from './ChatsComponent';
 
 export class Chat {
     readonly chatters: ChatParticipants;
@@ -23,7 +24,8 @@ export class Chat {
     constructor(
         private readonly chatRepository: IChatRepository,
         chatters: ChatParticipants,
-        readonly roomID: UUID
+        readonly roomID: UUID,
+        readonly eventEmitter: AsyncEventEmitter<ChatsEventMap>
     ) {
         if (chatters === 'broadcast') {
             this.chatters = chatters;
@@ -82,7 +84,11 @@ export class Chat {
             );
         }
 
-        return this.chatRepository.addMessage(chatMessageDetails);
+        const msg = await this.chatRepository.addMessage(chatMessageDetails);
+
+        await this.eventEmitter.emit('newMessage', msg);
+
+        return msg;
     }
 
     async fetchMessages(range: ChunkRange): Promise<ChatMessage[]> {
