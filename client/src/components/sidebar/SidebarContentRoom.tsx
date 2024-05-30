@@ -6,6 +6,7 @@ import { useGetRoom } from '@/lib/api/getRoom';
 import { useGetRoomPlayers } from '@/lib/api/getRoomPlayers';
 import { useQuasmStore } from '@/lib/stores/quasmStore';
 
+import { CopyGameCode } from '../CopyGameCode';
 import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
 import { LeaveRoomDialog } from '../dialogs/LeaveRoomDialog';
 import { RoomSettingsDialog } from '../dialogs/RoomSettingsDialog';
@@ -14,7 +15,6 @@ import { SvgSpinner } from '../Spinner';
 import { Accordion } from '../ui/accordion';
 import { CharactersAccordion } from './content/CharactersAccordion';
 import { ToolsAccordion } from './content/ToolsAccordion';
-import { CopyGameCode } from '../CopyGameCode';
 
 export function SidebarContentRoom() {
   const { setRoomName, setIsGameMaster, isGameMaster } = useQuasmStore();
@@ -61,11 +61,11 @@ export function SidebarContentRoom() {
               />
             )}
           </div>
-            <div className='flex items-center space-x-2'>
-              {<CopyGameCode gameCode={roomId} />}
-              {isGameMaster ? <RoomSettingsDialog /> : <LeaveRoomDialog />}
-            </div>
+          <div className='flex items-center space-x-2'>
+            {<CopyGameCode gameCode={roomId} />}
+            {isGameMaster ? <RoomSettingsDialog /> : <LeaveRoomDialog />}
           </div>
+        </div>
       </div>
     </div>
   );

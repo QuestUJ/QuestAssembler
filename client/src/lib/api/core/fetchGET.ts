@@ -25,6 +25,5 @@ export async function fetchGET<Payload>({ path, token, onError }: GetCall) {
     err.name = response.error!.code;
     throw err;
   }
-
   return response.payload! as Payload;
 }

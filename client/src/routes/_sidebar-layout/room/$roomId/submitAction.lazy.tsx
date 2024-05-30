@@ -19,7 +19,7 @@ import { useGetTurnSubmit } from '@/lib/api/getTurnSubmit';
 import { useSocket, useSocketEvent } from '@/lib/stores/socketIOStore';
 import { buildResponseErrorToast, SocketErrorTxt } from '@/lib/toasters';
 
-const route = getRouteApi('/_auth/room/$roomId/submitAction');
+const route = getRouteApi('/_sidebar-layout/room/$roomId/submitAction');
 
 function PlayerSubmit() {
   const [content, setContent] = useState('');
@@ -115,6 +115,8 @@ function PlayerSubmit() {
   );
 }
 
-export const Route = createLazyFileRoute('/_auth/room/$roomId/submitAction')({
+export const Route = createLazyFileRoute(
+  '/_sidebar-layout/room/$roomId/submitAction'
+)({
   component: PlayerSubmit
 });

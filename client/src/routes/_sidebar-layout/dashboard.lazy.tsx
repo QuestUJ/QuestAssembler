@@ -55,6 +55,6 @@ function Dashboard() {
   );
 }
 
-export const Route = createLazyFileRoute('/_auth/dashboard')({
+export const Route = createLazyFileRoute('/_sidebar-layout/dashboard')({
   component: Dashboard
 });

@@ -29,7 +29,7 @@ import { useSocket, useSocketEvent } from '@/lib/stores/socketIOStore';
 import { useStoryChunkStore } from '@/lib/stores/storyChunkStore';
 import { buildResponseErrorToast, SocketErrorTxt } from '@/lib/toasters';
 
-const route = getRouteApi('/_auth/room/$roomId/submitStory');
+const route = getRouteApi('/_sidebar-layout/room/$roomId/submitStory');
 
 function SubmitStory() {
   const { roomId } = route.useParams();
@@ -272,6 +272,8 @@ function SubmitStory() {
   );
 }
 
-export const Route = createLazyFileRoute('/_auth/room/$roomId/submitStory')({
+export const Route = createLazyFileRoute(
+  '/_sidebar-layout/room/$roomId/submitStory'
+)({
   component: SubmitStory
 });

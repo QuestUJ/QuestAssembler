@@ -1,5 +1,5 @@
 import { Link, useParams } from '@tanstack/react-router';
-import { CheckCircle, Crown, Reply, Scroll } from 'lucide-react';
+import { CheckCircle, Crown, Scroll } from 'lucide-react';
 import { ReactNode } from 'react';
 
 import {
