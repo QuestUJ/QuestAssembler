@@ -37,19 +37,22 @@ export class StoryRepositoryPostgres implements IStoryRepository {
         const storyChunkData = await this.db
             .selectFrom('StoryChunks')
             .where('roomID', '=', roomID)
+            .orderBy('StoryChunks.chunkID desc')
             .limit(range.count)
             .selectAll()
             .execute();
 
-        return storyChunkData.map(
-            ch =>
-                new StoryChunk(
-                    ch.chunkID,
-                    ch.title,
-                    ch.content,
-                    ch.imageURL ? ch.imageURL : ''
-                )
-        );
+        return storyChunkData
+            .reverse()
+            .map(
+                ch =>
+                    new StoryChunk(
+                        ch.chunkID,
+                        ch.title,
+                        ch.content,
+                        ch.imageURL ? ch.imageURL : ''
+                    )
+            );
     }
 
     async fetchAllStoryChunks() {

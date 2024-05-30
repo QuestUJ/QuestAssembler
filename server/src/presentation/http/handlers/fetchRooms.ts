@@ -23,17 +23,29 @@ export function addFetchRoomsHandler(
 
         await reply.send({
             success: true,
-            payload: rooms.map(r => ({
-                id: r.id,
-                roomName: r.roomSettings.getName(),
-                gameMasterName: r.characters.getGameMaster().getNick(),
-                currentPlayers: r.characters.getCharacters().length,
-                maxPlayers: r.roomSettings.getMaxPlayerCount(),
-                isCurrentUserGameMaster:
-                    r.characters.getGameMaster().userID === request.user.userID,
-                lastImageUrl: undefined,
-                lastMessages: undefined
-            }))
+            payload: await Promise.all(
+                rooms.map(async r => {
+                    console.log(await r.story.fetchStory({ count: 1 }));
+                    const lastChunk = (
+                        await r.story.fetchStory({ count: 1 })
+                    ).shift();
+
+                    return {
+                        id: r.id,
+                        roomName: r.roomSettings.getName(),
+                        gameMasterName: r.characters.getGameMaster().getNick(),
+                        currentPlayers: r.characters.getCharacters().length,
+                        maxPlayers: r.roomSettings.getMaxPlayerCount(),
+                        isCurrentUserGameMaster:
+                            r.characters.getGameMaster().userID ===
+                            request.user.userID,
+                        lastImageUrl: lastChunk?.imageURL,
+                        lastMessages: lastChunk
+                            ? [lastChunk.content]
+                            : undefined
+                    };
+                })
+            )
         });
 
         logger.info(
