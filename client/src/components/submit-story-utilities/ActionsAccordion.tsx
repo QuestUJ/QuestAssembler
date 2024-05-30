@@ -35,8 +35,8 @@ export function ActionsAccordion({
         <AccordionContent className='flex h-80 w-80'>
           <ImageHandler
             handlerId='accordion_story_image'
-            callback={saveImageCallback}
-            removeSelectionCallback={() => {
+            onImageSave={saveImageCallback}
+            onSelectionRemove={() => {
               removeImageSelectionCallback();
             }}
             width={STORY_IMAGE_PIXEL_WIDTH}

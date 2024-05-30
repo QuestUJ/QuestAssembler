@@ -195,8 +195,8 @@ function SubmitStory() {
           <div className='col-span-2 col-start-1 row-span-3 row-start-4'>
             <ImageHandler
               handlerId='story_image'
-              callback={saveImageCallback}
-              removeSelectionCallback={removeImageSelectionCallback}
+              onImageSave={saveImageCallback}
+              onSelectionRemove={removeImageSelectionCallback}
               width={STORY_IMAGE_PIXEL_WIDTH}
               height={STORY_IMAGE_PIXEL_WIDTH}
             />

@@ -5,18 +5,17 @@ import { ImageEditDialog } from './dialogs/ImageEditDialog';
 import { Button } from './ui/button';
 
 interface ImageHandlerProps {
-  callback?: (imageBlob: Blob, imageURL: string) => void;
-  removeSelectionCallback: () => void;
+  onImageSave?: (imageBlob: Blob, imageURL: string) => void;
+  onSelectionRemove: () => void;
   width: number;
   height: number;
   handlerId: string;
   className?: string;
 }
 
-// callback will be run after the image is saved and is used to synchronize the component with its environment
 export function ImageHandler({
-  callback,
-  removeSelectionCallback,
+  onImageSave,
+  onSelectionRemove,
   width,
   height,
   className,
@@ -33,16 +32,16 @@ export function ImageHandler({
     const imageURL = URL.createObjectURL(files[0]);
     setSelectedImage(files[0]);
     setSelectedImageURL(URL.createObjectURL(files[0]));
-    if (callback) {
-      callback(files[0], imageURL);
+    if (onImageSave) {
+      onImageSave(files[0], imageURL);
     }
   };
 
   const handleSave = (imageBlob: Blob) => {
     const imageURL = URL.createObjectURL(imageBlob);
     setSelectedImageURL(imageURL);
-    if (callback) {
-      callback(imageBlob, imageURL);
+    if (onImageSave) {
+      onImageSave(imageBlob, imageURL);
     }
   };
 
@@ -66,7 +65,7 @@ export function ImageHandler({
             onClick={() => {
               setSelectedImage(undefined);
               setSelectedImageURL(undefined);
-              removeSelectionCallback();
+              onSelectionRemove();
             }}
           >
             Remove image selection

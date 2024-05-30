@@ -169,8 +169,8 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
                 width={AVATAR_PIXEL_WIDTH}
                 height={AVATAR_PIXEL_HEIGHT}
                 className='max-h-56 max-w-36'
-                callback={imageHandlerCallback}
-                removeSelectionCallback={() => setSelectedImage(undefined)}
+                onImageSave={imageHandlerCallback}
+                onSelectionRemove={() => setSelectedImage(undefined)}
               />
             </div>
             <div className='flex justify-between'>
