@@ -60,7 +60,14 @@ export function SidebarContentRoom() {
               />
             )}
           </div>
-          {isGameMaster ? <RoomSettingsDialog /> : <LeaveRoomDialog />}
+          {isGameMaster ? (
+            <RoomSettingsDialog
+              roomName={roomDetails ? roomDetails.roomName : ''}
+              maxPlayers={roomDetails ? roomDetails.maxPlayers : 0}
+            />
+          ) : (
+            <LeaveRoomDialog />
+          )}
         </div>
       </div>
     </div>
