@@ -6,6 +6,7 @@ import { useGetRoom } from '@/lib/api/getRoom';
 import { useGetRoomPlayers } from '@/lib/api/getRoomPlayers';
 import { useQuasmStore } from '@/lib/stores/quasmStore';
 
+import { CopyGameCode } from '../CopyGameCode';
 import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
 import { LeaveRoomDialog } from '../dialogs/LeaveRoomDialog';
 import { RoomSettingsDialog } from '../dialogs/RoomSettingsDialog';
@@ -41,11 +42,11 @@ export function SidebarContentRoom() {
           <LogoWithText />
         </div>
         <Accordion type='multiple'>
+          <ToolsAccordion />
           <CharactersAccordion
             gameMaster={roomDetails?.gameMasterID}
             characters={players}
           />
-          <ToolsAccordion />
         </Accordion>
       </div>
       <div className='w-full'>
@@ -60,14 +61,17 @@ export function SidebarContentRoom() {
               />
             )}
           </div>
-          {isGameMaster ? (
-            <RoomSettingsDialog
-              roomName={roomDetails ? roomDetails.roomName : ''}
-              maxPlayers={roomDetails ? roomDetails.maxPlayers : 0}
-            />
-          ) : (
-            <LeaveRoomDialog />
-          )}
+          <div className='flex items-center space-x-2'>
+            {<CopyGameCode gameCode={roomId} />}
+            {isGameMaster ? (
+              <RoomSettingsDialog
+                roomName={roomDetails ? roomDetails.roomName : ''}
+                maxPlayers={roomDetails ? roomDetails.maxPlayers : 0}
+              />
+            ) : (
+              <LeaveRoomDialog />
+            )}
+          </div>
         </div>
       </div>
     </div>

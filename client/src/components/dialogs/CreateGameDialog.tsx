@@ -67,13 +67,15 @@ export function CreateGameDialog() {
   const { mutate: createGame } = useCreateGame(code => {
     const shortCode = shortUUID().fromUUID(code);
     toast.success('Room created!', {
-      description: `You code: ${shortCode}`,
+      description: `Your code: ${shortCode}`,
       action: {
         label: 'Copy code',
         onClick: () =>
-          void navigator.clipboard.writeText(shortCode).then(() => {
-            toast('Code copied!');
-          })
+          void navigator.clipboard
+            .writeText(`${window.origin}/joinRoom/${shortCode}`)
+            .then(() => {
+              toast('Invitation copied!');
+            })
       }
     });
     form.reset();
