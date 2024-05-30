@@ -6,8 +6,9 @@ import {
   useNavigate
 } from '@tanstack/react-router';
 import { CheckCircle } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import shortUUID from 'short-uuid';
+import { toast } from 'sonner';
 
 import { ImageHandler } from '@/components/ImageHandler';
 import { SvgSpinner } from '@/components/Spinner';
@@ -18,13 +19,12 @@ import { StoryTextArea } from '@/components/submit-story-utilities/StoryTextArea
 import { TurnSubmitCard } from '@/components/submit-story-utilities/TurnSubmitCard';
 import { CharacterDetails } from '@/components/submit-story-utilities/types';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
 import { useFetchTurnSubmits } from '@/lib/api/fetchTurnSubmits';
 import { useWindowSize } from '@/lib/misc/windowSize';
 import { useQuasmStore } from '@/lib/stores/quasmStore';
 import { useSocket, useSocketEvent } from '@/lib/stores/socketIOStore';
 import { useStoryChunkStore } from '@/lib/stores/storyChunkStore';
-import { buildResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
+import { buildResponseErrorToast, SocketErrorTxt } from '@/lib/toasters';
 
 const route = getRouteApi('/_auth/room/$roomId/submitStory');
 
@@ -33,7 +33,6 @@ function SubmitStory() {
   const roomUUID = shortUUID().toUUID(roomId);
 
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const { data } = useFetchTurnSubmits(roomUUID);
 
@@ -60,8 +59,8 @@ function SubmitStory() {
   useSocketEvent(
     'turnSubmit',
     ({ characterID, nick, profileIMG, content, timestamp }) => {
-      toast({
-        title: `${nick} ended his turn`
+      toast(`${nick} ended his turn`, {
+        icon: <img src={profileIMG} />
       });
 
       if (!data) {
@@ -91,10 +90,12 @@ function SubmitStory() {
 
   const socket = useSocket();
 
+  const [submitInProgress, setSubmitInProgress] = useState(false);
+
   const handleSubmit = async () => {
     if (story.length <= 0) return;
     if (!socket) {
-      toast(SocketErrorToast);
+      toast.error(SocketErrorTxt);
       return;
     }
 
@@ -102,8 +103,8 @@ function SubmitStory() {
       currentImageBlob !== undefined &&
       currentImageBlob.size > MAX_STORY_IMAGE_FILE_SIZE_IN_BYTES
     ) {
-      toast(
-        buildResponseErrorToast(
+      toast.error(
+        ...buildResponseErrorToast(
           'Image is too big! Modify the image with the Modify Image button.'
         )
       );
@@ -123,9 +124,7 @@ function SubmitStory() {
       async res => {
         if (res.success) {
           setStory('');
-          toast({
-            title: 'Story submitted'
-          });
+          toast.success('Story submitted');
 
           await navigate({
             to: '/room/$roomId',
@@ -134,10 +133,12 @@ function SubmitStory() {
             }
           });
         } else {
-          toast(buildResponseErrorToast(res.error?.message));
+          toast.error(...buildResponseErrorToast(res.error?.message));
         }
       }
     );
+
+    setSubmitInProgress(true);
   };
 
   useSocketEvent('newTurn', async () => {
@@ -194,7 +195,7 @@ function SubmitStory() {
               height={256}
             />
           </div>
-          <div className='col-span-2 col-start-4 row-span-6 row-start-1 h-full overflow-y-auto rounded-md border-2 border-secondary p-2'>
+          <div className='col-span-2 col-start-4 row-span-6 row-start-1 h-full overflow-y-auto rounded-md border-2 p-2'>
             <h1 className='font-decorative text-2xl text-primary'>
               Player's turn submits
             </h1>
@@ -216,13 +217,19 @@ function SubmitStory() {
           </div>
           <div className='col-start-3 row-span-3 row-start-4 flex flex-col gap-2'>
             <LLMAssistanceButton />
-            <Button
-              className='flex w-full items-center gap-2 p-2 text-xs'
-              onClick={() => void handleSubmit()}
-            >
-              <CheckCircle className='' />
-              Submit story chunk
-            </Button>
+            {submitInProgress ? (
+              <div className='flex w-full justify-center'>
+                <SvgSpinner className='h-10 w-10' />
+              </div>
+            ) : (
+              <Button
+                className='flex w-full items-center gap-2 p-2 text-xs'
+                onClick={() => void handleSubmit()}
+              >
+                <CheckCircle className='' />
+                Submit story chunk
+              </Button>
+            )}
           </div>
         </div>
       ) : (
@@ -235,13 +242,21 @@ function SubmitStory() {
             </div>
           )}
           <ActionsAccordion saveImageCallback={saveImageCallback} />
-          <Button
-            className='flex w-4/5 items-center'
-            onClick={() => void handleSubmit()}
-          >
-            <CheckCircle className='' />
-            Submit story chunk
-          </Button>
+          {submitInProgress ? (
+            <div className='flex w-full justify-center'>
+              <SvgSpinner className='h-10 w-10' />
+            </div>
+          ) : (
+            <div className='w-full px-10'>
+              <Button
+                className='flex w-full items-center gap-2 p-2 text-xs'
+                onClick={() => void handleSubmit()}
+              >
+                <CheckCircle className='' />
+                Submit story chunk
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </>

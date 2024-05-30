@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import ImageEditor, { type Position } from 'react-avatar-editor';
+import { toast } from 'sonner';
 
 import { buildResponseErrorToast } from '@/lib/toasters';
 
@@ -11,7 +12,6 @@ import {
   DialogTitle,
   DialogTrigger
 } from '../ui/dialog';
-import { useToast } from '../ui/use-toast';
 
 type ImageState = {
   position: Position;
@@ -71,15 +71,15 @@ export function ImageEditDialog({
     });
   };
 
-  const { toast } = useToast();
-
   const convertEditedImageToBlob = async () => {
     const dataUrl = imageEditorRef.current
       ?.getImageScaledToCanvas()
       .toDataURL();
     if (!dataUrl) {
-      toast(
-        buildResponseErrorToast('Something went wrong when saving the image.')
+      toast.error(
+        ...buildResponseErrorToast(
+          'Something went wrong when saving the image.'
+        )
       );
     }
     const res = await fetch(dataUrl!);

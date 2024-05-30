@@ -8,7 +8,8 @@ import { useErrorToast } from '../misc/errorToast';
 import { fetchGET } from './core/fetchGET';
 
 export function useFetchMessages(roomUUID: string, other: string) {
-  const path = `/fetchMessages/${roomUUID}?other=${other}`;
+  const receiverUrl = other === 'broadcast' ? '' : `?other=${other}`;
+  const path = `/fetchMessages/${roomUUID}${receiverUrl}`;
 
   const { getAccessTokenSilently } = useAuth0();
 

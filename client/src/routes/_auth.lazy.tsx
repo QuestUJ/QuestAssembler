@@ -8,12 +8,12 @@ import {
 import { Outlet } from '@tanstack/react-router';
 import { Crown, Swords } from 'lucide-react';
 import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 import LogoWithText from '@/components/LogoWithText';
 import { SidebarDrawer } from '@/components/sidebar/SidebarDrawer';
 import { SidebarFixed } from '@/components/sidebar/SidebarFixed';
 import { SvgSpinner } from '@/components/Spinner';
-import { useToast } from '@/components/ui/use-toast';
 import { User } from '@/components/User';
 import { useWindowSize } from '@/lib/misc/windowSize';
 import { useQuasmStore } from '@/lib/stores/quasmStore';
@@ -86,8 +86,6 @@ function AuthLayout() {
   const connectSocket = useIOStore(state => state.connectSocket);
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
-  const { toast } = useToast();
-
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -101,20 +99,17 @@ function AuthLayout() {
     })().catch(err => {
       const msg = err instanceof Error ? err.message : (err as string);
 
-      toast({
-        title: 'Server connection problem',
-        variant: 'destructive',
+      toast.error('Server connection problem', {
         description: msg
       });
     });
-  }, [connectSocket, getAccessTokenSilently, toast, isAuthenticated]);
+  }, [connectSocket, getAccessTokenSilently, isAuthenticated]);
 
   useSocketEvent('roomDeletion', async () => {
     await queryClient.invalidateQueries({
       queryKey: ['roomFetch']
     });
-    toast({
-      title: 'You have been redirected',
+    toast.error('You have been redirected', {
       description: 'Room you were a part of has been deleted!'
     });
     await navigate({

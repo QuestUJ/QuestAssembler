@@ -1,15 +1,12 @@
 import { useEffect } from 'react';
-
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 
 import { buildResponseErrorToast } from '../toasters';
 
 export function useErrorToast(flag: boolean, err?: string) {
-  const { toast } = useToast();
-
   useEffect(() => {
     if (flag) {
-      toast(buildResponseErrorToast(err));
+      toast.error(...buildResponseErrorToast(err));
     }
-  }, [flag, err, toast]);
+  }, [flag, err]);
 }

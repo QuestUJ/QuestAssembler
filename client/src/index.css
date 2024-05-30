@@ -106,4 +106,21 @@
       transform: rotate(1turn);
     }
   }
+
+  .toast {
+    color: hsl(var(--primary)) !important;
+    font-family: 'Inter', 'ui-sans-serif', 'system-ui' !important;
+  }
+
+  .toast[data-type='error'] [data-icon] {
+    color: hsl(var(--destructive)) !important;
+  }
+
+  .toast [data-button] {
+    background: hsl(var(--primary)) !important;
+  }
+
+  .toaster {
+    bottom: 5rem !important;
+  }
 }
