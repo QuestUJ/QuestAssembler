@@ -57,7 +57,13 @@ const formSchema = z.object({
     })
 });
 
-export function RoomSettingsDialog() {
+export function RoomSettingsDialog({
+  roomName,
+  maxPlayers
+}: {
+  roomName: string;
+  maxPlayers: number;
+}) {
   const [open, setOpen] = useState(false);
   const { roomId }: { roomId: string } = useParams({
     strict: false
@@ -69,6 +75,10 @@ export function RoomSettingsDialog() {
     defaultValues: {
       name: '',
       maxPlayers: 0
+    },
+    values: {
+      name: roomName,
+      maxPlayers
     }
   });
 

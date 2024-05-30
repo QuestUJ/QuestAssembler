@@ -55,6 +55,7 @@ export function addGetRoomHandler(
                 id: room.id,
                 roomName: room.roomSettings.getName(),
                 gameMasterID: room.characters.getGameMaster().id,
+                maxPlayers: room.roomSettings.getMaxPlayerCount(),
                 currentPlayer: {
                     id: currentPlayer.id,
                     nick: currentPlayer.getNick(),

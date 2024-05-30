@@ -43,6 +43,7 @@ export interface ApiRoomDetailsPayload {
     id: string;
     roomName: string;
     gameMasterID: string;
+    maxPlayers: number;
     currentPlayer: ApiPlayerPayload;
 }
 

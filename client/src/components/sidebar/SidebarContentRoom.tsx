@@ -63,7 +63,14 @@ export function SidebarContentRoom() {
           </div>
           <div className='flex items-center space-x-2'>
             {<CopyGameCode gameCode={roomId} />}
-            {isGameMaster ? <RoomSettingsDialog /> : <LeaveRoomDialog />}
+            {isGameMaster ? (
+              <RoomSettingsDialog
+                roomName={roomDetails ? roomDetails.roomName : ''}
+                maxPlayers={roomDetails ? roomDetails.maxPlayers : 0}
+              />
+            ) : (
+              <LeaveRoomDialog />
+            )}
           </div>
         </div>
       </div>

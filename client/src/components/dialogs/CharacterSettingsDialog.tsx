@@ -74,6 +74,10 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
     defaultValues: {
       nick: '',
       description: ''
+    },
+    values: {
+      nick: props.nick,
+      description: ''
     }
   });
 
