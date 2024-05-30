@@ -5,6 +5,12 @@ import {
 } from '@radix-ui/react-accordion';
 import { ReactNode, useEffect, useRef } from 'react';
 
+import {
+  displayNickname,
+  NicknameDisplayStyle
+} from '@/lib/misc/displayNickname';
+import { useWindowSize } from '@/lib/misc/windowSize';
+
 import { AccordionTrigger } from '../ui/accordion';
 
 interface MessageDetails {
@@ -16,6 +22,7 @@ interface MessageDetails {
 
 export function Message({ message }: { message: MessageDetails }) {
   const { authorName, characterPictureURL, content, timestamp } = message;
+  const { width } = useWindowSize();
   return (
     <div className='flex min-h-10 gap-2'>
       <img
@@ -24,7 +31,9 @@ export function Message({ message }: { message: MessageDetails }) {
       />
       <div className='flex flex-col gap-1 rounded-md bg-background p-2'>
         <div className='flex flex-nowrap justify-between gap-4'>
-          <h1 className='text-sm font-semibold text-primary'>{authorName}</h1>
+          <h1 className='text-sm font-semibold text-primary'>
+            {displayNickname(authorName, NicknameDisplayStyle.LONG, width)}
+          </h1>
           <h3 className='text-xs text-secondary'>
             {timestamp.toLocaleString()}
           </h3>

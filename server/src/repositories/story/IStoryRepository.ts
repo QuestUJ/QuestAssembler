@@ -15,4 +15,6 @@ export interface IStoryRepository {
      * Returns the requested part of the story - the StoryChunks specified in ChunkRange
      */
     fetchStory(roomID: UUID, range: ChunkRange): Promise<StoryChunk[]>;
+
+    fetchAllStoryChunks(): Promise<StoryChunk[]>;
 }

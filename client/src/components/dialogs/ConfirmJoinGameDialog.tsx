@@ -1,6 +1,8 @@
 import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import shortUUID from 'short-uuid';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -10,10 +12,8 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog';
-import { toast } from 'sonner';
 import { useSocket } from '@/lib/stores/socketIOStore';
 import { buildResponseErrorToast, SocketErrorTxt } from '@/lib/toasters';
-import { useNavigate } from '@tanstack/react-router';
 
 export function ConfirmJoinGameDialog({ roomId }: { roomId: string }) {
   const [open, setOpen] = useState(true);
@@ -37,14 +37,20 @@ export function ConfirmJoinGameDialog({ roomId }: { roomId: string }) {
         });
 
         await navigate({
-            to: '/room/$roomId',
-            params: {
-              roomId
-            }
-          });
+          to: '/room/$roomId',
+          params: {
+            roomId
+          }
+        });
       } else {
         toast.error(...buildResponseErrorToast(res.error?.message));
       }
+    });
+  };
+
+  const cancel = async () => {
+    await navigate({
+      to: '/dashboard'
     });
   };
 
@@ -56,7 +62,7 @@ export function ConfirmJoinGameDialog({ roomId }: { roomId: string }) {
           <DialogDescription>Do you want to join this room?</DialogDescription>
         </DialogHeader>
         <div className='mt-4 flex justify-between'>
-          <Button className='bg-secondary' onClick={() => setOpen(false)}>
+          <Button className='bg-secondary' onClick={() => void cancel()}>
             No
           </Button>
           <Button onClick={() => joinRoom()}>Yes</Button>

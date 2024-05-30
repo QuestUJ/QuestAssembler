@@ -8,8 +8,8 @@
     "scripts": {
         "build": "rimraf dist && tsup",
         "dev": "tsx watch src/index.ts",
-        "lint": "eslint src",
-        "lint:fix": "eslint --fix src",
+        "lint": "eslint src && tsc --noEmit",
+        "lint:fix": "eslint --fix src && tsc --noEmit",
         "format": "prettier -w src",
         "test": "vitest"
     },

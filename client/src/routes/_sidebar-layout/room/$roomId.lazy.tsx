@@ -14,7 +14,7 @@ import { usePlayerLeftEvent } from '@/lib/socket/playerLeftEvent';
 import { usePlayerReadyEvent } from '@/lib/socket/playerReadyEvent';
 import { useSubscribeToRoom } from '@/lib/socket/subscribeToRoom';
 
-const route = getRouteApi('/_auth/room/$roomId');
+const route = getRouteApi('/_sidebar-layout/room/$roomId');
 
 function Avatar(player: SocketPlayerDetails) {
   return (
@@ -37,6 +37,6 @@ function RoomLayout() {
   return <Outlet />;
 }
 
-export const Route = createLazyFileRoute('/_auth/room/$roomId')({
+export const Route = createLazyFileRoute('/_sidebar-layout/room/$roomId')({
   component: RoomLayout
 });

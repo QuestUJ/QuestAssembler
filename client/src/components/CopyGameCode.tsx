@@ -5,15 +5,20 @@ import { Button } from '@/components/ui/button';
 export function CopyGameCode({ gameCode }: { gameCode: string }) {
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(gameCode);
-      toast('Game code copied to your clipboard.');
+      await navigator.clipboard.writeText(
+        `${window.origin}/joinRoom/${gameCode}`
+      );
+      toast('Invitation link copied to clipboard');
     } catch (error) {
-      toast('Failed to copy the game code. Please try again.');
+      toast('Failed to copy the invitation. Please try again.');
     }
   };
 
   return (
-    <Button className='m-0 h-12 w-12 rounded p-0' onClick={handleCopy}>
+    <Button
+      className='m-0 h-12 w-12 rounded p-0'
+      onClick={() => void handleCopy()}
+    >
       <svg
         width='24px'
         height='24px'

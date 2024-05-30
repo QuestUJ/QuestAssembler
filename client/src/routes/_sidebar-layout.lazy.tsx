@@ -1,4 +1,4 @@
-import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
+import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   createLazyFileRoute,
@@ -7,7 +7,6 @@ import {
 } from '@tanstack/react-router';
 import { Outlet } from '@tanstack/react-router';
 import { Crown, Swords } from 'lucide-react';
-import { useEffect } from 'react';
 import { toast } from 'sonner';
 
 import LogoWithText from '@/components/LogoWithText';
@@ -17,7 +16,7 @@ import { SvgSpinner } from '@/components/Spinner';
 import { User } from '@/components/User';
 import { useWindowSize } from '@/lib/misc/windowSize';
 import { useQuasmStore } from '@/lib/stores/quasmStore';
-import { useIOStore, useSocketEvent } from '@/lib/stores/socketIOStore';
+import { useSocketEvent } from '@/lib/stores/socketIOStore';
 import { cn } from '@/lib/utils';
 
 function RoomIcon({ isGameMaster }: { isGameMaster: boolean }) {
@@ -77,33 +76,15 @@ function TopBar() {
   );
 }
 
-function AuthLayout() {
+function SidebarLayout() {
   const { width } = useWindowSize();
 
   const { roomId }: { roomId: string | undefined } = useParams({
     strict: false
   });
-  const connectSocket = useIOStore(state => state.connectSocket);
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    (async () => {
-      const token = await getAccessTokenSilently();
-
-      connectSocket(token);
-    })().catch(err => {
-      const msg = err instanceof Error ? err.message : (err as string);
-
-      toast.error('Server connection problem', {
-        description: msg
-      });
-    });
-  }, [connectSocket, getAccessTokenSilently, isAuthenticated]);
 
   useSocketEvent('roomDeletion', async () => {
     await queryClient.invalidateQueries({
@@ -146,6 +127,6 @@ function AuthLayout() {
   );
 }
 
-export const Route = createLazyFileRoute('/_auth')({
-  component: withAuthenticationRequired(AuthLayout)
+export const Route = createLazyFileRoute('/_sidebar-layout')({
+  component: withAuthenticationRequired(SidebarLayout)
 });

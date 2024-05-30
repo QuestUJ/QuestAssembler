@@ -3,7 +3,6 @@ import { create } from 'zustand';
 type StoryChunkState = {
   story: string;
   oldStory: string | undefined; // used for storing story after using llm
-  currentPhotoURL: string | undefined;
   isGeneratingWithLLM: boolean;
 };
 
@@ -18,7 +17,6 @@ export const useStoryChunkStore = create<StoryChunkState & StoryChunkActions>()(
   set => ({
     story: '',
     oldStory: undefined,
-    currentPhotoURL: undefined,
     isGeneratingWithLLM: false,
     setNewStoryWithLLM: newStory =>
       set(state => ({

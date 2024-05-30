@@ -13,7 +13,7 @@ import { StoryChunkContainer } from '@/components/story-utilities/StoryChunks';
 import { useFetchStory } from '@/lib/api/fetchStory';
 import { useSocketEvent } from '@/lib/stores/socketIOStore';
 
-const route = getRouteApi('/_auth/room/$roomId/');
+const route = getRouteApi('/_sidebar-layout/room/$roomId/');
 
 function Story() {
   const { roomId } = route.useParams();
@@ -60,6 +60,6 @@ function Story() {
   );
 }
 
-export const Route = createLazyFileRoute('/_auth/room/$roomId/')({
+export const Route = createLazyFileRoute('/_sidebar-layout/room/$roomId/')({
   component: Story
 });

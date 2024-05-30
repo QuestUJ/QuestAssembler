@@ -1,11 +1,11 @@
 import { ErrorCode } from '@quasm/common';
 import { useNavigate } from '@tanstack/react-router';
+import { useParams } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
 import { useSocket } from '../stores/socketIOStore';
 import { buildResponseErrorToast } from '../toasters';
-import { useParams } from '@tanstack/react-router';
 
 export function useSubscribeToRoom(roomUUID: string) {
   const socket = useSocket();
@@ -27,11 +27,10 @@ export function useSubscribeToRoom(roomUUID: string) {
               roomId
             }
           });
-        }
-        else{
+        } else {
           toast.error(...buildResponseErrorToast(res.error?.message));
         }
       }
     });
-  }, [socket, roomUUID, navigate]);
+  }, [socket, roomUUID, navigate, roomId]);
 }

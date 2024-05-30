@@ -1,4 +1,5 @@
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
+import { IFileStorage } from '@/domain/tools/file-storage/IFileStorage';
 import {
     QuasmSocket,
     QuasmSocketServer
@@ -20,7 +21,8 @@ export class User {
         socket: QuasmSocket,
         io: QuasmSocketServer,
         dataAccess: DataAccessFacade,
-        authProvider: IAuthProvider
+        authProvider: IAuthProvider,
+        fileStorageProvider: IFileStorage
     ) {
         const handlers = [
             joinRoomHandler,
@@ -30,7 +32,8 @@ export class User {
             changeRoomSettingsHandler,
             submitActionHandler,
             leaveRoomHandler,
-            submitStoryHandler
+            submitStoryHandler,
+            deleteRoomHandler
         ];
 
         handlers.forEach(handler => {
@@ -38,15 +41,9 @@ export class User {
                 io,
                 socket,
                 dataAccess,
-                authProvider
+                authProvider,
+                fileStorageProvider
             });
-        });
-
-        deleteRoomHandler({
-            io,
-            socket,
-            dataAccess,
-            authProvider
         });
     }
 }

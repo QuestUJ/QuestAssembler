@@ -139,7 +139,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             const submit =
                 r.submitContent && r.submitTimestamp
                     ? new PlayerTurnSubmit(r.submitContent, r.submitTimestamp)
-                    : null;
+                    : undefined;
 
             const character = new Character(
                 this.dataAccess!.characterRepository,
@@ -193,7 +193,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             const submit =
                 r.submitContent && r.submitTimestamp
                     ? new PlayerTurnSubmit(r.submitContent, r.submitTimestamp)
-                    : null;
+                    : undefined;
 
             const character = new Character(
                 this.dataAccess!.characterRepository,

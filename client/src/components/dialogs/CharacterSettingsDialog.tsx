@@ -1,7 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  AVATAR_PIXEL_HEIGHT,
+  AVATAR_PIXEL_WIDTH,
   ErrorCode,
   ErrorMap,
+  MAX_AVATAR_FILE_SIZE_IN_BYTES,
   MAX_CHARACTER_DESCRIPTION_LENGTH,
   MAX_CHARACTER_NICK_LENGTH
 } from '@quasm/common';
@@ -22,9 +25,14 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import {
+  displayNickname,
+  NicknameDisplayStyle
+} from '@/lib/misc/displayNickname';
 import { useSocket } from '@/lib/stores/socketIOStore';
 import { buildResponseErrorToast, SocketErrorTxt } from '@/lib/toasters';
 
+import { ImageHandler } from '../ImageHandler';
 import {
   Form,
   FormControl,
@@ -59,6 +67,8 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
     strict: false
   });
 
+  const [selectedImage, setSelectedImage] = useState<Blob>();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -67,15 +77,34 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
     }
   });
 
-  const formHandler: SubmitHandler<z.infer<typeof formSchema>> = data => {
+  const formHandler: SubmitHandler<z.infer<typeof formSchema>> = async data => {
     if (!socket) {
       toast.error(SocketErrorTxt);
       return;
     }
 
+    if (
+      selectedImage !== undefined &&
+      selectedImage.size > MAX_AVATAR_FILE_SIZE_IN_BYTES
+    ) {
+      toast.error(
+        ...buildResponseErrorToast(
+          'The file is too big! Modify it by clicking Modify image button.'
+        )
+      );
+      return;
+    }
+    // prepare image for being sent over the network
+    const convertedSelectedImage = selectedImage
+      ? new Uint8Array(await selectedImage.arrayBuffer())
+      : undefined;
     socket.emit(
       'changeCharacterSettings',
-      { roomID: shortUUID().toUUID(roomId), ...data },
+      {
+        roomID: shortUUID().toUUID(roomId),
+        avatar: convertedSelectedImage,
+        ...data
+      },
       res => {
         if (res.success) {
           toast('Character settings changed successfully');
@@ -89,6 +118,10 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
     setOpen(false);
   };
 
+  const imageHandlerCallback = (imageBlob: Blob) => {
+    setSelectedImage(imageBlob);
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -98,14 +131,16 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
             className='mr-2 aspect-square h-full rounded-full'
             alt='current player character picture'
           />
-          <h1 className='font-decorative text-2xl'>{props.nick}</h1>
+          <h1 className='font-decorative text-2xl'>
+            {displayNickname(props.nick, NicknameDisplayStyle.SHORT)}
+          </h1>
         </div>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
           <DialogTitle>Character settings</DialogTitle>
           <DialogDescription>
-            Customize your character nick and descreption
+            Customize your character nick and description
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -134,6 +169,16 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
                 </FormItem>
               )}
             />
+            <div className='flex h-fit w-full justify-center'>
+              <ImageHandler
+                handlerId='avatar_image'
+                width={AVATAR_PIXEL_WIDTH}
+                height={AVATAR_PIXEL_HEIGHT}
+                className='max-h-56 max-w-36'
+                onImageSave={imageHandlerCallback}
+                onSelectionRemove={() => setSelectedImage(undefined)}
+              />
+            </div>
             <div className='flex justify-between'>
               <Button
                 className='bg-supporting'

@@ -25,5 +25,7 @@ export function useFetchStory(roomUUID: string) {
 
   useErrorToast(query.isError, query.error?.message);
 
+  console.log(query);
+
   return query;
 }

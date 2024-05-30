@@ -71,9 +71,11 @@ export function CreateGameDialog() {
       action: {
         label: 'Copy code',
         onClick: () =>
-          void navigator.clipboard.writeText(shortCode).then(() => {
-            toast('Code copied!');
-          })
+          void navigator.clipboard
+            .writeText(`${window.origin}/joinRoom/${shortCode}`)
+            .then(() => {
+              toast('Invitation copied!');
+            })
       }
     });
     form.reset();

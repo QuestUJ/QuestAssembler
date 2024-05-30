@@ -91,7 +91,7 @@ function PlayerChat() {
 }
 
 export const Route = createLazyFileRoute(
-  '/_auth/room/$roomId/chat/$characterId'
+  '/_sidebar-layout/room/$roomId/chat/$characterId'
 )({
   component: PlayerChat
 });

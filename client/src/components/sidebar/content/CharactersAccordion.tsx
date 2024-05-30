@@ -9,6 +9,10 @@ import {
   AccordionItem,
   AccordionTrigger
 } from '@/components/ui/accordion';
+import {
+  displayNickname,
+  NicknameDisplayStyle
+} from '@/lib/misc/displayNickname';
 
 function Character({
   characterInfo,
@@ -35,7 +39,9 @@ function Character({
       <div className='flex h-14 flex-row items-center gap-2 rounded-xl p-2 hover:cursor-pointer hover:bg-highlight'>
         <img src={profileIMG} className='aspect-square h-full rounded-full' />
         <div className='flex w-full items-center justify-between'>
-          <h1 className='font-decorative text-2xl'>{nick}</h1>
+          <h1 className='font-decorative text-2xl'>
+            {displayNickname(nick, NicknameDisplayStyle.SHORT)}
+          </h1>
           {isGameMaster ? (
             <Crown className='h-8 w-8 flex-shrink-0 text-primary' />
           ) : isReady ? (

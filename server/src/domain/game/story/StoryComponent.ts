@@ -39,6 +39,10 @@ export class StoryComponent implements IQuasmEventEmitter<StoryEventMap> {
         return this.storyRepository.fetchStory(this.roomID, range);
     }
 
+    fetchAllStoryChunks(): Promise<StoryChunk[]> {
+        return this.storyRepository.fetchAllStoryChunks();
+    }
+
     async addStoryChunk(chunk: StoryChunkDetails): Promise<StoryChunk> {
         if (chunk.content.length > MAX_STORY_CHUNK_LENGTH) {
             throw new QuasmError(
