@@ -1,13 +1,7 @@
 import { withAuthenticationRequired } from '@auth0/auth0-react';
-import { useQueryClient } from '@tanstack/react-query';
-import {
-  createLazyFileRoute,
-  useNavigate,
-  useParams
-} from '@tanstack/react-router';
+import { createLazyFileRoute, useParams } from '@tanstack/react-router';
 import { Outlet } from '@tanstack/react-router';
 import { Crown, Swords } from 'lucide-react';
-import { toast } from 'sonner';
 
 import LogoWithText from '@/components/LogoWithText';
 import { SidebarDrawer } from '@/components/sidebar/SidebarDrawer';
@@ -16,7 +10,6 @@ import { SvgSpinner } from '@/components/Spinner';
 import { User } from '@/components/User';
 import { useWindowSize } from '@/lib/misc/windowSize';
 import { useQuasmStore } from '@/lib/stores/quasmStore';
-import { useSocketEvent } from '@/lib/stores/socketIOStore';
 import { cn } from '@/lib/utils';
 
 function RoomIcon({ isGameMaster }: { isGameMaster: boolean }) {
@@ -83,22 +76,6 @@ function SidebarLayout() {
     strict: false
   });
 
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
-
-  useSocketEvent('roomDeletion', async () => {
-    await queryClient.invalidateQueries({
-      queryKey: ['roomFetch']
-    });
-    toast.error('You have been redirected', {
-      description: 'Room you were a part of has been deleted!'
-    });
-    await navigate({
-      to: '/dashboard'
-    });
-    return;
-  }); // had to move the handler here, because if handler couldn't fire when sidebar was hidden in mobile view (SidebarComponentRoom wasn't mounted)
-  // TODO: probably a good idea to move rest of the handlers here, or at least write the new ones here
   return (
     <>
       {width >= 1024 ? (

@@ -12,6 +12,7 @@ import { useNewPlayerEvent } from '@/lib/socket/newPlayerEvent';
 import { useNewTurnEvent } from '@/lib/socket/newTurnEvent';
 import { usePlayerLeftEvent } from '@/lib/socket/playerLeftEvent';
 import { usePlayerReadyEvent } from '@/lib/socket/playerReadyEvent';
+import { useRoomDeletionEvent } from '@/lib/socket/roomDeletion';
 import { useSubscribeToRoom } from '@/lib/socket/subscribeToRoom';
 
 const route = getRouteApi('/_sidebar-layout/room/$roomId');
@@ -33,6 +34,7 @@ function RoomLayout() {
   useChangeRoomSettingsEvent(roomUUID);
   usePlayerReadyEvent(roomUUID);
   useNewTurnEvent(roomUUID);
+  useRoomDeletionEvent();
 
   return <Outlet />;
 }
