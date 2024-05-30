@@ -48,7 +48,7 @@ export function deleteRoomHandler({
             }
 
             const storyChunkImagesURLs = (
-                await room.story.fetchStory({ count: 9999 })
+                await room.story.fetchAllStoryChunks()
             )
                 .map(storyChunk => storyChunk.imageURL)
                 .filter(

@@ -51,4 +51,21 @@ export class StoryRepositoryPostgres implements IStoryRepository {
                 )
         );
     }
+
+    async fetchAllStoryChunks() {
+        const storyChunkData = await this.db
+            .selectFrom('StoryChunks')
+            .selectAll()
+            .execute();
+
+        return storyChunkData.map(
+            ch =>
+                new StoryChunk(
+                    ch.chunkID,
+                    ch.title,
+                    ch.content,
+                    ch.imageURL ? ch.imageURL : ''
+                )
+        );
+    }
 }
