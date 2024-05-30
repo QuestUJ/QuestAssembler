@@ -1,3 +1,7 @@
+import {
+  MAX_STORY_IMAGE_FILE_SIZE_IN_BYTES,
+  STORY_IMAGE_PIXEL_WIDTH
+} from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   createLazyFileRoute,
@@ -9,10 +13,10 @@ import { useEffect, useState } from 'react';
 import shortUUID from 'short-uuid';
 import { toast } from 'sonner';
 
+import { ImageHandler } from '@/components/ImageHandler';
 import { SvgSpinner } from '@/components/Spinner';
 import { ActionsAccordion } from '@/components/submit-story-utilities/ActionsAccordion';
 import { CharacterSubmitTab } from '@/components/submit-story-utilities/CharactersTurnSubmitTab';
-import { ImageHandler } from '@/components/submit-story-utilities/ImageHandler';
 import { LLMAssistanceButton } from '@/components/submit-story-utilities/LLMAssistanceButton';
 import { StoryTextArea } from '@/components/submit-story-utilities/StoryTextArea';
 import { TurnSubmitCard } from '@/components/submit-story-utilities/TurnSubmitCard';
@@ -34,6 +38,8 @@ function SubmitStory() {
   const queryClient = useQueryClient();
 
   const { data } = useFetchTurnSubmits(roomUUID);
+
+  const [selectedImage, setSelectedImage] = useState<Blob>();
 
   useSocketEvent('newPlayer', ({ id, nick, profileIMG }) => {
     if (!data) {
@@ -89,22 +95,39 @@ function SubmitStory() {
 
   const [submitInProgress, setSubmitInProgress] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (story.length <= 0) return;
     if (!socket) {
       toast.error(SocketErrorTxt);
       return;
     }
 
+    if (
+      selectedImage !== undefined &&
+      selectedImage.size > MAX_STORY_IMAGE_FILE_SIZE_IN_BYTES
+    ) {
+      toast.error(
+        ...buildResponseErrorToast(
+          'Image is too big! Modify the image with the Modify Image button.'
+        )
+      );
+      return;
+    }
+    // prepare image for being sent over the network
+    const convertedSelectedImage = selectedImage
+      ? new Uint8Array(await selectedImage.arrayBuffer())
+      : undefined;
     socket.emit(
       'submitStory',
       {
         roomID: roomUUID,
-        story
+        story,
+        image: convertedSelectedImage
       },
       async res => {
         if (res.success) {
           setStory('');
+          setSelectedImage(undefined);
           toast.success('Story submitted');
 
           await navigate({
@@ -154,6 +177,14 @@ function SubmitStory() {
     );
   }
 
+  const saveImageCallback = (imageBlob: Blob) => {
+    setSelectedImage(imageBlob);
+  };
+
+  const removeImageSelectionCallback = () => {
+    setSelectedImage(undefined);
+  };
+
   return (
     <>
       {width >= 1024 ? (
@@ -162,7 +193,13 @@ function SubmitStory() {
             <StoryTextArea />
           </div>
           <div className='col-span-2 col-start-1 row-span-3 row-start-4'>
-            <ImageHandler />
+            <ImageHandler
+              handlerId='story_image'
+              onImageSave={saveImageCallback}
+              onSelectionRemove={removeImageSelectionCallback}
+              width={STORY_IMAGE_PIXEL_WIDTH}
+              height={STORY_IMAGE_PIXEL_WIDTH}
+            />
           </div>
           <div className='col-span-2 col-start-4 row-span-6 row-start-1 h-full overflow-y-auto rounded-md border-2 p-2'>
             <h1 className='font-decorative text-2xl text-primary'>
@@ -193,7 +230,7 @@ function SubmitStory() {
             ) : (
               <Button
                 className='flex w-full items-center gap-2 p-2 text-xs'
-                onClick={handleSubmit}
+                onClick={() => void handleSubmit()}
               >
                 <CheckCircle className='' />
                 Submit story chunk
@@ -210,7 +247,10 @@ function SubmitStory() {
               <SvgSpinner className='h-20 w-20' />
             </div>
           )}
-          <ActionsAccordion />
+          <ActionsAccordion
+            saveImageCallback={saveImageCallback}
+            removeImageSelectionCallback={removeImageSelectionCallback}
+          />
           {submitInProgress ? (
             <div className='flex w-full justify-center'>
               <SvgSpinner className='h-10 w-10' />
@@ -219,7 +259,7 @@ function SubmitStory() {
             <div className='w-full px-10'>
               <Button
                 className='flex w-full items-center gap-2 p-2 text-xs'
-                onClick={handleSubmit}
+                onClick={() => void handleSubmit()}
               >
                 <CheckCircle className='' />
                 Submit story chunk

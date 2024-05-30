@@ -31,7 +31,7 @@ export function addGetRoomPlayersHandler(
             payload: players.map(p => ({
                 id: p.id,
                 nick: p.getNick(),
-                profileIMG: p.profileIMG,
+                profileIMG: p.getProfileImageURL(),
                 isReady: !!p.getTurnSubmit()
             }))
         });

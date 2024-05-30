@@ -21,7 +21,10 @@ const configMap = {
     AUTH0_DOMAIN: Config.loadString('AUTH0_DOMAIN'),
     AUTH0_AUDIENCE: Config.loadString('AUTH0_AUDIENCE'),
 
-    HUGGINGFACE_TOKEN: Config.loadString('HUGGINGFACE_TOKEN')
+    HUGGINGFACE_TOKEN: Config.loadString('HUGGINGFACE_TOKEN'),
+
+    SUPABASE_SERVICE_KEY: Config.loadString('SUPABASE_SERVICE_KEY'),
+    SUPABASE_CONNECTION_URL: Config.loadString('SUPABASE_CONNECTION_URL')
 };
 
 /**

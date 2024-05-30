@@ -39,7 +39,7 @@ export function submitActionHandler({ socket, dataAccess, io }: HandlerConfig) {
                 masterSocket.emit('turnSubmit', {
                     characterID: character.id,
                     nick: character.getNick(),
-                    profileIMG: character.profileIMG,
+                    profileIMG: character.getProfileImageURL(),
                     content: savedContent,
                     timestamp: timestamp.toISOString()
                 });

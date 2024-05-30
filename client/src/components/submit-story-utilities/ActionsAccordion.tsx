@@ -1,14 +1,22 @@
+import { STORY_IMAGE_PIXEL_WIDTH } from '@quasm/common';
+
+import { ImageHandler } from '../ImageHandler';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger
 } from '../ui/accordion';
-import { ImageHandler } from './ImageHandler';
 import { LLMAssistanceButton } from './LLMAssistanceButton';
 import { StoryTextArea } from './StoryTextArea';
 
-export function ActionsAccordion() {
+export function ActionsAccordion({
+  saveImageCallback,
+  removeImageSelectionCallback
+}: {
+  saveImageCallback: (imageBlob: Blob, imageURL: string) => void;
+  removeImageSelectionCallback: () => void;
+}) {
   return (
     <Accordion type='multiple' className='w-4/5'>
       <AccordionItem value='story'>
@@ -24,8 +32,16 @@ export function ActionsAccordion() {
         <AccordionTrigger className='flex w-full flex-row items-center text-2xl text-primary'>
           Image
         </AccordionTrigger>
-        <AccordionContent className=''>
-          <ImageHandler />
+        <AccordionContent className='flex h-80 w-80'>
+          <ImageHandler
+            handlerId='accordion_story_image'
+            onImageSave={saveImageCallback}
+            onSelectionRemove={() => {
+              removeImageSelectionCallback();
+            }}
+            width={STORY_IMAGE_PIXEL_WIDTH}
+            height={STORY_IMAGE_PIXEL_WIDTH}
+          />
         </AccordionContent>
       </AccordionItem>
     </Accordion>

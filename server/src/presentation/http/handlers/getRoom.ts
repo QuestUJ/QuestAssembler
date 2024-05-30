@@ -58,7 +58,7 @@ export function addGetRoomHandler(
                 currentPlayer: {
                     id: currentPlayer.id,
                     nick: currentPlayer.getNick(),
-                    profileIMG: currentPlayer.profileIMG,
+                    profileIMG: currentPlayer.getProfileImageURL(),
                     isReady: !!currentPlayer.getTurnSubmit()
                 }
             }

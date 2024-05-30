@@ -8,5 +8,6 @@ export enum QuasmComponent {
     ROOMSETTINGS = 'Room Settings',
     CHARACTER = 'Character',
     CHAT = 'Chat',
-    STORY = 'STORY'
+    STORY = 'STORY',
+    STORAGE = 'STORAGE'
 }

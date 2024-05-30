@@ -70,8 +70,8 @@ export function addFetchMessagesHandler(
                         : myCharacter.getNick(),
                 characterPictureURL:
                     m.from === other
-                        ? otherCharacter.profileIMG
-                        : myCharacter.profileIMG
+                        ? otherCharacter.getProfileImageURL()
+                        : myCharacter.getProfileImageURL()
             }))
         });
 

@@ -1,4 +1,6 @@
-import { Tabs, TabsList } from '../ui/tabs';
+import { Tabs, TabsContent, TabsList } from '../ui/tabs';
+import { PlayersTabNavigation } from './PlayersTabNavigation';
+import { TurnSubmitCard } from './TurnSubmitCard';
 import { CharacterDetails } from './types';
 
 export function CharacterSubmitTab({
@@ -10,7 +12,7 @@ export function CharacterSubmitTab({
     <Tabs defaultValue={roomCharacters[0].characterID} className='w-4/5'>
       <TabsList className='w-full'>
         {roomCharacters.map(character => (
-          <TabNavigation characterInfo={character} />
+          <PlayersTabNavigation characterInfo={character} />
         ))}
       </TabsList>
       {roomCharacters.map(character => (

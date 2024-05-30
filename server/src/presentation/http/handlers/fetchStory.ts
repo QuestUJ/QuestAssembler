@@ -36,7 +36,8 @@ export function addFetchStoryHandler(
             success: true,
             payload: story.map(s => ({
                 id: s.id,
-                content: s.content
+                content: s.content,
+                imageURL: s.imageURL
             }))
         });
     });

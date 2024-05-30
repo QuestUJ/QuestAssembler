@@ -41,7 +41,7 @@ export function sendMessageHandler({ socket, dataAccess }: HandlerConfig) {
                 authorName: myCharacter.getNick(),
                 content: content,
                 timestamp: msg.timestamp.toISOString(),
-                characterPictureURL: myCharacter.profileIMG
+                characterPictureURL: myCharacter.getProfileImageURL()
             };
 
             respond({

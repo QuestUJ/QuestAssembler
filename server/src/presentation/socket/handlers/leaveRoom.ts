@@ -11,7 +11,8 @@ export function leaveRoomHandler({
     dataAccess,
     authProvider,
     socket,
-    io
+    io,
+    fileStorageProvider
 }: HandlerConfig) {
     socket.on('leaveRoom', (roomID, respond) => {
         withErrorHandling(respond, async () => {
@@ -45,10 +46,15 @@ export function leaveRoomHandler({
             socket.to(room.id).emit('playerLeft', {
                 id: character.id,
                 nick: character.getNick(),
-                profileIMG: character.profileIMG,
+                profileIMG: character.getProfileImageURL(),
                 isReady: !!character.getTurnSubmit()
             });
 
+            if (character.getProfileImageURL()) {
+                await fileStorageProvider.deleteImageAtPublicURL(
+                    character.getProfileImageURL()!
+                );
+            }
             await room.characters.deleteCharacter(character.id);
 
             respond({
