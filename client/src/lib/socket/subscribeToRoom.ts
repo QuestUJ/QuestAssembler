@@ -20,16 +20,16 @@ export function useSubscribeToRoom(roomUUID: string) {
 
     socket.emit('subscribeToRoom', roomUUID, async res => {
       if (!res.success) {
-        toast.error(...buildResponseErrorToast(res.error?.message));
-
         if (res.error?.code === ErrorCode.RoomNotFound) {
-          console.log('the case');
           await navigate({
             to: '/joinRoom/$roomId',
             params: {
               roomId
             }
           });
+        }
+        else{
+          toast.error(...buildResponseErrorToast(res.error?.message));
         }
       }
     });

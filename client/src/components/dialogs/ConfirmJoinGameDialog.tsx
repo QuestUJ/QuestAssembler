@@ -13,10 +13,12 @@ import {
 import { toast } from 'sonner';
 import { useSocket } from '@/lib/stores/socketIOStore';
 import { buildResponseErrorToast, SocketErrorTxt } from '@/lib/toasters';
+import { useNavigate } from '@tanstack/react-router';
 
 export function ConfirmJoinGameDialog({ roomId }: { roomId: string }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const socket = useSocket();
 
@@ -33,6 +35,13 @@ export function ConfirmJoinGameDialog({ roomId }: { roomId: string }) {
         await queryClient.invalidateQueries({
           queryKey: ['fetchRooms']
         });
+
+        await navigate({
+            to: '/room/$roomId',
+            params: {
+              roomId
+            }
+          });
       } else {
         toast.error(...buildResponseErrorToast(res.error?.message));
       }
