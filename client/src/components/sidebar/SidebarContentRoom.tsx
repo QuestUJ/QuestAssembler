@@ -41,11 +41,11 @@ export function SidebarContentRoom() {
           <LogoWithText />
         </div>
         <Accordion type='multiple'>
+          <ToolsAccordion />
           <CharactersAccordion
             gameMaster={roomDetails?.gameMasterID}
             characters={players}
           />
-          <ToolsAccordion />
         </Accordion>
       </div>
       <div className='w-full'>

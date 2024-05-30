@@ -67,7 +67,7 @@ export function CreateGameDialog() {
   const { mutate: createGame } = useCreateGame(code => {
     const shortCode = shortUUID().fromUUID(code);
     toast.success('Room created!', {
-      description: `You code: ${shortCode}`,
+      description: `Your code: ${shortCode}`,
       action: {
         label: 'Copy code',
         onClick: () =>
