@@ -19,7 +19,13 @@ export class ChatRepositoryPostgres implements IChatRepository {
     ): Promise<ChatMessage> {
         const result = await this.db
             .insertInto('ChatMessages')
-            .values(chatMessageDetails)
+            .values({
+                ...chatMessageDetails,
+                to:
+                    chatMessageDetails.to === 'broadcast'
+                        ? null
+                        : chatMessageDetails.to
+            })
             .returning(['messageID', 'timestamp'])
             .executeTakeFirstOrThrow();
 
@@ -40,7 +46,7 @@ export class ChatRepositoryPostgres implements IChatRepository {
         if (chatParticipants === 'broadcast') {
             const { messageCount } = await this.db
                 .selectFrom('ChatMessages')
-                .where('ChatMessages.to', '=', 'broadcast')
+                .where('ChatMessages.to', 'is', null)
                 .select(({ fn }) =>
                     fn
                         .count<number>('ChatMessages.messageID')
@@ -77,7 +83,7 @@ export class ChatRepositoryPostgres implements IChatRepository {
     ): Promise<ChatMessage[]> {
         let query = this.db.selectFrom('ChatMessages');
         if (chatParticipants === 'broadcast') {
-            query = query.where('ChatMessages.to', '=', 'broadcast');
+            query = query.where('ChatMessages.to', 'is', null);
         } else {
             const [x, y] = chatParticipants;
 
@@ -106,7 +112,7 @@ export class ChatRepositoryPostgres implements IChatRepository {
                     new ChatMessage(
                         m.messageID,
                         m.from as UUID,
-                        m.to as UUID,
+                        m.to === null ? 'broadcast' : (m.to as UUID),
                         m.content,
                         m.timestamp
                     )

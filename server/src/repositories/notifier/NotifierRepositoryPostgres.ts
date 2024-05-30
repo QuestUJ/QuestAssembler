@@ -69,6 +69,7 @@ export class NotifierRepositoryPostgres implements INotifierRepository {
                 .values({
                     receiver: characterID,
                     sender: senderID,
+                    senderCharacter: senderID === 'broadcast' ? null : senderID,
                     lastRead: messageID
                 })
                 .executeTakeFirstOrThrow();
@@ -100,7 +101,11 @@ export class NotifierRepositoryPostgres implements INotifierRepository {
             .leftJoin('ChatReadTracking', join =>
                 join
                     .on('ChatReadTracking.receiver', '=', characterID)
-                    .onRef('Characters.id', '=', 'ChatReadTracking.sender')
+                    .onRef(
+                        'Characters.id',
+                        '=',
+                        'ChatReadTracking.senderCharacter'
+                    )
             )
             .leftJoin('ChatMessages', join =>
                 join
@@ -134,7 +139,7 @@ export class NotifierRepositoryPostgres implements INotifierRepository {
             )
             .leftJoin('ChatMessages', join =>
                 join
-                    .on('ChatMessages.to', '=', 'broadcast')
+                    .on('ChatMessages.to', 'is', null)
                     .onRef('ChatMessages.from', '=', 'Characters.id')
                     .on(eb =>
                         eb.or([

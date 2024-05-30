@@ -22,6 +22,8 @@ export function sendMessageHandler({ socket, dataAccess }: HandlerConfig) {
                 socket.data.userID
             );
 
+            console.log(receiver === 'broadcast');
+
             const msg = await room.chats
                 .getChat(
                     receiver === 'broadcast'

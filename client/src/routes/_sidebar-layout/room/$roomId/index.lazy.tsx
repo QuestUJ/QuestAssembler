@@ -12,6 +12,7 @@ import { SvgSpinner } from '@/components/Spinner';
 import { StoryChunkContainer } from '@/components/story-utilities/StoryChunks';
 import { useFetchMessages } from '@/lib/api/fetchMessages';
 import { useFetchStory } from '@/lib/api/fetchStory';
+import { useSendMessage } from '@/lib/socket/sendMessage';
 import { useSocketEvent } from '@/lib/stores/socketIOStore';
 
 const route = getRouteApi('/_sidebar-layout/room/$roomId/');
@@ -38,6 +39,10 @@ function Story() {
   });
 
   const { data: messages } = useFetchMessages(roomUUID, 'broadcast');
+  const sendMessage = useSendMessage({
+    roomUUID,
+    receiver: 'broadcast'
+  });
 
   if (!story) {
     return (
@@ -54,17 +59,19 @@ function Story() {
           story={story.map(s => ({ type: 'storychunk', ...s }))}
         />
         {messages ? (
-          <BroadcastChat messages={messages} />
+          <BroadcastChat
+            messages={messages.map(m => ({
+              ...m,
+              timestamp: new Date(m.timestamp)
+            }))}
+          />
         ) : (
           <div className='flex h-full w-full justify-center'>
             <SvgSpinner className='h-20 w-20' />
           </div>
         )}
       </OutletWrapper>
-      <InputBar
-        handleSend={() => console.log('send handled')}
-        sendButtonText='Send'
-      />
+      <InputBar handleSend={sendMessage} sendButtonText='Send' />
     </div>
   );
 }

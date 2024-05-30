@@ -46,7 +46,7 @@ function PlayerChat() {
 
     const msg: ApiMessagePayload = {
       ...data,
-      timestamp: new Date(data.timestamp)
+      timestamp: data.timestamp
     };
 
     queryClient.setQueryData<ApiMessagePayload[]>(

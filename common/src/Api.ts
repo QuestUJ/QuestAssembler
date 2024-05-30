@@ -80,7 +80,7 @@ export interface ApiMessagePayload {
     id: number;
     authorName: string;
     characterPictureURL: string | undefined;
-    timestamp: Date;
+    timestamp: string;
     content: string;
 }
 

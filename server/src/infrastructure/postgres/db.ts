@@ -50,7 +50,7 @@ export interface CharactersTable {
 export interface ChatMessagesTable {
     messageID: Generated<number>;
     from: string;
-    to: string;
+    to: string | null;
     content: string;
     timestamp: ColumnType<Date, string | undefined, never>;
 }
@@ -58,6 +58,7 @@ export interface ChatMessagesTable {
 export interface ChatReadTrackingTable {
     receiver: string;
     sender: string;
+    senderCharacter: string | null;
     lastRead: number | null;
 }
 
