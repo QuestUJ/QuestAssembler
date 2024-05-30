@@ -48,15 +48,12 @@ export function ImageHandler({
   return (
     <div
       className={twMerge(
-        `flex h-80 h-full w-80 w-full items-center justify-center rounded-md bg-background ${className}`
+        `flex h-80 w-80 items-center justify-center rounded-md bg-background ${className}`
       )}
     >
       {selectedImage ? (
-        <div className='h-full w-full'>
-          <img
-            className='mb-1 aspect-square h-full w-full'
-            src={selectedImageURL}
-          />
+        <div className='flex h-full w-full flex-col'>
+          <img className='mb-1 aspect-square' src={selectedImageURL} />
           <ImageEditDialog
             image={selectedImage}
             handleSave={handleSave}
@@ -64,7 +61,7 @@ export function ImageHandler({
             height={height}
           />
           <Button
-            className='my-1 w-full bg-white text-sm'
+            className='my-1 w-full bg-white text-xs'
             onClick={() => {
               setSelectedImage(undefined);
               setSelectedImageURL(undefined);
@@ -75,11 +72,17 @@ export function ImageHandler({
         </div>
       ) : (
         <>
+          {/** unfortunately cannot style the input field itself so had to go with this hacky solution
+           * TODO: Make that look better
+           */}
+          <label htmlFor='image_picker' className='hover:cursor-pointer'>
+            Click here to select an image
+          </label>
           <input
             id='image_picker'
             type='file'
             accept='image/png, image/gif, image/jpeg'
-            className=''
+            className='hidden'
             ref={filePickerRef}
             onChange={e => imageInputChangeHandler(e.target.files)}
           />

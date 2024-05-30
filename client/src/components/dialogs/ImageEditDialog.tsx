@@ -90,7 +90,6 @@ export function ImageEditDialog({
     const imageBlob = await convertEditedImageToBlob();
     handleSave(imageBlob);
     setOpen(false);
-    // no-misused-promises fix
   };
 
   return (
@@ -113,6 +112,7 @@ export function ImageEditDialog({
           disableCanvasRotation={true}
           rotate={imageState.rotate}
         />
+        {/** TODO: Make that look better */}
         <label>
           Scale:{' '}
           <input

@@ -1,3 +1,5 @@
+import { STORY_IMAGE_PIXEL_WIDTH } from '@quasm/common';
+
 import { ImageHandler } from '../ImageHandler';
 import {
   Accordion,
@@ -29,7 +31,11 @@ export function ActionsAccordion({
           Image
         </AccordionTrigger>
         <AccordionContent className='flex h-80 w-80'>
-          <ImageHandler callback={saveImageCallback} width={256} height={256} />
+          <ImageHandler
+            callback={saveImageCallback}
+            width={STORY_IMAGE_PIXEL_WIDTH}
+            height={STORY_IMAGE_PIXEL_WIDTH}
+          />
         </AccordionContent>
       </AccordionItem>
     </Accordion>

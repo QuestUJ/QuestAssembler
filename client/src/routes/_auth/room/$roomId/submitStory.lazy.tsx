@@ -1,4 +1,7 @@
-import { MAX_STORY_IMAGE_FILE_SIZE_IN_BYTES } from '@quasm/common';
+import {
+  MAX_STORY_IMAGE_FILE_SIZE_IN_BYTES,
+  STORY_IMAGE_PIXEL_WIDTH
+} from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   createLazyFileRoute,
@@ -191,8 +194,8 @@ function SubmitStory() {
           <div className='col-span-2 col-start-1 row-span-3 row-start-4'>
             <ImageHandler
               callback={saveImageCallback}
-              width={256}
-              height={256}
+              width={STORY_IMAGE_PIXEL_WIDTH}
+              height={STORY_IMAGE_PIXEL_WIDTH}
             />
           </div>
           <div className='col-span-2 col-start-4 row-span-6 row-start-1 h-full overflow-y-auto rounded-md border-2 p-2'>

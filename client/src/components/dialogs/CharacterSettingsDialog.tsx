@@ -1,5 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  AVATAR_PIXEL_HEIGHT,
+  AVATAR_PIXEL_WIDTH,
   ErrorCode,
   ErrorMap,
   MAX_AVATAR_FILE_SIZE_IN_BYTES,
@@ -61,10 +63,6 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
     strict: false
   });
 
-  //const selectedImage = useQuasmStore(state => state.currentImageBlob);
-  //const setSelectedImageBlob = useQuasmStore(
-  //  state => state.setCurrentImageBlob
-  //);
   const [selectedImage, setSelectedImageBlob] = useState<Blob>();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -85,8 +83,8 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
       selectedImage !== undefined &&
       selectedImage.size > MAX_AVATAR_FILE_SIZE_IN_BYTES
     ) {
-      toast(
-        buildResponseErrorToast(
+      toast.error(
+        ...buildResponseErrorToast(
           'The file is too big! Modify it by clicking Modify image button.'
         )
       );
@@ -165,11 +163,11 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
                 </FormItem>
               )}
             />
-            <div className='my-12 flex w-full justify-center'>
+            <div className='flex h-fit w-full justify-center'>
               <ImageHandler
-                width={64}
-                height={64}
-                className='max-h-44 max-w-44'
+                width={AVATAR_PIXEL_WIDTH}
+                height={AVATAR_PIXEL_HEIGHT}
+                className='max-h-56 max-w-36'
                 callback={imageHandlerCallback}
               />
             </div>

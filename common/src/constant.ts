@@ -8,3 +8,7 @@ export const DEFAULT_FETCHED_STORYCHUNKS = 20;
 export const MAX_RANGE = 4;
 export const MAX_AVATAR_FILE_SIZE_IN_BYTES = 25000;
 export const MAX_STORY_IMAGE_FILE_SIZE_IN_BYTES = 300000;
+export const AVATAR_PIXEL_WIDTH = 64;
+export const AVATAR_PIXEL_HEIGHT = 64;
+export const STORY_IMAGE_PIXEL_WIDTH = 64;
+export const STORY_IMAGE_PIXEL_HEIGHT = 64;
