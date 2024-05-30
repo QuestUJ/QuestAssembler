@@ -1,6 +1,4 @@
-import 'react-image-crop/dist/ReactCrop.css';
-
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { ImageEditDialog } from './dialogs/ImageEditDialog';
@@ -26,7 +24,6 @@ export function ImageHandler({
 }: ImageHandlerProps) {
   const [selectedImage, setSelectedImage] = useState<File>();
   const [selectedImageURL, setSelectedImageURL] = useState<string>();
-  const filePickerRef = useRef<HTMLInputElement>(null); // unfortunately value for input type="file" component can't be set programatically, so have to use ref
 
   const imageInputChangeHandler = (files: FileList | null) => {
     if (!files) {
@@ -88,7 +85,6 @@ export function ImageHandler({
             type='file'
             accept='image/png, image/gif, image/jpeg'
             className='hidden'
-            ref={filePickerRef}
             onChange={e => imageInputChangeHandler(e.target.files)}
           />
         </>

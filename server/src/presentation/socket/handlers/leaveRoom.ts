@@ -46,13 +46,13 @@ export function leaveRoomHandler({
             socket.to(room.id).emit('playerLeft', {
                 id: character.id,
                 nick: character.getNick(),
-                profileIMG: character.profileIMG,
+                profileIMG: character.getProfileImageURL(),
                 isReady: !!character.getTurnSubmit()
             });
 
-            if (character.profileIMG) {
+            if (character.getProfileImageURL()) {
                 await fileStorageProvider.deleteImageAtPublicURL(
-                    character.profileIMG
+                    character.getProfileImageURL()!
                 );
             }
             await room.characters.deleteCharacter(character.id);

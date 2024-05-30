@@ -27,7 +27,7 @@ export class Character {
         readonly userID: string,
         private nick: string,
         readonly isGameMaster: boolean,
-        public profileIMG?: string,
+        private profileIMG?: string,
         private description?: string,
         turnSubmit?: PlayerTurnSubmit
     ) {

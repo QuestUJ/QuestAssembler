@@ -15,7 +15,7 @@ describe('StoryChunk construction', () => {
         expect(storyChunk.id).toEqual(id);
         expect(storyChunk.title).toEqual(title);
         expect(storyChunk.content).toEqual(content);
-        expect(storyChunk.imageUrl).toEqual(imageUrl);
+        expect(storyChunk.imageURL).toEqual(imageUrl);
         expect(storyChunk.timestamp).toEqual(timestamp);
     });
 });
