@@ -63,7 +63,7 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
     strict: false
   });
 
-  const [selectedImage, setSelectedImageBlob] = useState<Blob>();
+  const [selectedImage, setSelectedImage] = useState<Blob>();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -115,7 +115,7 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
   };
 
   const imageHandlerCallback = (imageBlob: Blob) => {
-    setSelectedImageBlob(imageBlob);
+    setSelectedImage(imageBlob);
   };
 
   return (
@@ -165,10 +165,12 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
             />
             <div className='flex h-fit w-full justify-center'>
               <ImageHandler
+                handlerId='avatar_image'
                 width={AVATAR_PIXEL_WIDTH}
                 height={AVATAR_PIXEL_HEIGHT}
                 className='max-h-56 max-w-36'
                 callback={imageHandlerCallback}
+                removeSelectionCallback={() => setSelectedImage(undefined)}
               />
             </div>
             <div className='flex justify-between'>

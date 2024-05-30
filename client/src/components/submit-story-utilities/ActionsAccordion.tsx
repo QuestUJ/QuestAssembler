@@ -11,9 +11,11 @@ import { LLMAssistanceButton } from './LLMAssistanceButton';
 import { StoryTextArea } from './StoryTextArea';
 
 export function ActionsAccordion({
-  saveImageCallback
+  saveImageCallback,
+  removeImageSelectionCallback
 }: {
   saveImageCallback: (imageBlob: Blob, imageURL: string) => void;
+  removeImageSelectionCallback: () => void;
 }) {
   return (
     <Accordion type='multiple' className='w-4/5'>
@@ -32,7 +34,11 @@ export function ActionsAccordion({
         </AccordionTrigger>
         <AccordionContent className='flex h-80 w-80'>
           <ImageHandler
+            handlerId='accordion_story_image'
             callback={saveImageCallback}
+            removeSelectionCallback={() => {
+              removeImageSelectionCallback();
+            }}
             width={STORY_IMAGE_PIXEL_WIDTH}
             height={STORY_IMAGE_PIXEL_WIDTH}
           />

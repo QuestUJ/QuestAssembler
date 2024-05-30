@@ -39,7 +39,7 @@ function SubmitStory() {
 
   const { data } = useFetchTurnSubmits(roomUUID);
 
-  const currentImageBlob = useQuasmStore(state => state.currentImageBlob);
+  const [selectedImage, setSelectedImage] = useState<Blob>();
 
   useSocketEvent('newPlayer', ({ id, nick, profileIMG }) => {
     if (!data) {
@@ -103,8 +103,8 @@ function SubmitStory() {
     }
 
     if (
-      currentImageBlob !== undefined &&
-      currentImageBlob.size > MAX_STORY_IMAGE_FILE_SIZE_IN_BYTES
+      selectedImage !== undefined &&
+      selectedImage.size > MAX_STORY_IMAGE_FILE_SIZE_IN_BYTES
     ) {
       toast.error(
         ...buildResponseErrorToast(
@@ -114,8 +114,8 @@ function SubmitStory() {
       return;
     }
     // prepare image for being sent over the network
-    const convertedSelectedImage = currentImageBlob
-      ? new Uint8Array(await currentImageBlob.arrayBuffer())
+    const convertedSelectedImage = selectedImage
+      ? new Uint8Array(await selectedImage.arrayBuffer())
       : undefined;
     socket.emit(
       'submitStory',
@@ -127,6 +127,7 @@ function SubmitStory() {
       async res => {
         if (res.success) {
           setStory('');
+          setSelectedImage(undefined);
           toast.success('Story submitted');
 
           await navigate({
@@ -168,9 +169,6 @@ function SubmitStory() {
     }
   }, [isGameMaster, navigate]);
 
-  const setCurrentImageUrl = useQuasmStore(state => state.setCurrentImageURL);
-  const setCurrentImageBlob = useQuasmStore(state => state.setCurrentImageBlob);
-
   if (!isGameMaster) {
     return (
       <div className='flex items-center justify-center p-10'>
@@ -179,9 +177,12 @@ function SubmitStory() {
     );
   }
 
-  const saveImageCallback = (imageBlob: Blob, imageURL: string) => {
-    setCurrentImageBlob(imageBlob);
-    setCurrentImageUrl(imageURL);
+  const saveImageCallback = (imageBlob: Blob) => {
+    setSelectedImage(imageBlob);
+  };
+
+  const removeImageSelectionCallback = () => {
+    setSelectedImage(undefined);
   };
 
   return (
@@ -193,7 +194,9 @@ function SubmitStory() {
           </div>
           <div className='col-span-2 col-start-1 row-span-3 row-start-4'>
             <ImageHandler
+              handlerId='story_image'
               callback={saveImageCallback}
+              removeSelectionCallback={removeImageSelectionCallback}
               width={STORY_IMAGE_PIXEL_WIDTH}
               height={STORY_IMAGE_PIXEL_WIDTH}
             />
@@ -244,7 +247,10 @@ function SubmitStory() {
               <SvgSpinner className='h-20 w-20' />
             </div>
           )}
-          <ActionsAccordion saveImageCallback={saveImageCallback} />
+          <ActionsAccordion
+            saveImageCallback={saveImageCallback}
+            removeImageSelectionCallback={removeImageSelectionCallback}
+          />
           {submitInProgress ? (
             <div className='flex w-full justify-center'>
               <SvgSpinner className='h-10 w-10' />

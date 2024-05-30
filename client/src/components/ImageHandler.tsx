@@ -8,17 +8,21 @@ import { Button } from './ui/button';
 
 interface ImageHandlerProps {
   callback?: (imageBlob: Blob, imageURL: string) => void;
+  removeSelectionCallback: () => void;
   width: number;
   height: number;
+  handlerId: string;
   className?: string;
 }
 
 // callback will be run after the image is saved and is used to synchronize the component with its environment
 export function ImageHandler({
   callback,
+  removeSelectionCallback,
   width,
   height,
-  className
+  className,
+  handlerId
 }: ImageHandlerProps) {
   const [selectedImage, setSelectedImage] = useState<File>();
   const [selectedImageURL, setSelectedImageURL] = useState<string>();
@@ -65,6 +69,7 @@ export function ImageHandler({
             onClick={() => {
               setSelectedImage(undefined);
               setSelectedImageURL(undefined);
+              removeSelectionCallback();
             }}
           >
             Remove image selection
@@ -75,11 +80,11 @@ export function ImageHandler({
           {/** unfortunately cannot style the input field itself so had to go with this hacky solution
            * TODO: Make that look better
            */}
-          <label htmlFor='image_picker' className='hover:cursor-pointer'>
+          <label htmlFor={handlerId} className='hover:cursor-pointer'>
             Click here to select an image
           </label>
           <input
-            id='image_picker'
+            id={handlerId}
             type='file'
             accept='image/png, image/gif, image/jpeg'
             className='hidden'
