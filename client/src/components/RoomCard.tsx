@@ -25,7 +25,9 @@ export function RoomCard({ room }: { room: ApiRoomPayload }) {
           )}
         </div>
         <div className='col-span-5 row-span-1 border-b-2 border-zinc-800 px-2 py-1'>
-          <h1 className='text-xl lg:text-3xl'>{room.roomName}</h1>
+          <h1 className='overflow-hidden whitespace-nowrap text-xl lg:text-3xl'>
+            {room.roomName}
+          </h1>
           <h4 className='text-xs lg:text-sm'>
             <span className='text-secondary'>Game Master:</span>{' '}
             {displayNickname(room.gameMasterName, NicknameDisplayStyle.SHORT)}
