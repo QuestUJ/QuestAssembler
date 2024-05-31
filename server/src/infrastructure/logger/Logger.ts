@@ -1,5 +1,5 @@
 import { QuasmComponent } from '@quasm/common';
-import chalk from 'chalk';
+import chalk from '@stagas/chalk';
 
 const ComponentColorMap: Record<string, (str: string) => string> = {
     [QuasmComponent.HTTP]: chalk.cyan,

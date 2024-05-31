@@ -4,7 +4,7 @@ import {
     QuasmError,
     UserDetails
 } from '@quasm/common';
-import chalk from 'chalk';
+import chalk from '@stagas/chalk';
 import {
     type FastifyInstance,
     type FastifyPluginOptions,

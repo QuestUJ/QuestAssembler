@@ -245,12 +245,12 @@ importers:
       '@quasm/common':
         specifier: workspace:^
         version: link:../common
+      '@stagas/chalk':
+        specifier: ^5.0.1
+        version: 5.0.1
       '@supabase/supabase-js':
         specifier: ^2.43.4
         version: 2.43.4
-      chalk:
-        specifier: ^5.3.0
-        version: 5.3.0
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
@@ -1308,6 +1308,10 @@ packages:
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
 
+  '@stagas/chalk@5.0.1':
+    resolution: {integrity: sha512-V1Q/GbnDa/lV0ITLWrcbOPU8SPWaotlGO7RXUZXW8LhHxfh5yTgnJ4Fu2+kplZJAwB6EfyEDuNgBrOUfxbP7rQ==}
+    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
+
   '@supabase/auth-js@2.64.2':
     resolution: {integrity: sha512-s+lkHEdGiczDrzXJ1YWt2y3bxRi+qIUnXcgkpLSrId7yjBeaXBFygNjTaoZLG02KNcYwbuZ9qkEIqmj2hF7svw==}
 
@@ -1744,10 +1748,6 @@ packages:
   chalk@4.1.2:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
     engines: {node: '>=10'}
-
-  chalk@5.3.0:
-    resolution: {integrity: sha512-dLitG79d+GV1Nb/VYcCDFivJeK1hiukt9QjRNVOsUtTy1rR1YJsmpGGTZ3qJos+uw7WmWF4wUwBd9jxjocFC2w==}
-    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
 
   check-error@1.0.3:
     resolution: {integrity: sha512-iKEoDYaRmd1mxM90a2OEfWhjsjPpYPuQ+lMYsoxB126+t8fw7ySEO48nmDg5COTjxDI65/Y2OWpeEHk3ZOe8zg==}
@@ -4556,6 +4556,8 @@ snapshots:
 
   '@socket.io/component-emitter@3.1.2': {}
 
+  '@stagas/chalk@5.0.1': {}
+
   '@supabase/auth-js@2.64.2':
     dependencies:
       '@supabase/node-fetch': 2.6.15
@@ -5082,8 +5084,6 @@ snapshots:
     dependencies:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
-
-  chalk@5.3.0: {}
 
   check-error@1.0.3:
     dependencies:

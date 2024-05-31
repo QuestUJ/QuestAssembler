@@ -1,5 +1,5 @@
 import { QuasmComponent } from '@quasm/common';
-import chalk from 'chalk';
+import chalk from '@stagas/chalk';
 
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
 import { IFileStorage } from '@/domain/tools/file-storage/IFileStorage';
