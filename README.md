@@ -25,7 +25,7 @@
 Welcome to the Quest Assembler repository! This project aims to provide a text-based RPG platform for players and dungeon masters to enjoy game sessions over the internet.
 
 ### Real-time Communication
-> Stay connected with your co-players and game master through built-in chat, fostering teamwork.
+> Stay connected with your co-Players and Game Master through built-in chat, fostering teamwork.
   
 ### Immersive Storytelling
 > Embark on epic quests and unravel captivating narratives with AI-assisted story generation. From plot twists to character interactions, our platform enhances immersion and engagement in your stories. Utilize the power of Phi-3-Mini for enhanced storytelling, and add photos to make the story visually engaging.
