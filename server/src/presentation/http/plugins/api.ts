@@ -4,6 +4,7 @@ import {
     QuasmError,
     UserDetails
 } from '@quasm/common';
+import chalk from 'chalk';
 import {
     type FastifyInstance,
     type FastifyPluginOptions,
@@ -12,6 +13,7 @@ import {
 
 import { IAIAssistant } from '@/domain/tools/ai-assistant/IAIAssistant';
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
+import { logger } from '@/infrastructure/logger/Logger';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 import { addCreateRoomHandler } from '../handlers/createRoom';
@@ -42,7 +44,7 @@ export function apiRoutes(
             const tokenString = req.headers.authorization;
             if (tokenString === undefined) {
                 throw new QuasmError(
-                    QuasmComponent.SOCKET,
+                    QuasmComponent.HTTP,
                     401,
                     ErrorCode.MissingAccessToken,
                     `Expected bearer token in headers not found`
@@ -62,6 +64,19 @@ export function apiRoutes(
                 nickname: details.nickname,
                 profileImg: details.profileImg
             };
+
+            let methodStyle = chalk.bold;
+            if (req.method === 'GET') {
+                methodStyle = methodStyle.greenBright;
+            } else if (req.method === 'POST') {
+                methodStyle = methodStyle.redBright;
+            }
+
+            logger.info(QuasmComponent.HTTP, [
+                chalk.green(req.user.userID),
+                methodStyle(req.method),
+                req.url
+            ]);
 
             done();
         });

@@ -1,8 +1,7 @@
-import { MsgEvent, QuasmComponent } from '@quasm/common';
+import { MsgEvent } from '@quasm/common';
 import { UUID } from 'crypto';
 
 import { Chat } from '@/domain/game/chat/Chat';
-import { logger } from '@/infrastructure/logger/Logger';
 
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
@@ -10,11 +9,6 @@ import { withErrorHandling } from './withErrorHandling';
 export function sendMessageHandler({ socket, dataAccess }: HandlerConfig) {
     socket.on('sendMessage', ({ roomID, receiver, content }, respond) => {
         withErrorHandling(async () => {
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET sendMessage RECEIVED receiver: ${receiver}`
-            );
-
             const room = await dataAccess.roomRepository.getRoomByID(
                 roomID as UUID
             );
@@ -57,11 +51,6 @@ export function sendMessageHandler({ socket, dataAccess }: HandlerConfig) {
                     .to(JSON.stringify(Chat.toId([msg.from, msg.to])))
                     .emit('message', payload);
             }
-
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET sendMessage SUCCESS receiver: ${receiver}`
-            );
         }, respond);
     });
 }

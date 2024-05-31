@@ -1,8 +1,7 @@
-import { FetchRoomsResponse, QuasmComponent } from '@quasm/common';
+import { FetchRoomsResponse } from '@quasm/common';
 import { UUID } from 'crypto';
 import { FastifyInstance } from 'fastify';
 
-import { logger } from '@/infrastructure/logger/Logger';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 export function addFetchRoomsHandler(
@@ -12,11 +11,6 @@ export function addFetchRoomsHandler(
     fastify.get<{
         Reply: FetchRoomsResponse;
     }>('/fetchRooms', async (request, reply) => {
-        logger.info(
-            QuasmComponent.HTTP,
-            `${request.user.userID} | GET /fetchRooms RECEIVED`
-        );
-
         const rooms = await dataAccess.roomRepository.fetchRooms(
             request.user.userID as UUID
         );
@@ -46,10 +40,5 @@ export function addFetchRoomsHandler(
                 })
             )
         });
-
-        logger.info(
-            QuasmComponent.HTTP,
-            `${request.user.userID} | GET /fetchRooms SUCCESS `
-        );
     });
 }

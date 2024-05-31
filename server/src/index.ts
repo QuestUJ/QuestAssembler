@@ -65,8 +65,10 @@ const {
 
     await app.listen({ port: PORT, host: '0.0.0.0' });
 
-    logger.info(QuasmComponent.HTTP, `Started successfully on port: ${PORT}`);
-})().catch(err => logger.error(QuasmComponent.HTTP, `Failed to start: ${err}`));
+    logger.info(QuasmComponent.HTTP, [`Started successfully on port: ${PORT}`]);
+})().catch(err =>
+    logger.error(QuasmComponent.HTTP, [`Failed to start: ${err}`])
+);
 
 declare module 'fastify' {
     interface FastifyInstance {

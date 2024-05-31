@@ -1,8 +1,6 @@
 import { ErrorCode, QuasmComponent, QuasmError } from '@quasm/common';
 import { UUID } from 'crypto';
 
-import { logger } from '@/infrastructure/logger/Logger';
-
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
 
@@ -14,11 +12,6 @@ export function deleteRoomHandler({
 }: HandlerConfig) {
     socket.on('deleteRoom', (data, respond) => {
         withErrorHandling(async () => {
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET deleteRoom RECEIVED ${data.roomID}`
-            );
-
             const room = await dataAccess.roomRepository.getRoomByID(
                 data.roomID as UUID
             );
@@ -67,10 +60,6 @@ export function deleteRoomHandler({
             respond({
                 success: true
             });
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET deleteRoom SUCCESS ${data.roomID}`
-            );
         }, respond);
     });
 }

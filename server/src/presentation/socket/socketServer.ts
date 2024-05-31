@@ -35,15 +35,14 @@ export function startSocketServer(
     authProvider: IAuthProvider,
     fileStorageProvider: IFileStorage
 ) {
-    logger.info(QuasmComponent.SOCKET, 'Socket.io attached');
+    logger.info(QuasmComponent.SOCKET, ['Socket.io attached']);
 
     io.use(auth(authProvider));
 
     io.on('connection', socket => {
-        logger.info(
-            QuasmComponent.SOCKET,
+        logger.info(QuasmComponent.SOCKET, [
             `Received connection from: ${socket.data.userID}`
-        );
+        ]);
 
         new User(socket, io, dataAccess, authProvider, fileStorageProvider);
     });

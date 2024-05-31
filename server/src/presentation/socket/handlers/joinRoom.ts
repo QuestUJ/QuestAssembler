@@ -1,8 +1,6 @@
-import { QuasmComponent } from '@quasm/common';
 import { UUID } from 'crypto';
 
 import { Chat } from '@/domain/game/chat/Chat';
-import { logger } from '@/infrastructure/logger/Logger';
 
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
@@ -15,11 +13,6 @@ export function joinRoomHandler({
 }: HandlerConfig) {
     socket.on('joinRoom', (roomID, respond) => {
         withErrorHandling(async () => {
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET joinRoom RECEIVED ${roomID} `
-            );
-
             const room = await dataAccess.roomRepository.getRoomByID(
                 roomID as UUID
             );
@@ -58,11 +51,6 @@ export function joinRoomHandler({
                 profileIMG: characterDetails.profileIMG,
                 isReady: !!character.getTurnSubmit()
             });
-
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET joinRoom SUCCESS ${roomID} `
-            );
         }, respond);
     });
 }
