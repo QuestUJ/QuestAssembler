@@ -16,9 +16,7 @@ export function useSubscribeToRoom(roomUUID: string) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('ok');
     if (!socket) return;
-    console.log('but');
 
     socket.emit('subscribeToRoom', roomUUID, async res => {
       if (!res.success) {
@@ -32,8 +30,6 @@ export function useSubscribeToRoom(roomUUID: string) {
         } else {
           toast.error(...buildResponseErrorToast(res.error?.message));
         }
-      } else {
-        console.log(' all good');
       }
     });
   }, [socket, roomUUID, navigate, roomId]);

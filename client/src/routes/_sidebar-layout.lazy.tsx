@@ -10,6 +10,7 @@ import { SvgSpinner } from '@/components/Spinner';
 import { User } from '@/components/User';
 import { useWindowSize } from '@/lib/misc/windowSize';
 import { useQuasmStore } from '@/lib/stores/quasmStore';
+import { useSocketSyncStore } from '@/lib/stores/socketSyncStore';
 import { cn } from '@/lib/utils';
 
 function RoomIcon({ isGameMaster }: { isGameMaster: boolean }) {
@@ -29,6 +30,8 @@ function TopBarExpanded() {
   });
   const isOnDashboard = roomId === undefined;
 
+  const { storyIsLive, liveChat } = useSocketSyncStore();
+
   return (
     <div
       className={cn(
@@ -46,6 +49,8 @@ function TopBarExpanded() {
               <h1 className='font-decorative text-4xl text-primary'>
                 {currentRoomName}
               </h1>
+              {liveChat}
+              {storyIsLive && ' Story live'}
             </>
           )}
         </div>

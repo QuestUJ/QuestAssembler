@@ -161,7 +161,7 @@ export class NotifierRepositoryPostgres implements INotifierRepository {
         const result = await charactersQuery.union(broadcastQuery).execute();
 
         return result.reduce(
-            (acc, row) => ({ ...acc, [row.id]: row.numOfMessages }),
+            (acc, row) => ({ ...acc, [row.id]: Number(row.numOfMessages) }),
             {}
         );
     }
@@ -191,6 +191,6 @@ export class NotifierRepositoryPostgres implements INotifierRepository {
             ])
             .executeTakeFirstOrThrow();
 
-        return result.numOfChunks as number;
+        return Number(result.numOfChunks);
     }
 }

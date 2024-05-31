@@ -13,7 +13,6 @@ import {
   displayNickname,
   NicknameDisplayStyle
 } from '@/lib/misc/displayNickname';
-import { useSocketSyncStore } from '@/lib/stores/socketSyncStore';
 
 function Character({
   characterInfo,
@@ -26,9 +25,9 @@ function Character({
 }) {
   const { nick, profileIMG, id: characterID, isReady } = characterInfo;
   const { roomId }: { roomId: string } = useParams({ strict: false });
-  const liveChat = useSocketSyncStore(state => state.liveChat);
 
-  const isLive = liveChat === characterID;
+  const displayUnreadMessages =
+    unreadMessages !== undefined && unreadMessages > 0;
 
   return (
     <Link
@@ -43,7 +42,7 @@ function Character({
     >
       <div className='flex h-14 flex-row items-center gap-2 rounded-xl p-2 hover:cursor-pointer hover:bg-highlight'>
         <div className='relative h-full flex-shrink-0'>
-          {!isLive && unreadMessages && unreadMessages > 0 && (
+          {displayUnreadMessages && (
             <span className='absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary font-bold text-black'>
               {unreadMessages}
             </span>

@@ -1,6 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { ApiMessagePayload, ErrorCode } from '@quasm/common';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import shortUUID from 'short-uuid';
 
@@ -15,9 +15,11 @@ export function useFetchMessages(roomUUID: string, other: string) {
 
   const navigate = useNavigate();
 
+  const queryClient = useQueryClient();
+
   const queryFn = async () => {
     const token = await getAccessTokenSilently();
-    return fetchGET<ApiMessagePayload[]>({
+    const result = await fetchGET<ApiMessagePayload[]>({
       path,
       token,
       onError: async code => {
@@ -29,6 +31,17 @@ export function useFetchMessages(roomUUID: string, other: string) {
         }
       }
     });
+
+    const currentUnreadMessages = queryClient.getQueryData<
+      Record<string, number>
+    >(['getUnreadMessages', roomUUID]);
+
+    queryClient.setQueryData(['getUnreadMessages', roomUUID], {
+      ...currentUnreadMessages,
+      [other]: 0
+    });
+
+    return result;
   };
 
   const query = useQuery({

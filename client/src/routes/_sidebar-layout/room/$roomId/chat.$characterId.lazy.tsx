@@ -1,7 +1,5 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
-import { useEffect } from 'react';
 import shortUUID from 'short-uuid';
 
 import {
@@ -54,16 +52,6 @@ function PlayerChat() {
       messageID: msg.id
     });
   });
-
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    queryClient
-      .invalidateQueries({
-        queryKey: ['getUnreadMessages', roomUUID]
-      })
-      .catch(() => null);
-  }, [queryClient, roomUUID]);
 
   return (
     <div className='flex h-full flex-col justify-end'>
