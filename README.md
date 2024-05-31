@@ -22,7 +22,7 @@
 
 # About
 
-Welcome to the Quest Assembler repository! This project aims to provide a text-based RPG platform for players and dungeon masters alike to enjoy game sessions over the internet.
+Welcome to the Quest Assembler repository! This project aims to provide a text-based RPG platform for players and dungeon masters to enjoy game sessions over the internet.
 
 # Features
 
@@ -30,25 +30,51 @@ Welcome to the Quest Assembler repository! This project aims to provide a text-b
 > Stay connected with your party members and dungeon master through built-in chat, enhancing immersion and fostering teamwork.
   
 ### Immersive Storytelling
-> Embark on epic quests and unravel captivating narratives with AI-assisted story generation. From plot twists to character interactions, our platform enhances immersion and engagement in your campaigns.
+> Embark on epic quests and unravel captivating narratives with AI-assisted story generation. From plot twists to character interactions, our platform enhances immersion and engagement in your campaigns. Utilize the power of Phi-3-Mini for dynamic story elements, and add photos to make the story visually engaging.
 
 ### Avatar and Description Setting
 >  Personalize your online presence by setting your avatar and character description. This allows you to visually represent your character during gameplay.
 
 
-# Roadmap
+# How to play
+## Visit [questassembler.onrender.com](https://questassembler.onrender.com/). 
+> If you're the first one there, you might have to wait a few moments.
 
 ![](/assets/LandingPage.png)
-![](/assets/AuthLogin.png)
-![](/assets/CreateGame.png)
-![](/assets/Dashboard.png)
-![](/assets/ViewStory.png)
-![](/assets/Chat.png)
-![](/assets/Turn.png)
-![](/assets/StoryChunk.png)
-![](/assets/RoomSettings.png)
+## Log in
+> Create an account or log in to access the platform.
 
+![](/assets/AuthLogin.png)
+## Create a Game
+> Create a game and share the game code with your friends. You'll be the Game Master.
+
+![](/assets/CreateGame.png)
+## Dashboard
+> On the dashboard, you can see the games you're currently in.
+
+![](/assets/Dashboard.png)
+## View Story
+> View the story that you've collectively developed.
+
+![](/assets/ViewStory.png)
+## Chat with other Players
+> Stay connected and strategize with your team through the chat feature.
+
+![](/assets/Chat.png)
+## Take turns
+> As a player, you submit an action each turn.
+
+![](/assets/Turn.png)
+## Direct the Story
+As the Game Master, you direct the story based on player's submissions each turn. Support your storytelling with the LLM's assistance and add photos for a visually interesting plot.
+
+![](/assets/StoryChunk.png)
+
+# Thanks for Your Support!
+We hope you're enjoying Quest Assembler and having epic adventures with your friends. 
+If you'd like to help us keep the magic alive, consider buying us a ~beer~ coffee at [Buy me a coffee](https://buymeacoffee.com/questuj). 
 
 # License
-
 This project is licensed under the GPL 3.0 License - see the [LICENSE](/LICENSE) file for details.
+
+
