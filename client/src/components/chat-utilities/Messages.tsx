@@ -39,7 +39,7 @@ export function Message({ message }: { message: MessageDetails }) {
           </h3>
         </div>
         <hr />
-        <p className='text-md'>{content}</p>
+        <p className='text-md whitespace-pre'>{content}</p>
       </div>
     </div>
   );
