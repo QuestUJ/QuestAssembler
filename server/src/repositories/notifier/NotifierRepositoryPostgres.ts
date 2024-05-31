@@ -16,34 +16,20 @@ export class NotifierRepositoryPostgres implements INotifierRepository {
         chunkID: number;
         characterID: UUID;
     }): Promise<void> {
-        const current = await this.db
-            .selectFrom('StoryReadTracking')
-            .where('receiver', '=', characterID)
-            .selectAll()
-            .executeTakeFirst();
-
-        if (!current) {
-            await this.db
-                .insertInto('StoryReadTracking')
-                .values({
-                    receiver: characterID,
-                    lastRead: chunkID
-                })
-                .executeTakeFirstOrThrow();
-
-            return;
-        }
-
-        if (current.lastRead && chunkID <= current.lastRead) {
-            return;
-        }
-
         await this.db
-            .updateTable('StoryReadTracking')
-            .set({
+            .insertInto('StoryReadTracking')
+            .values({
+                receiver: characterID,
                 lastRead: chunkID
             })
-            .where('receiver', '=', characterID)
+            .onConflict(oc =>
+                oc
+                    .column('receiver')
+                    .doUpdateSet({
+                        lastRead: chunkID
+                    })
+                    .where('excluded.lastRead', '<', chunkID)
+            )
             .executeTakeFirstOrThrow();
     }
 
@@ -56,37 +42,20 @@ export class NotifierRepositoryPostgres implements INotifierRepository {
         characterID: UUID;
         senderID: Chatter;
     }): Promise<void> {
-        const current = await this.db
-            .selectFrom('ChatReadTracking')
-            .where('receiver', '=', characterID)
-            .where('sender', '=', senderID)
-            .selectAll()
-            .executeTakeFirst();
-
-        if (!current) {
-            await this.db
-                .insertInto('ChatReadTracking')
-                .values({
-                    receiver: characterID,
-                    sender: senderID,
-                    senderCharacter: senderID === 'broadcast' ? null : senderID,
-                    lastRead: messageID
-                })
-                .executeTakeFirstOrThrow();
-            return;
-        }
-
-        if (current.lastRead && messageID <= current.lastRead) {
-            return;
-        }
-
         await this.db
-            .updateTable('ChatReadTracking')
-            .set({
+            .insertInto('ChatReadTracking')
+            .values({
+                receiver: characterID,
+                sender: senderID,
+                senderCharacter: senderID === 'broadcast' ? null : senderID,
                 lastRead: messageID
             })
-            .where('receiver', '=', characterID)
-            .where('sender', '=', senderID)
+            .onConflict(oc =>
+                oc
+                    .columns(['sender', 'receiver'])
+                    .doUpdateSet({ lastRead: messageID })
+                    .where('excluded.lastRead', '<', messageID)
+            )
             .executeTakeFirstOrThrow();
     }
 
