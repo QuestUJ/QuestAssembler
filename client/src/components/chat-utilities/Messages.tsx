@@ -55,7 +55,7 @@ export function MessageContainer({ messages }: { messages: MessageDetails[] }) {
   }, [scrollToRef, messages]);
 
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-2' data-testid='messages'>
       {messages.length <= 0 && (
         <p className='text-secondary'>No messages yet</p>
       )}

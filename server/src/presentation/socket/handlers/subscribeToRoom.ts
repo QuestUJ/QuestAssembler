@@ -8,11 +8,7 @@ import { isMemberOf } from '../utils';
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
 
-export function subscribeToRoomHandler({
-    socket,
-    dataAccess,
-    io
-}: HandlerConfig) {
+export function subscribeToRoomHandler({ socket, dataAccess }: HandlerConfig) {
     socket.on('subscribeToRoom', (id, respond) => {
         withErrorHandling(async () => {
             logger.info(
@@ -37,29 +33,24 @@ export function subscribeToRoomHandler({
                 socket.data.userID
             );
 
-            const roomSockets = await io.in(room.id).fetchSockets();
-
-            roomSockets.forEach(socket => {
-                const other = room.characters.getCharacterByUserID(
-                    socket.data.userID
-                );
-
-                socket.leave(
-                    JSON.stringify(Chat.toId([other.id, character.id]))
-                );
-            });
-
-            await socket.leave(room.id);
-
             // Subsribe to room events
             await socket.join(room.id);
             await Promise.all(
                 room.chats
                     .getPrivateChatsOfCharacter(character.id)
                     .map(async chat => {
-                        await socket.join(JSON.stringify(chat.chatters));
+                        await socket.join(
+                            JSON.stringify(
+                                Chat.toId(chat.chatters as [UUID, UUID])
+                            )
+                        );
                     })
             );
+
+            respond({
+                success: true
+            });
+
             logger.info(
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET subscribeToRoom SUCCESS ${id}`

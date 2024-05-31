@@ -44,11 +44,7 @@ export function joinRoomHandler({
 
             roomSockets.forEach(otherSocket => {
                 const other = room.characters.getCharacterByUserID(
-                    socket.data.userID
-                );
-
-                void socket.join(
-                    JSON.stringify(Chat.toId([other.id, character.id]))
+                    otherSocket.data.userID
                 );
 
                 void otherSocket.join(

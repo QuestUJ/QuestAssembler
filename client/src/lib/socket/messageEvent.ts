@@ -18,6 +18,7 @@ export function useMessageEvent(
   useSocketEvent('message', async msg => {
     const key = msg.broadcast ? 'broadcast' : msg.from;
 
+    console.log('hi mark');
     if (liveChat !== key) {
       toast(`${msg.authorName}${msg.broadcast ? ' to everyone' : ''}`, {
         description: msg.content,
