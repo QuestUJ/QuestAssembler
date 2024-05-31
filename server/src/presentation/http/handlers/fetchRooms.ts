@@ -23,6 +23,25 @@ export function addFetchRoomsHandler(
                         await r.story.fetchStory({ count: 1 })
                     ).shift();
 
+                    const character = r.characters.getCharacterByUserID(
+                        request.user.userID
+                    );
+
+                    const unreadMessages =
+                        await r.notifier.getNumberOfUnreadMessages(
+                            character.id
+                        );
+
+                    const unreadStory =
+                        await r.notifier.getNumberOfUnreadStoryChunks(
+                            character.id
+                        );
+
+                    const numOfMessages = Object.values(unreadMessages).reduce(
+                        (acc, num) => acc + num,
+                        0
+                    );
+
                     return {
                         id: r.id,
                         roomName: r.roomSettings.getName(),
@@ -35,7 +54,8 @@ export function addFetchRoomsHandler(
                         lastImageUrl: lastChunk?.imageURL,
                         lastMessages: lastChunk
                             ? [lastChunk.content]
-                            : undefined
+                            : undefined,
+                        numOfUnreadStuff: numOfMessages + unreadStory
                     };
                 })
             )

@@ -15,8 +15,9 @@ export function RoomCard({ room }: { room: ApiRoomPayload }) {
       params={{
         roomId: shortUUID().fromUUID(room.id)
       }}
+      className='w-11/12 md:w-[450px] lg:w-[600px]'
     >
-      <div className='mx-4 my-2 grid h-40 w-[350px] grid-cols-7 grid-rows-3 rounded-xl border-2 bg-card transition-colors hover:border-primary md:w-[450px] md:grid-cols-10 md:gap-0 lg:h-48 lg:w-[600px]'>
+      <div className='relative mx-4 my-2 grid h-40 grid-cols-7 grid-rows-3 rounded-xl border-2 bg-card transition-colors hover:border-primary  md:grid-cols-10 md:gap-0 lg:h-48'>
         <div className='col-span-1 row-span-1 border-b-2 border-r-2 border-zinc-800 p-1'>
           {room.isCurrentUserGameMaster ? (
             <Crown className='h-full w-full p-1 text-primary lg:p-2' />
@@ -34,10 +35,10 @@ export function RoomCard({ room }: { room: ApiRoomPayload }) {
           </h4>
         </div>
         <div className='col-span-1 row-span-1 flex flex-col items-center justify-center border-b-2 border-l-2 border-zinc-800 p-1'>
-          <h1 className='text-sm'>
+          <h1 className='text-xs'>
             {room.currentPlayers} / {room.maxPlayers}
           </h1>
-          <h3 className='text-xs'>Players</h3>
+          <h3 className='hidden text-xs lg:inline'>Players</h3>
         </div>
         <div className='col-span-3 row-span-3 hidden items-center justify-center rounded-r-xl border-l-2 bg-zinc-950 md:flex'>
           {room.lastImageUrl ? (
@@ -62,6 +63,11 @@ export function RoomCard({ room }: { room: ApiRoomPayload }) {
           )}
           <span className='absolute bottom-0 left-0 h-6 w-full rounded-xl bg-gradient-to-b from-transparent to-card'></span>
         </div>
+        {room.numOfUnreadStuff > 0 && (
+          <span className='absolute -right-4 -top-4 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-black'>
+            {room.numOfUnreadStuff}
+          </span>
+        )}
       </div>
     </Link>
   );
