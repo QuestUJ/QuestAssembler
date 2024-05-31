@@ -39,7 +39,6 @@ export function useMessageEvent(
     ]);
 
     if (messages) {
-      console.log('inserting from event', msg);
       queryClient.setQueryData<ApiMessagePayload[]>(
         ['fetchMessages', roomUUID, key],
         [...messages, msg]

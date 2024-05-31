@@ -42,12 +42,16 @@ export function joinRoomHandler({
 
             const roomSockets = await io.in(room.id).fetchSockets();
 
-            roomSockets.forEach(socket => {
+            roomSockets.forEach(otherSocket => {
                 const other = room.characters.getCharacterByUserID(
                     socket.data.userID
                 );
 
-                socket.join(
+                void socket.join(
+                    JSON.stringify(Chat.toId([other.id, character.id]))
+                );
+
+                void otherSocket.join(
                     JSON.stringify(Chat.toId([other.id, character.id]))
                 );
             });

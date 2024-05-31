@@ -13,7 +13,7 @@ import { SvgSpinner } from '@/components/Spinner';
 import { useFetchMessages } from '@/lib/api/fetchMessages';
 import { useMarkCurrentChat } from '@/lib/misc/markCurrentChat';
 import { useSendMessage } from '@/lib/socket/sendMessage';
-import { useSocketEvent } from '@/lib/stores/socketIOStore';
+import { useSocket, useSocketEvent } from '@/lib/stores/socketIOStore';
 
 function PlayerChat() {
   const { roomId, characterId } = Route.useParams();
@@ -41,6 +41,18 @@ function PlayerChat() {
         }
       });
     }
+  });
+
+  const socket = useSocket();
+
+  useSocketEvent('message', msg => {
+    if (!socket) return;
+
+    socket.emit('markMessageRead', {
+      roomID: roomUUID,
+      senderID: msg.from,
+      messageID: msg.id
+    });
   });
 
   const queryClient = useQueryClient();

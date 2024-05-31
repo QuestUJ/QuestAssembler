@@ -60,6 +60,16 @@ function Story() {
     receiver: 'broadcast'
   });
 
+  useSocketEvent('message', msg => {
+    if (!socket) return;
+
+    socket.emit('markMessageRead', {
+      roomID: roomUUID,
+      senderID: 'broadcast',
+      messageID: msg.id
+    });
+  });
+
   useEffect(() => {
     queryClient
       .invalidateQueries({

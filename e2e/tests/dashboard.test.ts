@@ -35,9 +35,6 @@ testWithRooms.describe('[FM3, FM4] Dashboard', () => {
             })
             .click();
 
-        await page.reload();
-        await page.waitForLoadState('load');
-
         const roomCard = page.getByText(rnd);
 
         await expect(roomCard).toBeVisible();
