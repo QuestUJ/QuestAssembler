@@ -7,11 +7,10 @@ import { withErrorHandling } from './withErrorHandling';
 export function submitStoryHandler({
     socket,
     dataAccess,
-    io,
     fileStorageProvider
 }: HandlerConfig) {
     socket.on('submitStory', (submit, respond) => {
-        withErrorHandling(respond, async () => {
+        withErrorHandling(async () => {
             const room = await dataAccess.roomRepository.getRoomByID(
                 submit.roomID as UUID
             );
@@ -42,6 +41,11 @@ export function submitStoryHandler({
                 imageURL: imageURL
             });
 
+            await room.notifier.markStoryAsRead({
+                characterID: character.id,
+                chunkID: chunk.id
+            });
+
             respond({
                 success: true,
                 payload: {
@@ -52,12 +56,12 @@ export function submitStoryHandler({
                 }
             });
 
-            io.to(room.id).emit('newTurn', {
+            socket.to(room.id).emit('newTurn', {
                 id: chunk.id,
                 title: chunk.title,
                 story: chunk.content,
                 imageURL: chunk.imageURL
             });
-        });
+        }, respond);
     });
 }

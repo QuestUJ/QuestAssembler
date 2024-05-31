@@ -1,9 +1,8 @@
-import { ApiMessagePayload } from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import shortUUID from 'short-uuid';
-import { toast } from 'sonner';
 
 import {
   MessageContainer,
@@ -12,8 +11,9 @@ import {
 import { InputBar } from '@/components/InputBar';
 import { SvgSpinner } from '@/components/Spinner';
 import { useFetchMessages } from '@/lib/api/fetchMessages';
+import { useMarkCurrentChat } from '@/lib/misc/markCurrentChat';
 import { useSendMessage } from '@/lib/socket/sendMessage';
-import { useSocketEvent } from '@/lib/stores/socketIOStore';
+import { useSocket, useSocketEvent } from '@/lib/stores/socketIOStore';
 
 function PlayerChat() {
   const { roomId, characterId } = Route.useParams();
@@ -30,30 +30,7 @@ function PlayerChat() {
 
   const { data, isPending } = useFetchMessages(roomUUID, characterUUID);
 
-  const queryClient = useQueryClient();
-
-  useSocketEvent('message', data => {
-    toast(data.authorName, {
-      description: data.content,
-      icon: (
-        <img
-          className='rounded-full'
-          src={data.characterPictureURL}
-          alt={data.authorName}
-        />
-      )
-    });
-
-    const msg: ApiMessagePayload = {
-      ...data,
-      timestamp: new Date(data.timestamp)
-    };
-
-    queryClient.setQueryData<ApiMessagePayload[]>(
-      ['fetchMessages', roomUUID, data.from],
-      old => (old ? [...old, msg] : [msg])
-    );
-  });
+  useMarkCurrentChat(characterUUID);
 
   useSocketEvent('playerLeft', async player => {
     if (characterUUID == player.id) {
@@ -65,6 +42,28 @@ function PlayerChat() {
       });
     }
   });
+
+  const socket = useSocket();
+
+  useSocketEvent('message', msg => {
+    if (!socket) return;
+
+    socket.emit('markMessageRead', {
+      roomID: roomUUID,
+      senderID: msg.from,
+      messageID: msg.id
+    });
+  });
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    queryClient
+      .invalidateQueries({
+        queryKey: ['getUnreadMessages', roomUUID]
+      })
+      .catch(() => null);
+  }, [queryClient, roomUUID]);
 
   return (
     <div className='flex h-full flex-col justify-end'>

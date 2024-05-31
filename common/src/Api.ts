@@ -80,7 +80,7 @@ export interface ApiMessagePayload {
     id: number;
     authorName: string;
     characterPictureURL: string | undefined;
-    timestamp: Date;
+    timestamp: string;
     content: string;
 }
 
@@ -135,3 +135,14 @@ export interface ApiStoryChunk {
 }
 
 export type FetchStoryResponse = ApiResponse<ApiStoryChunk[]>;
+
+// ======================
+// /getUnreadMessages/
+// ======================
+
+export type GetUnreadMessagesResponse = ApiResponse<Record<string, number>>;
+
+// ======================
+// /getUnreadStory/
+// ======================
+export type GetUnreadStoryResponse = ApiResponse<number>;

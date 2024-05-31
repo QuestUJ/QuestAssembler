@@ -63,6 +63,17 @@ export interface SubmitStoryAck {
     imageURL?: string;
 }
 
+export interface MarkStoryReadPayload {
+    roomID: string;
+    chunkID: number;
+}
+
+export interface MarkMessageReadPayload {
+    roomID: string;
+    senderID: string;
+    messageID: number;
+}
+
 export interface ClientToServerEvents {
     joinRoom: (roomID: string, callback: (res: Ack) => void) => void;
     leaveRoom: (roomID: string, callback: (res: Ack) => void) => void;
@@ -88,11 +99,14 @@ export interface ClientToServerEvents {
         submit: SubmitStoryPayload,
         callback: (res: Ack<SubmitStoryAck>) => void
     ) => void;
+    markStoryRead: (payload: MarkStoryReadPayload) => void;
+    markMessageRead: (payload: MarkMessageReadPayload) => void;
 }
 
 // ==============================================================================================
 export interface MsgEvent {
     id: number;
+    broadcast: boolean;
     roomID: string;
     from: string;
     authorName: string;

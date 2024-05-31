@@ -1,6 +1,7 @@
 import { ErrorCode, QuasmComponent, QuasmError } from '@quasm/common';
 import { UUID } from 'crypto';
 
+import { Chat } from '@/domain/game/chat/Chat';
 import { logger } from '@/infrastructure/logger/Logger';
 
 import { isMemberOf } from '../utils';
@@ -9,7 +10,7 @@ import { withErrorHandling } from './withErrorHandling';
 
 export function subscribeToRoomHandler({ socket, dataAccess }: HandlerConfig) {
     socket.on('subscribeToRoom', (id, respond) => {
-        withErrorHandling(respond, async () => {
+        withErrorHandling(async () => {
             logger.info(
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET subscribeToRoom RECEIVED ${id}`
@@ -38,13 +39,22 @@ export function subscribeToRoomHandler({ socket, dataAccess }: HandlerConfig) {
                 room.chats
                     .getPrivateChatsOfCharacter(character.id)
                     .map(async chat => {
-                        await socket.join(JSON.stringify(chat.chatters));
+                        await socket.join(
+                            JSON.stringify(
+                                Chat.toId(chat.chatters as [UUID, UUID])
+                            )
+                        );
                     })
             );
+
+            respond({
+                success: true
+            });
+
             logger.info(
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET subscribeToRoom SUCCESS ${id}`
             );
-        });
+        }, respond);
     });
 }

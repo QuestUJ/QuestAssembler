@@ -5,7 +5,7 @@ import { withErrorHandling } from './withErrorHandling';
 
 export function submitActionHandler({ socket, dataAccess, io }: HandlerConfig) {
     socket.on('submitAction', ({ content, roomID }, res) => {
-        withErrorHandling(res, async () => {
+        withErrorHandling(async () => {
             const room = await dataAccess.roomRepository.getRoomByID(
                 roomID as UUID
             );
@@ -44,6 +44,6 @@ export function submitActionHandler({ socket, dataAccess, io }: HandlerConfig) {
                     timestamp: timestamp.toISOString()
                 });
             }
-        });
+        }, res);
     });
 }

@@ -50,28 +50,42 @@ export function addFetchMessagesHandler(
                 count,
                 offset
             });
+
+            if (result.length > 0) {
+                await room.notifier.markMessageAsRead({
+                    characterID: myCharacter.id,
+                    messageID: result[result.length - 1].id,
+                    senderID: 'broadcast'
+                });
+            }
         } else {
+            const otherCharacter = room.characters.getCharacterByID(
+                other as UUID
+            );
+
             result = await room.chats
                 .getChat([myCharacter.id, other] as [UUID, UUID])
                 .fetchMessages({ count, offset });
-        }
 
-        const otherCharacter = room.characters.getCharacterByID(other as UUID);
+            if (result.length > 0) {
+                await room.notifier.markMessageAsRead({
+                    characterID: myCharacter.id,
+                    messageID: result[result.length - 1].id,
+                    senderID: otherCharacter.id
+                });
+            }
+        }
 
         await reply.send({
             success: true,
             payload: result.map(m => ({
                 id: m.id,
                 content: m.content,
-                timestamp: m.timestamp,
-                authorName:
-                    m.from === other
-                        ? otherCharacter.getNick()
-                        : myCharacter.getNick(),
-                characterPictureURL:
-                    m.from === other
-                        ? otherCharacter.getProfileImageURL()
-                        : myCharacter.getProfileImageURL()
+                timestamp: m.timestamp.toISOString(),
+                authorName: room.characters.getCharacterByID(m.from).getNick(),
+                characterPictureURL: room.characters
+                    .getCharacterByID(m.from)
+                    .getProfileImageURL()
             }))
         });
 

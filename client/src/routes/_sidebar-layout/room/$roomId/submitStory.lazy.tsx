@@ -1,4 +1,5 @@
 import {
+  ApiTurnSubmitWithCharacterPayload,
   MAX_STORY_IMAGE_FILE_SIZE_IN_BYTES,
   STORY_IMAGE_PIXEL_WIDTH
 } from '@quasm/common';
@@ -62,10 +63,6 @@ function SubmitStory() {
   useSocketEvent(
     'turnSubmit',
     ({ characterID, nick, profileIMG, content, timestamp }) => {
-      toast(`${nick} ended his turn`, {
-        icon: <img src={profileIMG} />
-      });
-
       if (!data) {
         return;
       }
@@ -79,20 +76,32 @@ function SubmitStory() {
           timestamp
         }
       };
-      const at = data.findIndex(ch => ch.characterID === characterID);
 
-      data[at] = updated;
-
-      queryClient.setQueryData(['fetchTurnSubmits', roomUUID], [...data]);
+      queryClient.setQueryData(
+        ['fetchTurnSubmits', roomUUID],
+        data.map(submit =>
+          submit.characterID !== characterID ? submit : updated
+        )
+      );
     }
   );
 
+  useSocketEvent('changeCharacterDetails', ch => {
+    if (!data) return;
+
+    queryClient.setQueryData<ApiTurnSubmitWithCharacterPayload[]>(
+      ['fetchTurnSubmits', roomUUID],
+      data.map(submit =>
+        submit.characterID !== ch.id
+          ? submit
+          : { ...submit, nick: ch.nick, profileIMG: ch.profileIMG }
+      )
+    );
+  });
+
   const { width } = useWindowSize();
-
   const { story, setStory } = useStoryChunkStore();
-
   const socket = useSocket();
-
   const [submitInProgress, setSubmitInProgress] = useState(false);
 
   const handleSubmit = async () => {
@@ -117,6 +126,7 @@ function SubmitStory() {
     const convertedSelectedImage = selectedImage
       ? new Uint8Array(await selectedImage.arrayBuffer())
       : undefined;
+
     socket.emit(
       'submitStory',
       {

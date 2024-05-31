@@ -14,7 +14,7 @@ export function joinRoomHandler({
     io
 }: HandlerConfig) {
     socket.on('joinRoom', (roomID, respond) => {
-        withErrorHandling(respond, async () => {
+        withErrorHandling(async () => {
             logger.info(
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET joinRoom RECEIVED ${roomID} `
@@ -42,12 +42,12 @@ export function joinRoomHandler({
 
             const roomSockets = await io.in(room.id).fetchSockets();
 
-            roomSockets.forEach(socket => {
+            roomSockets.forEach(otherSocket => {
                 const other = room.characters.getCharacterByUserID(
-                    socket.data.userID
+                    otherSocket.data.userID
                 );
 
-                socket.join(
+                void otherSocket.join(
                     JSON.stringify(Chat.toId([other.id, character.id]))
                 );
             });
@@ -63,6 +63,6 @@ export function joinRoomHandler({
                 QuasmComponent.SOCKET,
                 `${socket.data.userID} | SOCKET joinRoom SUCCESS ${roomID} `
             );
-        });
+        }, respond);
     });
 }

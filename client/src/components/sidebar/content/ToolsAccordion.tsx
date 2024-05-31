@@ -1,5 +1,11 @@
 import { Link, useParams } from '@tanstack/react-router';
-import { CheckCircle, Crown, Scroll } from 'lucide-react';
+import {
+  BookOpenText,
+  CheckCircle,
+  Crown,
+  MessageSquare,
+  Scroll
+} from 'lucide-react';
 import { ReactNode } from 'react';
 
 import {
@@ -8,6 +14,7 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion';
 import { useQuasmStore } from '@/lib/stores/quasmStore';
+import { useSocketSyncStore } from '@/lib/stores/socketSyncStore';
 
 function ToolLink({ children }: { children: ReactNode }) {
   return (
@@ -17,9 +24,19 @@ function ToolLink({ children }: { children: ReactNode }) {
   );
 }
 
-export function ToolsAccordion() {
+interface Props {
+  numOfUnreadBroadcast: number | undefined;
+  numOfUnreadStory: number | undefined;
+}
+
+export function ToolsAccordion({
+  numOfUnreadBroadcast,
+  numOfUnreadStory
+}: Props) {
   const isGameMaster = useQuasmStore(state => state.isGameMaster);
   const { roomId }: { roomId: string } = useParams({ strict: false });
+
+  const { liveChat, storyIsLive } = useSocketSyncStore();
 
   return (
     <AccordionItem value='tools'>
@@ -40,8 +57,28 @@ export function ToolsAccordion() {
           }}
         >
           <ToolLink>
-            <Scroll className='h-8 w-8 text-primary' />
-            <h1 className='font-decorative text-xl'>View story</h1>
+            <Scroll className='h-8 w-8 flex-shrink-0 text-primary' />
+            <div className='flex w-full justify-between'>
+              <h1 className='font-decorative text-xl'>View story</h1>
+              <span className='flex items-center gap-3 text-primary'>
+                {!storyIsLive &&
+                  numOfUnreadBroadcast &&
+                  numOfUnreadBroadcast > 0 && (
+                    <span className='flex items-center gap-1'>
+                      <p className='text-lg'>{numOfUnreadBroadcast}</p>
+                      <MessageSquare />
+                    </span>
+                  )}
+                {liveChat !== 'broadcast' &&
+                  numOfUnreadStory &&
+                  numOfUnreadStory > 0 && (
+                    <span className='flex items-center gap-1'>
+                      <p className='text-lg'>{numOfUnreadStory}</p>
+                      <BookOpenText className='h-6 w-6' />
+                    </span>
+                  )}
+              </span>
+            </div>
           </ToolLink>
         </Link>
         {isGameMaster ? (

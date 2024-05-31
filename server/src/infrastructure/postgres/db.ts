@@ -12,6 +12,8 @@ export interface Database {
     StoryChunks: StoryChunksTable;
     Characters: CharactersTable;
     ChatMessages: ChatMessagesTable;
+    StoryReadTracking: StoryReadTrackingTable;
+    ChatReadTracking: ChatReadTrackingTable;
 }
 
 export interface RoomsTable {
@@ -48,9 +50,21 @@ export interface CharactersTable {
 export interface ChatMessagesTable {
     messageID: Generated<number>;
     from: string;
-    to: string;
+    to: string | null;
     content: string;
     timestamp: ColumnType<Date, string | undefined, never>;
+}
+
+export interface ChatReadTrackingTable {
+    receiver: string;
+    sender: string;
+    senderCharacter: string | null;
+    lastRead: number | null;
+}
+
+export interface StoryReadTrackingTable {
+    receiver: string;
+    lastRead: number | null;
 }
 
 const dialect = new PostgresDialect({

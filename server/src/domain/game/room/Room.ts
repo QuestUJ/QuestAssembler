@@ -4,6 +4,7 @@ import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 import { CharactersComponent } from '../character/CharactersComponent';
 import { ChatsComponent } from '../chat/ChatsComponent';
+import { NotifierComponent } from '../notifier/NotifierComponent';
 import { StoryComponent } from '../story/StoryComponent';
 import { RoomSettings, RoomSettingsDetails } from './RoomSettings';
 
@@ -12,6 +13,7 @@ export class Room {
     readonly characters: CharactersComponent;
     readonly chats: ChatsComponent;
     readonly story: StoryComponent;
+    readonly notifier: NotifierComponent;
 
     constructor(
         private readonly dataAccess: DataAccessFacade,
@@ -39,6 +41,11 @@ export class Room {
 
         this.story = new StoryComponent(
             this.dataAccess.storyRepository,
+            this.id
+        );
+
+        this.notifier = new NotifierComponent(
+            this.dataAccess.notifierRepository,
             this.id
         );
 

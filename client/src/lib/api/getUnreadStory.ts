@@ -1,29 +1,26 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { ApiStoryChunk } from '@quasm/common';
 import { useQuery } from '@tanstack/react-query';
 
-import { useErrorToast } from '../misc/errorToast';
 import { fetchGET } from './core/fetchGET';
 
-export function useFetchStory(roomUUID: string) {
-  const path = `/fetchStory/${roomUUID}`;
+export function useGetUnreadStory(roomUUID: string) {
+  const path = `/getUnreadStory/${roomUUID}`;
 
   const { getAccessTokenSilently } = useAuth0();
 
   const queryFn = async () => {
     const token = await getAccessTokenSilently();
-    return fetchGET<ApiStoryChunk[]>({
+
+    return fetchGET<number>({
       path,
       token
     });
   };
 
   const query = useQuery({
-    queryKey: ['fetchStory', roomUUID],
+    queryKey: ['getUnreadStory', roomUUID],
     queryFn
   });
-
-  useErrorToast(query.isError, query.error?.message);
 
   return query;
 }

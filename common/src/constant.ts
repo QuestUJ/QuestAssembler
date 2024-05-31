@@ -12,3 +12,5 @@ export const AVATAR_PIXEL_WIDTH = 64;
 export const AVATAR_PIXEL_HEIGHT = 64;
 export const STORY_IMAGE_PIXEL_WIDTH = 64;
 export const STORY_IMAGE_PIXEL_HEIGHT = 64;
+export const MAX_CHAT_MESSAGES: number = 500;
+export const MAX_CHAT_MESSAGE_LENGTH: number = 280;
