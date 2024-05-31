@@ -30,6 +30,8 @@ export class User {
         authProvider: IAuthProvider,
         fileStorageProvider: IFileStorage
     ) {
+        socket.data.subscribedRoomID = null;
+
         socket.prependAny(event => {
             logger.info(QuasmComponent.SOCKET, [
                 chalk.green(socket.data.userID),

@@ -154,4 +154,5 @@ export interface InternalEvents {}
 export interface SocketData {
     userID: string;
     token: string;
+    subscribedRoomID: string | null;
 }

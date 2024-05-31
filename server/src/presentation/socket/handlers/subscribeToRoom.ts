@@ -23,6 +23,30 @@ export function subscribeToRoomHandler({ socket, dataAccess }: HandlerConfig) {
                 );
             }
 
+            // Unsubscribe old room
+            if (socket.data.subscribedRoomID) {
+                const oldRoom = await dataAccess.roomRepository.getRoomByID(
+                    socket.data.subscribedRoomID as UUID
+                );
+                const oldCharacter = oldRoom.characters.getCharacterByUserID(
+                    socket.data.userID
+                );
+
+                await socket.leave(oldRoom.id);
+
+                await Promise.all(
+                    oldRoom.chats
+                        .getPrivateChatsOfCharacter(oldCharacter.id)
+                        .map(async chat => {
+                            await socket.leave(
+                                JSON.stringify(
+                                    Chat.toId(chat.chatters as [UUID, UUID])
+                                )
+                            );
+                        })
+                );
+            }
+
             const character = room.characters.getCharacterByUserID(
                 socket.data.userID
             );
@@ -40,6 +64,8 @@ export function subscribeToRoomHandler({ socket, dataAccess }: HandlerConfig) {
                         );
                     })
             );
+
+            socket.data.subscribedRoomID = room.id;
 
             respond({
                 success: true
