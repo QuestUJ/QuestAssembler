@@ -30,7 +30,7 @@ Welcome to the Quest Assembler repository! This project aims to provide a text-b
 ### Immersive Storytelling
 > Embark on epic quests and unravel captivating narratives with AI-assisted story generation. From plot twists to character interactions, our platform enhances immersion and engagement in your stories. Utilize the power of Phi-3-Mini for enhanced storytelling, and add photos to make the story visually engaging.
 
-### Avatar and Description personalization
+### Character personalization
 > Personalize your online presence by setting your avatar and character description. This allows you to visually represent your character during gameplay.
 
 
@@ -75,12 +75,13 @@ Welcome to the Quest Assembler repository! This project aims to provide a text-b
 
 ![](/assets/StoryChunk.png)
 
+---
 
 # Thanks for Your Support!
 We hope you're enjoying Quest Assembler and having epic adventures with your friends. 
 If you'd like to help us keep the magic alive, consider buying us a ~beer~ coffee at [Buy me a coffee](https://buymeacoffee.com/questuj). 
 
+
 # License
 This project is licensed under the GPL 3.0 License - see the [LICENSE](/LICENSE) file for details.
-
 
