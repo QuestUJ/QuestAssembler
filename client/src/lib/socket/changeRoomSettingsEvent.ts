@@ -7,6 +7,7 @@ import { useSocketEvent } from '../stores/socketIOStore';
 export function useChangeRoomSettingsEvent(roomUUID: string) {
   const queryClient = useQueryClient();
   const setRoomName = useQuasmStore(state => state.setRoomName);
+  const setMaxPlayers = useQuasmStore(state => state.setMaxPlayers);
 
   useSocketEvent('changeRoomSettings', roomData => {
     const roomDetails = queryClient.getQueryData<ApiRoomDetailsPayload>([
@@ -17,5 +18,6 @@ export function useChangeRoomSettingsEvent(roomUUID: string) {
     if (!roomDetails) return;
 
     setRoomName(roomData.name);
+    setMaxPlayers(roomData.maxPlayers);
   });
 }

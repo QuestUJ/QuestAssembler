@@ -16,7 +16,7 @@ import { CharactersAccordion } from './content/CharactersAccordion';
 import { ToolsAccordion } from './content/ToolsAccordion';
 
 export function SidebarContentRoom() {
-  const { setRoomName, setIsGameMaster, isGameMaster } = useQuasmStore();
+  const { setRoomName, setIsGameMaster, setMaxPlayers, isGameMaster } = useQuasmStore();
 
   const { roomId }: { roomId: string } = useParams({
     strict: false
@@ -29,6 +29,7 @@ export function SidebarContentRoom() {
 
   useEffect(() => {
     setRoomName(roomDetails?.roomName);
+    setMaxPlayers(roomDetails ? roomDetails.maxPlayers : 0);
     setIsGameMaster(
       roomDetails?.currentPlayer.id === roomDetails?.gameMasterID
     );
