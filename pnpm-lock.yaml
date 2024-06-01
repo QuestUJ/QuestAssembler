@@ -245,6 +245,9 @@ importers:
       '@quasm/common':
         specifier: workspace:^
         version: link:../common
+      '@stagas/chalk':
+        specifier: ^5.0.1
+        version: 5.0.1
       '@supabase/supabase-js':
         specifier: ^2.43.4
         version: 2.43.4
@@ -1304,6 +1307,10 @@ packages:
 
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
+
+  '@stagas/chalk@5.0.1':
+    resolution: {integrity: sha512-V1Q/GbnDa/lV0ITLWrcbOPU8SPWaotlGO7RXUZXW8LhHxfh5yTgnJ4Fu2+kplZJAwB6EfyEDuNgBrOUfxbP7rQ==}
+    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
 
   '@supabase/auth-js@2.64.2':
     resolution: {integrity: sha512-s+lkHEdGiczDrzXJ1YWt2y3bxRi+qIUnXcgkpLSrId7yjBeaXBFygNjTaoZLG02KNcYwbuZ9qkEIqmj2hF7svw==}
@@ -4548,6 +4555,8 @@ snapshots:
   '@sinclair/typebox@0.27.8': {}
 
   '@socket.io/component-emitter@3.1.2': {}
+
+  '@stagas/chalk@5.0.1': {}
 
   '@supabase/auth-js@2.64.2':
     dependencies:

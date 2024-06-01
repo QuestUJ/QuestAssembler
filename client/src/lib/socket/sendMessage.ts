@@ -35,8 +35,6 @@ export function useSendMessage({ roomUUID, receiver }: Options) {
 
         const msg = res.payload!;
 
-        console.log('Inserting after send', msg);
-
         queryClient.setQueryData<ApiMessagePayload[]>(
           ['fetchMessages', roomUUID, receiver],
           old => (old ? [...old, msg] : [msg])

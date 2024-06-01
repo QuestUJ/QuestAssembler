@@ -1,8 +1,6 @@
-import { QuasmComponent } from '@quasm/common';
 import { UUID } from 'crypto';
 
 import { Chat } from '@/domain/game/chat/Chat';
-import { logger } from '@/infrastructure/logger/Logger';
 
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
@@ -17,11 +15,6 @@ export function leaveRoomHandler({
     socket.on('leaveRoom', (roomID, respond) => {
         withErrorHandling(async () => {
             authProvider;
-
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET leaveRoom RECEIVED ${roomID} `
-            );
 
             const room = await dataAccess.roomRepository.getRoomByID(
                 roomID as UUID
@@ -62,11 +55,6 @@ export function leaveRoomHandler({
             respond({
                 success: true
             });
-
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET leaveRoom SUCCESS ${roomID} `
-            );
         }, respond);
     });
 }

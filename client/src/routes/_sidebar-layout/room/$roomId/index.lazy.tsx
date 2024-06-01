@@ -60,28 +60,17 @@ function Story() {
     receiver: 'broadcast'
   });
 
-  useSocketEvent('message', msg => {
-    if (!socket) return;
-
-    socket.emit('markMessageRead', {
-      roomID: roomUUID,
-      senderID: 'broadcast',
-      messageID: msg.id
-    });
-  });
-
   useEffect(() => {
-    queryClient
-      .invalidateQueries({
-        queryKey: ['getUnreadStory', roomUUID]
-      })
-      .catch(() => null);
+    queryClient.setQueryData<number>(['getUnreadStory', roomUUID], 0);
 
-    queryClient
-      .invalidateQueries({
-        queryKey: ['getUnreadMessages', roomUUID]
-      })
-      .catch(() => null);
+    const currentUnreadMessages = queryClient.getQueryData<
+      Record<string, number>
+    >(['getUnreadMessages', roomUUID]);
+
+    queryClient.setQueryData(['getUnreadMessages', roomUUID], {
+      ...currentUnreadMessages,
+      broadcast: 0
+    });
   }, [queryClient, roomUUID]);
 
   if (!story) {

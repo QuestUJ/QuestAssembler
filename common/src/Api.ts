@@ -25,6 +25,7 @@ export interface ApiRoomPayload {
     isCurrentUserGameMaster: boolean;
     lastImageUrl: string | undefined;
     lastMessages: string[] | undefined;
+    numOfUnreadStuff: number;
 }
 
 export type FetchRoomsResponse = ApiResponse<ApiRoomPayload[]>;

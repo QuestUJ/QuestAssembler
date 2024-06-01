@@ -16,7 +16,7 @@ export function CopyGameCode({ gameCode }: { gameCode: string }) {
 
   return (
     <Button
-      className='m-0 h-12 w-12 rounded p-0'
+      className='m-0 h-10 w-10 rounded p-0'
       onClick={() => void handleCopy()}
     >
       <svg

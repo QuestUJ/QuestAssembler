@@ -12,10 +12,16 @@ export function useNewTurnEvent(roomUUID: string) {
   useSocketEvent('newTurn', async () => {
     toast('Turn ended! New story chunk available');
 
-    if (!storyIsLive) {
-      await queryClient.invalidateQueries({
-        queryKey: ['getUnreadStory', roomUUID]
-      });
+    const currentUnread = queryClient.getQueryData<number>([
+      'getUnreadStory',
+      roomUUID
+    ]);
+
+    if (!storyIsLive && currentUnread !== undefined) {
+      queryClient.setQueryData<number>(
+        ['getUnreadStory', roomUUID],
+        currentUnread + 1
+      );
     }
 
     await queryClient.invalidateQueries({

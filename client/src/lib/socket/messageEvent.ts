@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 import { AvatarProps } from '@/components/NotificationAvatar';
 
-import { useSocketEvent } from '../stores/socketIOStore';
+import { useSocket, useSocketEvent } from '../stores/socketIOStore';
 import { useSocketSyncStore } from '../stores/socketSyncStore';
 
 export function useMessageEvent(
@@ -15,10 +15,11 @@ export function useMessageEvent(
   const liveChat = useSocketSyncStore(state => state.liveChat);
   const queryClient = useQueryClient();
 
-  useSocketEvent('message', async msg => {
+  const socket = useSocket();
+
+  useSocketEvent('message', msg => {
     const key = msg.broadcast ? 'broadcast' : msg.from;
 
-    console.log('hi mark');
     if (liveChat !== key) {
       toast(`${msg.authorName}${msg.broadcast ? ' to everyone' : ''}`, {
         description: msg.content,
@@ -28,8 +29,22 @@ export function useMessageEvent(
         })
       });
 
-      await queryClient.invalidateQueries({
-        queryKey: ['getUnreadMessages', roomUUID]
+      const unreadMessages = queryClient.getQueryData<Record<string, number>>([
+        'getUnreadMessages',
+        roomUUID
+      ]);
+
+      if (unreadMessages) {
+        queryClient.setQueryData(['getUnreadMessages', roomUUID], {
+          ...unreadMessages,
+          [key]: unreadMessages[key] + 1
+        });
+      }
+    } else if (socket) {
+      socket.emit('markMessageRead', {
+        roomID: roomUUID,
+        senderID: key,
+        messageID: msg.id
       });
     }
 

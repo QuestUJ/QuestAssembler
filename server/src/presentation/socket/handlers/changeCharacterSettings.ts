@@ -1,7 +1,4 @@
-import { QuasmComponent } from '@quasm/common';
 import { UUID } from 'crypto';
-
-import { logger } from '@/infrastructure/logger/Logger';
 
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
@@ -14,11 +11,6 @@ export function changeCharacterSettingsHandler({
 }: HandlerConfig) {
     socket.on('changeCharacterSettings', (data, respond) => {
         withErrorHandling(async () => {
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET changeCharacterSettings RECEIVED ${data.roomID}`
-            );
-
             const currentCharacter = (
                 await dataAccess.roomRepository.getRoomByID(data.roomID as UUID)
             ).characters.getCharacterByUserID(socket.data.userID);
@@ -47,10 +39,6 @@ export function changeCharacterSettingsHandler({
             respond({
                 success: true
             });
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET changeCharacterSettings SUCCESS ${data.roomID}`
-            );
         }, respond);
     });
 }

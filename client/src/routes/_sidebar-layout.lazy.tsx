@@ -14,9 +14,9 @@ import { cn } from '@/lib/utils';
 
 function RoomIcon({ isGameMaster }: { isGameMaster: boolean }) {
   return isGameMaster ? (
-    <Crown className='mr-4 h-10 w-10 text-primary' />
+    <Crown className='mr-4 h-10 w-10 flex-shrink-0 text-primary' />
   ) : (
-    <Swords className='mr-4 h-10 w-10 text-primary' />
+    <Swords className='mr-4 h-10 w-10 flex-shrink-0 text-primary' />
   );
 }
 
@@ -37,13 +37,13 @@ function TopBarExpanded() {
       )}
     >
       {!isOnDashboard && (
-        <div className='flex flex-row items-center'>
+        <div className='mr-4 flex flex-shrink flex-row items-center overflow-hidden'>
           {!currentRoomName ? (
             <SvgSpinner className='h-10 w-10' />
           ) : (
             <>
               <RoomIcon isGameMaster={isGameMaster} />
-              <h1 className='font-decorative text-4xl text-primary'>
+              <h1 className='whitespace-nowrap font-decorative text-4xl text-primary'>
                 {currentRoomName}
               </h1>
             </>
@@ -92,7 +92,7 @@ function SidebarLayout() {
         </div>
       ) : (
         <div className='grid h-screen w-screen grid-cols-1 grid-rows-8'>
-          <div>
+          <div className='p-4'>
             <TopBar />
           </div>
           <div className='row-span-7 overflow-y-auto bg-crust from-[#222] to-[#111]'>

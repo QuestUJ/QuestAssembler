@@ -1,8 +1,7 @@
-import { FetchRoomsResponse, QuasmComponent } from '@quasm/common';
+import { FetchRoomsResponse } from '@quasm/common';
 import { UUID } from 'crypto';
 import { FastifyInstance } from 'fastify';
 
-import { logger } from '@/infrastructure/logger/Logger';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 export function addFetchRoomsHandler(
@@ -12,11 +11,6 @@ export function addFetchRoomsHandler(
     fastify.get<{
         Reply: FetchRoomsResponse;
     }>('/fetchRooms', async (request, reply) => {
-        logger.info(
-            QuasmComponent.HTTP,
-            `${request.user.userID} | GET /fetchRooms RECEIVED`
-        );
-
         const rooms = await dataAccess.roomRepository.fetchRooms(
             request.user.userID as UUID
         );
@@ -28,6 +22,25 @@ export function addFetchRoomsHandler(
                     const lastChunk = (
                         await r.story.fetchStory({ count: 1 })
                     ).shift();
+
+                    const character = r.characters.getCharacterByUserID(
+                        request.user.userID
+                    );
+
+                    const unreadMessages =
+                        await r.notifier.getNumberOfUnreadMessages(
+                            character.id
+                        );
+
+                    const unreadStory =
+                        await r.notifier.getNumberOfUnreadStoryChunks(
+                            character.id
+                        );
+
+                    const numOfMessages = Object.values(unreadMessages).reduce(
+                        (acc, num) => acc + num,
+                        0
+                    );
 
                     return {
                         id: r.id,
@@ -41,15 +54,11 @@ export function addFetchRoomsHandler(
                         lastImageUrl: lastChunk?.imageURL,
                         lastMessages: lastChunk
                             ? [lastChunk.content]
-                            : undefined
+                            : undefined,
+                        numOfUnreadStuff: numOfMessages + unreadStory
                     };
                 })
             )
         });
-
-        logger.info(
-            QuasmComponent.HTTP,
-            `${request.user.userID} | GET /fetchRooms SUCCESS `
-        );
     });
 }

@@ -49,7 +49,7 @@ function RoomOverview() {
 
 function Dashboard() {
   return (
-    <div className='flex w-full flex-wrap md:p-2'>
+    <div className='flex w-full flex-col items-center py-2 md:flex-row md:flex-wrap  md:p-4'>
       <RoomOverview />
     </div>
   );

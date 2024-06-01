@@ -1,5 +1,9 @@
+import { QuasmComponent } from '@quasm/common';
+import chalk from '@stagas/chalk';
+
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
 import { IFileStorage } from '@/domain/tools/file-storage/IFileStorage';
+import { logger } from '@/infrastructure/logger/Logger';
 import {
     QuasmSocket,
     QuasmSocketServer
@@ -26,6 +30,16 @@ export class User {
         authProvider: IAuthProvider,
         fileStorageProvider: IFileStorage
     ) {
+        socket.data.subscribedRoomID = null;
+
+        socket.prependAny(event => {
+            logger.info(QuasmComponent.SOCKET, [
+                chalk.green(socket.data.userID),
+                chalk.redBright('RECV'),
+                event
+            ] as string[]);
+        });
+
         const handlers = [
             joinRoomHandler,
             subscribeToRoomHandler,

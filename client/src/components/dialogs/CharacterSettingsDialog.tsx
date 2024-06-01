@@ -129,13 +129,13 @@ export function CharacterSettingsDialog(props: CharacterSettingsProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className='flex h-full items-center rounded-md p-2 hover:bg-highlight'>
+        <div className='flex h-full cursor-pointer items-center rounded-md p-2 hover:bg-highlight'>
           <img
             src={props.profilePicture}
             className='mr-2 aspect-square h-full rounded-full'
             alt='current player character picture'
           />
-          <h1 className='font-decorative text-2xl'>
+          <h1 className='font-decorative text-xl'>
             {displayNickname(props.nick, NicknameDisplayStyle.SHORT)}
           </h1>
         </div>

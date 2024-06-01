@@ -8,10 +8,9 @@ export function withErrorHandling<T>(
 ) {
     const err = (error: unknown) => {
         if (error instanceof QuasmError) {
-            logger.error(
-                error.errorLocation,
+            logger.error(error.errorLocation, [
                 `ErrorCode: ${error.errorCode}, Context: ${error.message}`
-            );
+            ]);
 
             if (respond) {
                 respond({
