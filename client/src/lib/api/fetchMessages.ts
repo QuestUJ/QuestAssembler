@@ -1,15 +1,21 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { ApiMessagePayload, ErrorCode } from '@quasm/common';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import shortUUID from 'short-uuid';
 
 import { useErrorToast } from '../misc/errorToast';
 import { fetchGET } from './core/fetchGET';
 
+interface QueryContext {
+  pageParam: number | undefined;
+}
+
+const RANGE_COUNT = 4;
+
 export function useFetchMessages(roomUUID: string, other: string) {
-  const receiverUrl = other === 'broadcast' ? '' : `?other=${other}`;
-  const path = `/fetchMessages/${roomUUID}${receiverUrl}`;
+  const receiverUrl = other === 'broadcast' ? '' : `&other=${other}`;
+  const path = `/fetchMessages/${roomUUID}?count=${RANGE_COUNT}${receiverUrl}`;
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -17,10 +23,13 @@ export function useFetchMessages(roomUUID: string, other: string) {
 
   const queryClient = useQueryClient();
 
-  const queryFn = async () => {
+  const queryFn = async ({ pageParam }: QueryContext) => {
     const token = await getAccessTokenSilently();
+
+    const offsetString = pageParam ? `&offset=${pageParam}` : '';
+
     const result = await fetchGET<ApiMessagePayload[]>({
-      path,
+      path: `${path}${offsetString}`,
       token,
       onError: async code => {
         if (code === ErrorCode.MissingChat) {
@@ -44,12 +53,16 @@ export function useFetchMessages(roomUUID: string, other: string) {
     return result;
   };
 
-  const query = useQuery({
+  const infiniteQuery = useInfiniteQuery({
     queryKey: ['fetchMessages', roomUUID, other],
-    queryFn
+    queryFn,
+    initialPageParam: undefined,
+    getNextPageParam: lastPage =>
+      lastPage.length === 0 ? undefined : lastPage[0].id,
+    select: data => [...data.pages].reverse().flat(1)
   });
 
-  useErrorToast(query.isError, query.error?.message);
+  useErrorToast(infiniteQuery.isError, infiniteQuery.error?.message);
 
-  return query;
+  return infiniteQuery;
 }

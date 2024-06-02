@@ -54,7 +54,11 @@ function Story() {
     }
   });
 
-  const { data: messages } = useFetchMessages(roomUUID, 'broadcast');
+  const {
+    data: messages,
+    hasNextPage,
+    fetchNextPage
+  } = useFetchMessages(roomUUID, 'broadcast');
   const sendMessage = useSendMessage({
     roomUUID,
     receiver: 'broadcast'
@@ -73,6 +77,10 @@ function Story() {
     });
   }, [queryClient, roomUUID]);
 
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
+
   if (!story) {
     return (
       <div className='flex h-full w-full justify-center pt-20'>
@@ -84,9 +92,10 @@ function Story() {
   return (
     <div className='flex h-full flex-col justify-end'>
       <OutletWrapper>
-        <StoryChunkContainer
-          story={story.map(s => ({ type: 'storychunk', ...s }))}
-        />
+        <StoryChunkContainer story={story} />
+        <h1 onClick={() => void fetchNextPage()}>
+          {hasNextPage ? 'Git' : 'Nie git'}
+        </h1>
         {messages ? (
           <BroadcastChat
             messages={messages.map(m => ({

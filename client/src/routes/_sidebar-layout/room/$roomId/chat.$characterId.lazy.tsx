@@ -26,7 +26,10 @@ function PlayerChat() {
     receiver: characterUUID
   });
 
-  const { data, isPending } = useFetchMessages(roomUUID, characterUUID);
+  const { data, isPending, fetchNextPage, hasNextPage } = useFetchMessages(
+    roomUUID,
+    characterUUID
+  );
 
   useMarkCurrentChat(characterUUID);
 
@@ -56,6 +59,9 @@ function PlayerChat() {
   return (
     <div className='flex h-full flex-col justify-end'>
       <OutletWrapper>
+        <h1 onClick={() => void fetchNextPage()}>
+          {hasNextPage ? 'Git' : 'nie git'}
+        </h1>
         {isPending ? (
           <div className='w-ful flex h-full items-center justify-center'>
             <SvgSpinner className='h-20 w-20' />
