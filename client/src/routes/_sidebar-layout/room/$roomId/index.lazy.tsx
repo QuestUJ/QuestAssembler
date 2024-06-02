@@ -1,16 +1,14 @@
 import { ApiStoryChunk } from '@quasm/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { createLazyFileRoute, getRouteApi } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import shortUUID from 'short-uuid';
 
-import {
-  BroadcastChat,
-  OutletWrapper
-} from '@/components/chat-utilities/Messages';
+import { BroadcastChat } from '@/components/chat-utilities/Messages';
 import { InputBar } from '@/components/InputBar';
 import { SvgSpinner } from '@/components/Spinner';
 import { StoryChunkContainer } from '@/components/story-utilities/StoryChunks';
+import { Button } from '@/components/ui/button';
 import { useFetchMessages } from '@/lib/api/fetchMessages';
 import { useFetchStory } from '@/lib/api/fetchStory';
 import { useMarkCurrentChat } from '@/lib/misc/markCurrentChat';
@@ -57,6 +55,7 @@ function Story() {
   const {
     data: messages,
     hasNextPage,
+    isFetching,
     fetchNextPage
   } = useFetchMessages(roomUUID, 'broadcast');
   const sendMessage = useSendMessage({
@@ -77,10 +76,6 @@ function Story() {
     });
   }, [queryClient, roomUUID]);
 
-  useEffect(() => {
-    console.log(messages);
-  }, [messages]);
-
   if (!story) {
     return (
       <div className='flex h-full w-full justify-center pt-20'>
@@ -91,24 +86,25 @@ function Story() {
 
   return (
     <div className='flex h-full flex-col justify-end'>
-      <OutletWrapper>
-        <StoryChunkContainer story={story} />
-        <h1 onClick={() => void fetchNextPage()}>
-          {hasNextPage ? 'Git' : 'Nie git'}
-        </h1>
-        {messages ? (
-          <BroadcastChat
-            messages={messages.map(m => ({
-              ...m,
-              timestamp: new Date(m.timestamp)
-            }))}
-          />
-        ) : (
-          <div className='flex h-full w-full justify-center'>
-            <SvgSpinner className='h-20 w-20' />
-          </div>
-        )}
-      </OutletWrapper>
+      <div className='flex h-full flex-col justify-between'>
+        <div className='flex h-full flex-col justify-end'>
+          <StoryChunkContainer story={story} />
+        </div>
+        <Button className='mx-auto w-40' onClick={() => void fetchNextPage()}>
+          Fetch
+        </Button>
+        <div className='h-fit max-h-[50%]'>
+          {messages && (
+            <BroadcastChat
+              onReachTop={() => !isFetching && void fetchNextPage()}
+              messages={messages.map(m => ({
+                ...m,
+                timestamp: new Date(m.timestamp)
+              }))}
+            />
+          )}
+        </div>
+      </div>
       <InputBar handleSend={sendMessage} sendButtonText='Send' />
     </div>
   );

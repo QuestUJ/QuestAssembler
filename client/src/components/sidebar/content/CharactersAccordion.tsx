@@ -80,21 +80,25 @@ export function CharactersAccordion({
       <AccordionTrigger className='w-full font-decorative text-2xl text-primary hover:text-primary-shaded'>
         Players
       </AccordionTrigger>
-      <AccordionContent className='flex flex-col gap-2'>
-        {!characters ? (
-          <SvgSpinner className='mx-auto h-10 w-10' />
-        ) : characters.length === 0 ? (
-          <h1 className='text-secondary'>No more players in this room :(</h1>
-        ) : (
-          characters.map(character => (
-            <Character
-              isGameMaster={gameMaster === character.id}
-              characterInfo={character}
-              unreadMessages={unreadMessages ? unreadMessages[character.id] : 0}
-              key={character.id}
-            />
-          ))
-        )}
+      <AccordionContent>
+        <div className='flex flex-col gap-2'>
+          {!characters ? (
+            <SvgSpinner className='mx-auto h-10 w-10' />
+          ) : characters.length === 0 ? (
+            <h1 className='text-secondary'>No more players in this room :(</h1>
+          ) : (
+            characters.map(character => (
+              <Character
+                isGameMaster={gameMaster === character.id}
+                characterInfo={character}
+                unreadMessages={
+                  unreadMessages ? unreadMessages[character.id] : 0
+                }
+                key={character.id}
+              />
+            ))
+          )}
+        </div>
       </AccordionContent>
     </AccordionItem>
   );

@@ -23,25 +23,29 @@ export function ActionsAccordion({
         <AccordionTrigger className='flex w-full flex-row items-center text-2xl text-primary'>
           Story
         </AccordionTrigger>
-        <AccordionContent className='flex flex-col gap-2'>
-          <StoryTextArea />
-          <LLMAssistanceButton />
+        <AccordionContent>
+          <div className='flex flex-col gap-2'>
+            <StoryTextArea />
+            <LLMAssistanceButton />
+          </div>
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value='image'>
         <AccordionTrigger className='flex w-full flex-row items-center text-2xl text-primary'>
           Image
         </AccordionTrigger>
-        <AccordionContent className='flex h-80 w-80'>
-          <ImageHandler
-            handlerId='accordion_story_image'
-            onImageSave={saveImageCallback}
-            onSelectionRemove={() => {
-              removeImageSelectionCallback();
-            }}
-            width={STORY_IMAGE_PIXEL_WIDTH}
-            height={STORY_IMAGE_PIXEL_WIDTH}
-          />
+        <AccordionContent>
+          <div className='flex h-80 w-80'>
+            <ImageHandler
+              handlerId='accordion_story_image'
+              onImageSave={saveImageCallback}
+              onSelectionRemove={() => {
+                removeImageSelectionCallback();
+              }}
+              width={STORY_IMAGE_PIXEL_WIDTH}
+              height={STORY_IMAGE_PIXEL_WIDTH}
+            />
+          </div>
         </AccordionContent>
       </AccordionItem>
     </Accordion>

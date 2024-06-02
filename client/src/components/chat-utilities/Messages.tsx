@@ -1,9 +1,4 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem
-} from '@radix-ui/react-accordion';
-import { ReactNode } from 'react';
+import { ReactNode, useRef } from 'react';
 
 import {
   displayNickname,
@@ -11,7 +6,12 @@ import {
 } from '@/lib/misc/displayNickname';
 import { useWindowSize } from '@/lib/misc/windowSize';
 
-import { AccordionTrigger } from '../ui/accordion';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from '../ui/accordion';
 
 interface MessageDetails {
   authorName: string;
@@ -58,11 +58,47 @@ export function MessageContainer({ messages }: { messages: MessageDetails[] }) {
   );
 }
 
-export function BroadcastChat({ messages }: { messages: MessageDetails[] }) {
+function useScrolledToTop(onReachTop: () => void) {
+  const startRef = useRef<HTMLElement>(null);
+
+  const onScroll = (e: React.UIEvent<HTMLElement>) => {
+    const container = e.target as HTMLElement;
+
+    const { top: topLimit } = container.getBoundingClientRect();
+
+    if (!startRef.current) {
+      return;
+    }
+
+    const startPos = startRef.current.getBoundingClientRect().top;
+
+    if (startPos >= topLimit) {
+      onReachTop();
+    }
+  };
+
+  return {
+    onScroll,
+    startRef
+  };
+}
+
+interface BroadcastProps {
+  messages: MessageDetails[];
+  onReachTop: () => void;
+}
+
+export function BroadcastChat({ messages, onReachTop }: BroadcastProps) {
+  const { startRef, onScroll } = useScrolledToTop(onReachTop);
+
   return (
-    <Accordion type='single' collapsible>
-      <AccordionItem value='chat'>
-        <AccordionContent>
+    <Accordion className='h-full' type='single' collapsible>
+      <AccordionItem className='flex h-full flex-col' value='chat'>
+        <AccordionContent
+          onScroll={onScroll}
+          className='h-full overflow-y-auto'
+        >
+          <span ref={startRef}></span>
           <MessageContainer messages={messages} />
         </AccordionContent>
         <div className='mt-4 flex w-full items-center'>
