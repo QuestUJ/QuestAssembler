@@ -2,10 +2,7 @@ import { createLazyFileRoute } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
 import shortUUID from 'short-uuid';
 
-import {
-  MessageContainer,
-  OutletWrapper
-} from '@/components/chat-utilities/Messages';
+import { MessageContainer } from '@/components/chat-utilities/Messages';
 import { InputBar } from '@/components/InputBar';
 import { SvgSpinner } from '@/components/Spinner';
 import { useFetchMessages } from '@/lib/api/fetchMessages';
@@ -26,10 +23,8 @@ function PlayerChat() {
     receiver: characterUUID
   });
 
-  const { data, isPending, fetchNextPage, hasNextPage } = useFetchMessages(
-    roomUUID,
-    characterUUID
-  );
+  const { data, isPending, isFetching, fetchNextPage, hasNextPage } =
+    useFetchMessages(roomUUID, characterUUID);
 
   useMarkCurrentChat(characterUUID);
 
@@ -58,26 +53,23 @@ function PlayerChat() {
 
   return (
     <div className='flex h-full flex-col justify-end'>
-      <OutletWrapper>
-        <h1 onClick={() => void fetchNextPage()}>
-          {hasNextPage ? 'Git' : 'nie git'}
-        </h1>
+      <div className='h-[calc(100%-theme(space.20))] w-full'>
         {isPending ? (
           <div className='w-ful flex h-full items-center justify-center'>
             <SvgSpinner className='h-20 w-20' />
           </div>
         ) : (
           <MessageContainer
-            messages={
-              data?.map(m => ({
-                ...m,
-                type: 'message',
-                timestamp: new Date(m.timestamp)
-              })) ?? []
-            }
+            hasMore={hasNextPage}
+            fetchMore={() => !isFetching && void fetchNextPage()}
+            loader={<SvgSpinner className='h-20 w-20' />}
+            containerID='chat-scroller'
+            messages={data!.pages.map(page =>
+              page.map(msg => ({ ...msg, timestamp: new Date(msg.timestamp) }))
+            )}
           />
         )}
-      </OutletWrapper>
+      </div>
       <InputBar handleSend={sendMessage} sendButtonText='Send' />
     </div>
   );

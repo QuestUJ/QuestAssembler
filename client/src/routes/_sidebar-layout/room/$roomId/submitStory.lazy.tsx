@@ -148,6 +148,7 @@ function SubmitStory() {
           });
         } else {
           toast.error(...buildResponseErrorToast(res.error?.message));
+          setSubmitInProgress(false);
         }
       }
     );

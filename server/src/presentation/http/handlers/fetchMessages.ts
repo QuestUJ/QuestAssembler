@@ -33,8 +33,6 @@ export function addFetchMessagesHandler(
             request.user.userID
         );
 
-        console.log(other, count, offset);
-
         let result;
 
         if (!other) {
@@ -42,8 +40,6 @@ export function addFetchMessagesHandler(
                 count,
                 offset
             });
-
-            console.log(result);
 
             if (result.length > 0) {
                 await room.notifier.markMessageAsRead({

@@ -49,7 +49,7 @@ export function LeaveRoomDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className='m-0 h-12 w-12 rounded p-0'>
+        <Button className='m-0 h-10 w-10 rounded p-0'>
           <LogOut className='h-6 w-6' />
         </Button>
       </DialogTrigger>

@@ -11,7 +11,7 @@ interface QueryContext {
   pageParam: number | undefined;
 }
 
-const RANGE_COUNT = 4;
+const RANGE_COUNT = 25;
 
 export function useFetchMessages(roomUUID: string, other: string) {
   const receiverUrl = other === 'broadcast' ? '' : `&other=${other}`;
@@ -58,8 +58,7 @@ export function useFetchMessages(roomUUID: string, other: string) {
     queryFn,
     initialPageParam: undefined,
     getNextPageParam: lastPage =>
-      lastPage.length === 0 ? undefined : lastPage[0].id,
-    select: data => [...data.pages].reverse().flat(1)
+      lastPage.length === 0 ? undefined : lastPage[0].id
   });
 
   useErrorToast(infiniteQuery.isError, infiniteQuery.error?.message);

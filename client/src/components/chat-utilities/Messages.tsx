@@ -1,4 +1,5 @@
-import { ReactNode, useRef } from 'react';
+import { ReactNode } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 import {
   displayNickname,
@@ -6,6 +7,7 @@ import {
 } from '@/lib/misc/displayNickname';
 import { useWindowSize } from '@/lib/misc/windowSize';
 
+import { SvgSpinner } from '../Spinner';
 import {
   Accordion,
   AccordionContent,
@@ -45,61 +47,73 @@ export function Message({ message }: { message: MessageDetails }) {
   );
 }
 
-export function MessageContainer({ messages }: { messages: MessageDetails[] }) {
+interface MessagesProps {
+  messages: MessageDetails[][];
+  fetchMore: () => void;
+  hasMore: boolean;
+  loader: ReactNode;
+  containerID: string;
+}
+
+export function MessageContainer({
+  messages,
+  fetchMore,
+  hasMore,
+  loader,
+  containerID
+}: MessagesProps) {
   return (
-    <div className='flex flex-col gap-2' data-testid='messages'>
-      {messages.length <= 0 && (
-        <p className='text-secondary'>No messages yet</p>
-      )}
-      {messages.map(message => (
-        <Message key={message.timestamp.toISOString()} message={message} />
-      ))}
+    <div
+      id={containerID}
+      className='flex h-full w-full flex-col-reverse overflow-y-auto'
+    >
+      <InfiniteScroll
+        className='flex flex-col-reverse gap-2 p-4 pb-0'
+        inverse={true}
+        dataLength={messages.length}
+        next={fetchMore}
+        hasMore={hasMore}
+        loader={loader}
+        scrollableTarget={containerID}
+      >
+        {messages.length <= 0 && (
+          <p className='text-secondary'>No messages yet</p>
+        )}
+        {messages.map(page =>
+          page.map(msg => (
+            <span key={msg.timestamp.toISOString()}>
+              <Message message={msg} />
+            </span>
+          ))
+        )}
+        {!hasMore && <p className='m-4 text-secondary'>No more messages</p>}{' '}
+      </InfiniteScroll>
     </div>
   );
 }
 
-function useScrolledToTop(onReachTop: () => void) {
-  const startRef = useRef<HTMLElement>(null);
-
-  const onScroll = (e: React.UIEvent<HTMLElement>) => {
-    const container = e.target as HTMLElement;
-
-    const { top: topLimit } = container.getBoundingClientRect();
-
-    if (!startRef.current) {
-      return;
-    }
-
-    const startPos = startRef.current.getBoundingClientRect().top;
-
-    if (startPos >= topLimit) {
-      onReachTop();
-    }
-  };
-
-  return {
-    onScroll,
-    startRef
-  };
-}
-
 interface BroadcastProps {
-  messages: MessageDetails[];
-  onReachTop: () => void;
+  messages: MessageDetails[][];
+  fetchMore: () => void;
+  hasMore: boolean;
 }
 
-export function BroadcastChat({ messages, onReachTop }: BroadcastProps) {
-  const { startRef, onScroll } = useScrolledToTop(onReachTop);
-
+export function BroadcastChat({
+  messages,
+  fetchMore,
+  hasMore
+}: BroadcastProps) {
   return (
     <Accordion className='h-full' type='single' collapsible>
       <AccordionItem className='flex h-full flex-col' value='chat'>
-        <AccordionContent
-          onScroll={onScroll}
-          className='h-full overflow-y-auto'
-        >
-          <span ref={startRef}></span>
-          <MessageContainer messages={messages} />
+        <AccordionContent className='h-full'>
+          <MessageContainer
+            messages={messages}
+            fetchMore={fetchMore}
+            loader={<SvgSpinner className='h-20 w-20' />}
+            hasMore={hasMore}
+            containerID='broadcast-scroller'
+          />
         </AccordionContent>
         <div className='mt-4 flex w-full items-center'>
           <hr className='flex-grow border-primary' />

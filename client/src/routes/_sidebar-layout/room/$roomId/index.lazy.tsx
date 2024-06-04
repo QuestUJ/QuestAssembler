@@ -1,14 +1,17 @@
 import { ApiStoryChunk } from '@quasm/common';
-import { useQueryClient } from '@tanstack/react-query';
+import {
+  InfiniteData,
+  InfiniteQueryObserverLoadingResult,
+  useQueryClient
+} from '@tanstack/react-query';
 import { createLazyFileRoute, getRouteApi } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import shortUUID from 'short-uuid';
 
 import { BroadcastChat } from '@/components/chat-utilities/Messages';
 import { InputBar } from '@/components/InputBar';
 import { SvgSpinner } from '@/components/Spinner';
 import { StoryChunkContainer } from '@/components/story-utilities/StoryChunks';
-import { Button } from '@/components/ui/button';
 import { useFetchMessages } from '@/lib/api/fetchMessages';
 import { useFetchStory } from '@/lib/api/fetchStory';
 import { useMarkCurrentChat } from '@/lib/misc/markCurrentChat';
@@ -21,7 +24,12 @@ const route = getRouteApi('/_sidebar-layout/room/$roomId/');
 function Story() {
   const { roomId } = route.useParams();
   const roomUUID = shortUUID().toUUID(roomId);
-  const { data: story } = useFetchStory(roomUUID);
+  const {
+    data: story,
+    isFetching: isFetchingStory,
+    hasNextPage: hasNextPageOfStory,
+    fetchNextPage: fetchNextPageOfStory
+  } = useFetchStory(roomUUID);
   const queryClient = useQueryClient();
   const { setStoryIsLive } = useSocketSyncStore();
   const socket = useSocket();
@@ -39,12 +47,18 @@ function Story() {
   useSocketEvent('newTurn', chunk => {
     if (!story) return;
 
-    queryClient.setQueryData<ApiStoryChunk[]>(
+    const chunkApiFormat = {
+      id: chunk.id,
+      content: chunk.story,
+      imageURL: chunk.imageURL
+    };
+
+    queryClient.setQueryData<InfiniteData<ApiStoryChunk[], number | undefined>>(
       ['fetchStory', roomUUID],
-      [
-        ...story,
-        { id: chunk.id, content: chunk.story, imageURL: chunk.imageURL }
-      ]
+      data => ({
+        pages: data ? [[chunkApiFormat], ...data.pages] : [[chunkApiFormat]],
+        pageParams: data ? [chunk.id, ...data.pageParams] : [chunk.id]
+      })
     );
 
     if (socket) {
@@ -54,9 +68,9 @@ function Story() {
 
   const {
     data: messages,
-    hasNextPage,
-    isFetching,
-    fetchNextPage
+    hasNextPage: hasNextPageOfMessages,
+    isFetching: isFetchingMessages,
+    fetchNextPage: fetchNextPageOfMessages
   } = useFetchMessages(roomUUID, 'broadcast');
   const sendMessage = useSendMessage({
     roomUUID,
@@ -78,7 +92,7 @@ function Story() {
 
   if (!story) {
     return (
-      <div className='flex h-full w-full justify-center pt-20'>
+      <div className='flex h-full w-full justify-center'>
         <SvgSpinner className='h-20 w-20' />
       </div>
     );
@@ -86,22 +100,36 @@ function Story() {
 
   return (
     <div className='flex h-full flex-col justify-end'>
-      <div className='flex h-full flex-col justify-between'>
-        <div className='flex h-full flex-col justify-end'>
-          <StoryChunkContainer story={story} />
+      <div className=' flex h-[calc(100%-theme(space.20))] flex-col justify-end'>
+        <div
+          id='story-scroller'
+          className='flex flex-shrink flex-grow basis-full flex-col-reverse overflow-y-auto'
+        >
+          <StoryChunkContainer
+            story={story.pages}
+            fetchMore={() => !isFetchingStory && void fetchNextPageOfStory()}
+            hasMore={hasNextPageOfStory}
+            loader={<SvgSpinner className='mx-auto h-20 w-20' />}
+            containerID='story-scroller'
+          />
         </div>
-        <Button className='mx-auto w-40' onClick={() => void fetchNextPage()}>
-          Fetch
-        </Button>
-        <div className='h-fit max-h-[50%]'>
-          {messages && (
+        <div className='max-h-[50%]'>
+          <hr className='border-primary' />
+          {messages ? (
             <BroadcastChat
-              onReachTop={() => !isFetching && void fetchNextPage()}
-              messages={messages.map(m => ({
-                ...m,
-                timestamp: new Date(m.timestamp)
-              }))}
+              hasMore={hasNextPageOfMessages}
+              fetchMore={() =>
+                !isFetchingMessages && void fetchNextPageOfMessages()
+              }
+              messages={messages.pages.map(page =>
+                page.map(m => ({
+                  ...m,
+                  timestamp: new Date(m.timestamp)
+                }))
+              )}
             />
+          ) : (
+            <SvgSpinner className='mx-auto h-20 w-20' />
           )}
         </div>
       </div>
