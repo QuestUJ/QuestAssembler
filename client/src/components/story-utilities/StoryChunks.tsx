@@ -48,7 +48,9 @@ export function StoryChunkContainer({
       scrollableTarget={containerID}
     >
       {story.map(page =>
-        page.map(chunk => <StoryChunk key={chunk.id} storyChunk={chunk} />)
+        page
+          .map(chunk => <StoryChunk key={chunk.id} storyChunk={chunk} />)
+          .reverse()
       )}
     </InfiniteScroll>
   );

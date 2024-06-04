@@ -80,11 +80,13 @@ export function MessageContainer({
           <p className='text-secondary'>No messages yet</p>
         )}
         {messages.map(page =>
-          page.map(msg => (
-            <span key={msg.timestamp.toISOString()}>
-              <Message message={msg} />
-            </span>
-          ))
+          page
+            .map(msg => (
+              <span key={msg.timestamp.toISOString()}>
+                <Message message={msg} />
+              </span>
+            ))
+            .reverse()
         )}
         {!hasMore && <p className='m-4 text-secondary'>No more messages</p>}{' '}
       </InfiniteScroll>
@@ -124,15 +126,5 @@ export function BroadcastChat({
         </div>
       </AccordionItem>
     </Accordion>
-  );
-}
-// Outlet wrapper is used to display children correctly (not overflow the site)
-export function OutletWrapper({ children }: { children: ReactNode }) {
-  return (
-    <div className='h-full overflow-y-auto p-4 pb-0'>
-      <div className='flex h-fit min-h-full flex-col justify-end gap-4'>
-        {children}
-      </div>
-    </div>
   );
 }
