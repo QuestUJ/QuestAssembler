@@ -1,5 +1,5 @@
 import { ApiMessagePayload } from '@quasm/common';
-import { useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 import { toast } from 'sonner';
 
@@ -55,10 +55,12 @@ export function useMessageEvent(
     ]);
 
     if (messages) {
-      queryClient.setQueryData<ApiMessagePayload[]>(
-        ['fetchMessages', roomUUID, key],
-        [...messages, msg]
-      );
+      queryClient.setQueryData<
+        InfiniteData<ApiMessagePayload[], number | undefined>
+      >(['fetchMessages', roomUUID, key], data => ({
+        pages: data ? [[msg], ...data.pages] : [[msg]],
+        pageParams: data ? [msg.id, ...data.pageParams] : [msg.id]
+      }));
     }
   });
 }

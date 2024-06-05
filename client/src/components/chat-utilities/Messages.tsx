@@ -1,9 +1,5 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem
-} from '@radix-ui/react-accordion';
-import { ReactNode, useEffect, useRef } from 'react';
+import { ReactNode } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 import {
   displayNickname,
@@ -11,7 +7,13 @@ import {
 } from '@/lib/misc/displayNickname';
 import { useWindowSize } from '@/lib/misc/windowSize';
 
-import { AccordionTrigger } from '../ui/accordion';
+import { SvgSpinner } from '../Spinner';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from '../ui/accordion';
 
 interface MessageDetails {
   authorName: string;
@@ -45,34 +47,75 @@ export function Message({ message }: { message: MessageDetails }) {
   );
 }
 
-export function MessageContainer({ messages }: { messages: MessageDetails[] }) {
-  const scrollToRef = useRef<HTMLSpanElement>(null);
+interface MessagesProps {
+  messages: MessageDetails[][];
+  fetchMore: () => void;
+  hasMore: boolean;
+  loader: ReactNode;
+  containerID: string;
+}
 
-  useEffect(() => {
-    scrollToRef.current?.scrollIntoView({
-      behavior: 'smooth'
-    });
-  }, [scrollToRef, messages]);
-
+export function MessageContainer({
+  messages,
+  fetchMore,
+  hasMore,
+  loader,
+  containerID
+}: MessagesProps) {
   return (
-    <div className='flex flex-col gap-2' data-testid='messages'>
-      {messages.length <= 0 && (
-        <p className='text-secondary'>No messages yet</p>
-      )}
-      {messages.map(message => (
-        <Message key={message.timestamp.toISOString()} message={message} />
-      ))}
-      <span ref={scrollToRef}></span>
+    <div
+      id={containerID}
+      className='flex h-full w-full flex-col-reverse overflow-y-auto'
+    >
+      <InfiniteScroll
+        className='flex flex-col-reverse gap-2 p-4 pb-0'
+        inverse={true}
+        dataLength={messages.length}
+        next={fetchMore}
+        hasMore={hasMore}
+        loader={loader}
+        scrollableTarget={containerID}
+      >
+        {messages.length <= 0 && (
+          <p className='text-secondary'>No messages yet</p>
+        )}
+        {messages.map(page =>
+          page
+            .map(msg => (
+              <span key={msg.timestamp.toISOString()}>
+                <Message message={msg} />
+              </span>
+            ))
+            .reverse()
+        )}
+        {!hasMore && <p className='m-4 text-secondary'>No more messages</p>}{' '}
+      </InfiniteScroll>
     </div>
   );
 }
 
-export function BroadcastChat({ messages }: { messages: MessageDetails[] }) {
+interface BroadcastProps {
+  messages: MessageDetails[][];
+  fetchMore: () => void;
+  hasMore: boolean;
+}
+
+export function BroadcastChat({
+  messages,
+  fetchMore,
+  hasMore
+}: BroadcastProps) {
   return (
-    <Accordion type='single' collapsible>
-      <AccordionItem value='chat'>
-        <AccordionContent>
-          <MessageContainer messages={messages} />
+    <Accordion className='h-full' type='single' collapsible>
+      <AccordionItem className='flex h-full flex-col' value='chat'>
+        <AccordionContent className='h-full'>
+          <MessageContainer
+            messages={messages}
+            fetchMore={fetchMore}
+            loader={<SvgSpinner className='h-20 w-20' />}
+            hasMore={hasMore}
+            containerID='broadcast-scroller'
+          />
         </AccordionContent>
         <div className='mt-4 flex w-full items-center'>
           <hr className='flex-grow border-primary' />
@@ -83,15 +126,5 @@ export function BroadcastChat({ messages }: { messages: MessageDetails[] }) {
         </div>
       </AccordionItem>
     </Accordion>
-  );
-}
-// Outlet wrapper is used to display children correctly (not overflow the site)
-export function OutletWrapper({ children }: { children: ReactNode }) {
-  return (
-    <div className='h-full overflow-y-auto p-4 pb-0'>
-      <div className='flex h-fit min-h-full flex-col justify-end gap-4'>
-        {children}
-      </div>
-    </div>
   );
 }

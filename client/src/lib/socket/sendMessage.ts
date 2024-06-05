@@ -1,5 +1,5 @@
 import { ApiMessagePayload } from '@quasm/common';
-import { useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { useSocket } from '../stores/socketIOStore';
@@ -35,10 +35,12 @@ export function useSendMessage({ roomUUID, receiver }: Options) {
 
         const msg = res.payload!;
 
-        queryClient.setQueryData<ApiMessagePayload[]>(
-          ['fetchMessages', roomUUID, receiver],
-          old => (old ? [...old, msg] : [msg])
-        );
+        queryClient.setQueryData<
+          InfiniteData<ApiMessagePayload[], number | undefined>
+        >(['fetchMessages', roomUUID, receiver], data => ({
+          pages: data ? [[msg], ...data.pages] : [[msg]],
+          pageParams: data ? [msg.id, ...data.pageParams] : [msg.id]
+        }));
       }
     );
   };

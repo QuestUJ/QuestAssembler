@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { ReactNode } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 interface StoryChunkDetails {
   id: number;
@@ -21,22 +22,36 @@ export function StoryChunk({ storyChunk }: { storyChunk: StoryChunkDetails }) {
   );
 }
 
-export function StoryChunkContainer({ story }: { story: StoryChunkDetails[] }) {
-  const scrollToRef = useRef<HTMLSpanElement>(null);
+interface StoryChunksProps {
+  story: StoryChunkDetails[][];
+  fetchMore: () => void;
+  hasMore: boolean;
+  loader: ReactNode;
+  containerID: string;
+}
 
-  useEffect(() => {
-    scrollToRef.current?.scrollIntoView({
-      behavior: 'smooth'
-    });
-  }, [scrollToRef, story]);
-
+export function StoryChunkContainer({
+  story,
+  fetchMore,
+  hasMore,
+  loader,
+  containerID
+}: StoryChunksProps) {
   return (
-    <div className='flex flex-col gap-4'>
-      {story.map(storyChunk => (
-        <StoryChunk key={storyChunk.id} storyChunk={storyChunk} />
-      ))}
-      <span ref={scrollToRef}></span>
-      <hr className='border-primary' />
-    </div>
+    <InfiniteScroll
+      className='flex flex-col-reverse gap-4 p-8'
+      inverse={true}
+      dataLength={story.length}
+      next={fetchMore}
+      hasMore={hasMore}
+      loader={loader}
+      scrollableTarget={containerID}
+    >
+      {story.map(page =>
+        page
+          .map(chunk => <StoryChunk key={chunk.id} storyChunk={chunk} />)
+          .reverse()
+      )}
+    </InfiniteScroll>
   );
 }

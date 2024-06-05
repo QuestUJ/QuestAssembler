@@ -28,7 +28,7 @@ export class NotifierRepositoryPostgres implements INotifierRepository {
                     .doUpdateSet({
                         lastRead: chunkID
                     })
-                    .where('excluded.lastRead', '<', chunkID)
+                    .where('StoryReadTracking.lastRead', '<', chunkID)
             )
             .executeTakeFirstOrThrow();
     }
@@ -54,7 +54,7 @@ export class NotifierRepositoryPostgres implements INotifierRepository {
                 oc
                     .columns(['sender', 'receiver'])
                     .doUpdateSet({ lastRead: messageID })
-                    .where('excluded.lastRead', '<', messageID)
+                    .where('ChatReadTracking.lastRead', '<', messageID)
             )
             .executeTakeFirstOrThrow();
     }

@@ -86,7 +86,7 @@ function SidebarLayout() {
           <div className='col-span-4'>
             <TopBarExpanded />
           </div>
-          <div className='col-span-4 col-start-2 row-span-7 row-start-2 overflow-y-auto'>
+          <div className='col-span-4 col-start-2 row-span-7 row-start-2 h-full overflow-y-auto'>
             <Outlet />
           </div>
         </div>

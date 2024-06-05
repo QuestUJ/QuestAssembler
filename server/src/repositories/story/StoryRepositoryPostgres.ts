@@ -34,10 +34,16 @@ export class StoryRepositoryPostgres implements IStoryRepository {
     }
 
     async fetchStory(roomID: UUID, range: ChunkRange): Promise<StoryChunk[]> {
-        const storyChunkData = await this.db
+        let baseQuery = this.db
             .selectFrom('StoryChunks')
             .where('roomID', '=', roomID)
-            .orderBy('StoryChunks.chunkID desc')
+            .orderBy('chunkID desc');
+
+        if (range.offset) {
+            baseQuery = baseQuery.where('chunkID', '<', range.offset);
+        }
+
+        const storyChunkData = await baseQuery
             .limit(range.count)
             .selectAll()
             .execute();
