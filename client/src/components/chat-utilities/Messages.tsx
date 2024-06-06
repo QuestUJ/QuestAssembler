@@ -64,6 +64,7 @@ export function MessageContainer({
 }: MessagesProps) {
   return (
     <div
+      data-testid='messages'
       id={containerID}
       className='flex h-full w-full flex-col-reverse overflow-y-auto'
     >
