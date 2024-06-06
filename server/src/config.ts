@@ -24,7 +24,9 @@ const configMap = {
     HUGGINGFACE_TOKEN: Config.loadString('HUGGINGFACE_TOKEN'),
 
     SUPABASE_SERVICE_KEY: Config.loadString('SUPABASE_SERVICE_KEY'),
-    SUPABASE_CONNECTION_URL: Config.loadString('SUPABASE_CONNECTION_URL')
+    SUPABASE_CONNECTION_URL: Config.loadString('SUPABASE_CONNECTION_URL'),
+    AVATARS_BUCKET: Config.loadString('AVATARS_BUCKET'),
+    STORY_BUCKET: Config.loadString('STORY_BUCKET')
 };
 
 /**
