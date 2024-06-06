@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { twMerge } from 'tailwind-merge';
+
+import { cn } from '@/lib/utils';
 
 import { ImageEditDialog } from './dialogs/ImageEditDialog';
 import { Button } from './ui/button';
@@ -47,8 +48,8 @@ export function ImageHandler({
 
   return (
     <div
-      className={twMerge(
-        `flex h-80 w-80 items-center justify-center rounded-md bg-background ${className}`
+      className={cn(
+        `flex min-h-80 w-80 items-center justify-center rounded-md bg-background ${className}`
       )}
     >
       {selectedImage ? (
