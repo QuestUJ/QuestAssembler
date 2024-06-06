@@ -120,7 +120,9 @@
     background: hsl(var(--primary)) !important;
   }
 
-  .toaster {
-    bottom: 5rem !important;
+  @media screen and (min-width: 1024px) {
+    .toaster {
+      bottom: 5rem !important;
+    }
   }
 }
