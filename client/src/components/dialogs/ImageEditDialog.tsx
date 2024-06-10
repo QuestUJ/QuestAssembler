@@ -1,8 +1,5 @@
 import { useRef, useState } from 'react';
 import ImageEditor, { type Position } from 'react-avatar-editor';
-import { toast } from 'sonner';
-
-import { buildResponseErrorToast } from '@/lib/toasters';
 
 import { Button } from '../ui/button';
 import {
@@ -71,23 +68,24 @@ export function ImageEditDialog({
     });
   };
 
-  const convertEditedImageToBlob = async () => {
-    const dataUrl = imageEditorRef.current
-      ?.getImageScaledToCanvas()
-      .toDataURL();
-    if (!dataUrl) {
-      toast.error(
-        ...buildResponseErrorToast(
-          'Something went wrong when saving the image.'
-        )
-      );
-    }
-    const res = await fetch(dataUrl!);
-    return await res.blob();
+  const convertEditedImageToBlob = () => {
+    return new Promise<Blob | null>(resolve => {
+      if (!imageEditorRef.current) {
+        resolve(null);
+      }
+
+      imageEditorRef.current?.getImageScaledToCanvas().toBlob(blob => {
+        resolve(blob);
+      });
+    });
   };
 
   const submitChangesHandler = async () => {
     const imageBlob = await convertEditedImageToBlob();
+    if (imageBlob === null) {
+      return;
+    }
+
     handleSave(imageBlob);
     setOpen(false);
   };
@@ -97,11 +95,12 @@ export function ImageEditDialog({
       <DialogTrigger asChild>
         <Button className='w-full'>Modify image</Button>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px]'>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Modify the image</DialogTitle>
         </DialogHeader>
         <ImageEditor
+          style={{ margin: 'auto' }}
           ref={imageEditorRef}
           scale={imageState.scale}
           image={image}

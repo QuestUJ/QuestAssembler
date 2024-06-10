@@ -35,7 +35,7 @@ export function ActionsAccordion({
           Image
         </AccordionTrigger>
         <AccordionContent>
-          <div className='flex h-80 w-80'>
+          <div className='flex w-80'>
             <ImageHandler
               handlerId='accordion_story_image'
               onImageSave={saveImageCallback}

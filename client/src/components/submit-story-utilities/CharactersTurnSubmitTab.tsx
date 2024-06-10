@@ -12,11 +12,14 @@ export function CharacterSubmitTab({
     <Tabs defaultValue={roomCharacters[0].characterID} className='w-4/5'>
       <TabsList className='w-full'>
         {roomCharacters.map(character => (
-          <PlayersTabNavigation characterInfo={character} />
+          <PlayersTabNavigation
+            key={character.characterID}
+            characterInfo={character}
+          />
         ))}
       </TabsList>
       {roomCharacters.map(character => (
-        <TabsContent value={character.characterID}>
+        <TabsContent key={character.characterID} value={character.characterID}>
           <TurnSubmitCard characterInfo={character} />
         </TabsContent>
       ))}

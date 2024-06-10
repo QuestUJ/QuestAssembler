@@ -7,6 +7,8 @@ import {
 } from '@quasm/common';
 import { randomUUID } from 'crypto';
 
+import { config } from '@/config';
+
 import { IFileStorage } from './IFileStorage';
 
 type CreateObjectSupabaseResponse = {
@@ -14,6 +16,11 @@ type CreateObjectSupabaseResponse = {
     Key: string;
     error?: string;
 };
+
+const { STORY_BUCKET, AVATARS_BUCKET } = config.pick([
+    'STORY_BUCKET',
+    'AVATARS_BUCKET'
+]);
 
 /**
  * Supabase based file storage
@@ -48,7 +55,7 @@ export class SupabaseStorageProvider implements IFileStorage {
         }
 
         const objectURL = await this.requestObjectCreation(
-            'story_images',
+            STORY_BUCKET,
             roomId,
             image
         );
@@ -74,7 +81,7 @@ export class SupabaseStorageProvider implements IFileStorage {
             await this.deleteImageAtPublicURL(oldAvatarURL);
         }
         const avatarURL = await this.requestObjectCreation(
-            'avatars',
+            AVATARS_BUCKET,
             roomId,
             image
         );
