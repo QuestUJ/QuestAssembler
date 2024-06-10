@@ -23,7 +23,7 @@ export function usePlayerReadyEvent(
 
     if (player) {
       toast(player.nick, {
-        description: 'has ended his turn',
+        description: 'has ended their turn',
         icon: avatar(player)
       });
     }
