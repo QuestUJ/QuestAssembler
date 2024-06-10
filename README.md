@@ -6,29 +6,29 @@
 
 ---
 
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
 [![Typescript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)](https://socket.io/)
+[![phi-3 mini](https://img.shields.io/badge/phi--3%20mini-fccc44?style=for-the-badge&logo=microsoft&logoColor=black)](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct)
 [![Postgresql](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)](https://expressjs.com/)
 [![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Eslint](https://img.shields.io/badge/eslint-3A33D1?style=for-the-badge&logo=eslint&logoColor=white)](https://eslint.org/)
 [![Prettier](https://img.shields.io/badge/prettier-1A2C34?style=for-the-badge&logo=prettier&logoColor=F7BA3E)](https://prettier.io/)
-[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
-[![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)](https://socket.io/)
-[![phi-3 mini](https://img.shields.io/badge/phi--3%20mini-fccc44?style=for-the-badge&logo=microsoft&logoColor=black)](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct)
 
 
+<br>
 </div>
 
-# About
-
-Welcome to the Quest Assembler repository! This project aims to provide a text-based RPG platform for players and dungeon masters to enjoy game sessions over the internet.
+# Welcome to the Quest Assembler repository! 
+This project aims to provide a text-based Role Playing Game platform to enjoy game sessions over the internet.
 
 ### Real-time Communication
 > Stay connected with your co-Players and Game Master through built-in chat, fostering teamwork.
   
 ### Immersive Storytelling
-> Embark on epic quests and unravel captivating narratives with AI-assisted story generation. From plot twists to character interactions, our platform enhances immersion and engagement in your stories. Utilize the power of Phi-3-Mini for enhanced storytelling, and add photos to make the story visually engaging.
+> Embark on epic quests and unravel captivating narratives with AI-assisted story generation. From plot twists to character interactions, our platform boosts immersion in your stories, utilizing the power of Phi-3-Mini. Add photos for an enhanced visual experience.
 
 ### Character personalization
 > Personalize your online presence by setting your avatar and character description. This allows you to visually represent your character during gameplay.
