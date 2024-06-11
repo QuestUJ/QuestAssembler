@@ -1,6 +1,7 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { ApiGenerateTextPayload, GenerateTextBody } from '@quasm/common';
 import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 import { useStoryChunkStore } from '../stores/storyChunkStore';
 import { fetchPOST } from './core/fetchPOST';
@@ -29,6 +30,9 @@ export function useGenerateText(
     onSuccess: async ({ generatedText }) => {
       setStoryWithLLM(generatedText);
       if (onSuccess) await onSuccess(generatedText);
+    },
+    onError: err => {
+      toast.error(err.message);
     }
   });
 }

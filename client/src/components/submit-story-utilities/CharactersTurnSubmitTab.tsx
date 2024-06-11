@@ -9,7 +9,7 @@ export function CharacterSubmitTab({
   roomCharacters: CharacterDetails[];
 }) {
   return (
-    <Tabs defaultValue={roomCharacters[0].characterID} className='w-4/5'>
+    <Tabs defaultValue={roomCharacters[0]?.characterID} className='w-4/5'>
       <TabsList className='w-full'>
         {roomCharacters.map(character => (
           <PlayersTabNavigation

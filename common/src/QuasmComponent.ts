@@ -1,4 +1,5 @@
 export enum QuasmComponent {
+    AI = 'AI',
     AUTH = 'Authorization',
     DATABASE = 'Database',
     SOCKET = 'Socket',
