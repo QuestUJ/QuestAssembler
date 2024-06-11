@@ -1,7 +1,7 @@
 export interface StoryChunkDetails {
     title: string;
     content: string;
-    imageUrl?: string;
+    imageURL?: string;
 }
 
 export class StoryChunk {
@@ -9,7 +9,7 @@ export class StoryChunk {
         readonly id: number = -1,
         readonly title: string = '',
         readonly content: string = '',
-        readonly imageUrl: string = '',
+        readonly imageURL: string = '',
         readonly timestamp: Date = new Date()
     ) {}
 }

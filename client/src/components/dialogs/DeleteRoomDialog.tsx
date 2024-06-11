@@ -1,6 +1,7 @@
 import { useParams } from '@tanstack/react-router';
 import { useState } from 'react';
 import shortUUID from 'short-uuid';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -11,37 +12,30 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
-import { useSocket } from '@/lib/socketIOStore';
-import { SocketErrorToast } from '@/lib/toasters';
-
-import { useToast } from '../ui/use-toast';
+import { useSocket } from '@/lib/stores/socketIOStore';
+import { buildResponseErrorToast, SocketErrorTxt } from '@/lib/toasters';
 
 export function DeleteRoomDialog() {
   const [open, setOpen] = useState(false);
   const { roomId }: { roomId: string } = useParams({
     strict: false
   });
-  const { toast } = useToast();
 
   const socket = useSocket();
 
   const handleDelete = () => {
     if (!socket) {
-      toast(SocketErrorToast);
+      toast.error(SocketErrorTxt);
       return;
     }
 
     socket.emit('deleteRoom', { roomID: shortUUID().toUUID(roomId) }, res => {
       if (res.success) {
-        toast({
-          title: 'Success!',
+        toast.success('Success!', {
           description: 'Successfully deleted the room!'
         });
       } else {
-        toast({
-          title: 'Error!',
-          description: 'Cannot delete the room.'
-        });
+        toast.error(...buildResponseErrorToast(res.error?.message));
       }
     });
   };

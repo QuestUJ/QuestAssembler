@@ -29,14 +29,17 @@ export class StoryComponent implements IQuasmEventEmitter<StoryEventMap> {
 
     on<T extends keyof StoryEventMap>(
         event: T,
-        handler: (payload: StoryEventMap[T]) => void | Promise<void>
+        handler: StoryEventMap[T]
     ): void {
-        // @ts-expect-error Argument
         this.emitter.on(event, handler);
     }
 
     fetchStory(range: ChunkRange): Promise<StoryChunk[]> {
         return this.storyRepository.fetchStory(this.roomID, range);
+    }
+
+    fetchAllStoryChunks(): Promise<StoryChunk[]> {
+        return this.storyRepository.fetchAllStoryChunks();
     }
 
     async addStoryChunk(chunk: StoryChunkDetails): Promise<StoryChunk> {

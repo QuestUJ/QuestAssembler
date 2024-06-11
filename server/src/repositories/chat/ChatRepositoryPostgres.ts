@@ -19,7 +19,13 @@ export class ChatRepositoryPostgres implements IChatRepository {
     ): Promise<ChatMessage> {
         const result = await this.db
             .insertInto('ChatMessages')
-            .values(chatMessageDetails)
+            .values({
+                ...chatMessageDetails,
+                to:
+                    chatMessageDetails.to === 'broadcast'
+                        ? null
+                        : chatMessageDetails.to
+            })
             .returning(['messageID', 'timestamp'])
             .executeTakeFirstOrThrow();
 
@@ -35,12 +41,15 @@ export class ChatRepositoryPostgres implements IChatRepository {
     }
 
     async fetchMessageCount(
-        chatParticipants: ChatParticipants
+        chatParticipants: ChatParticipants,
+        roomID: UUID
     ): Promise<number> {
         if (chatParticipants === 'broadcast') {
             const { messageCount } = await this.db
                 .selectFrom('ChatMessages')
-                .where('ChatMessages.to', '=', 'broadcast')
+                .where('ChatMessages.to', 'is', null)
+                .innerJoin('Characters', 'ChatMessages.from', 'Characters.id')
+                .where('Characters.roomID', '=', roomID)
                 .select(({ fn }) =>
                     fn
                         .count<number>('ChatMessages.messageID')
@@ -73,11 +82,15 @@ export class ChatRepositoryPostgres implements IChatRepository {
 
     async fetchMessages(
         chatParticipants: ChatParticipants,
+        roomID: UUID,
         range: ChunkRange
     ): Promise<ChatMessage[]> {
         let query = this.db.selectFrom('ChatMessages');
         if (chatParticipants === 'broadcast') {
-            query = query.where('ChatMessages.to', '=', 'broadcast');
+            query = query
+                .where('ChatMessages.to', 'is', null)
+                .innerJoin('Characters', 'ChatMessages.from', 'Characters.id')
+                .where('Characters.roomID', '=', roomID);
         } else {
             const [x, y] = chatParticipants;
 
@@ -106,7 +119,7 @@ export class ChatRepositoryPostgres implements IChatRepository {
                     new ChatMessage(
                         m.messageID,
                         m.from as UUID,
-                        m.to as UUID,
+                        m.to === null ? 'broadcast' : (m.to as UUID),
                         m.content,
                         m.timestamp
                     )

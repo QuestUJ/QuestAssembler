@@ -1,11 +1,12 @@
 import { QuasmComponent } from './QuasmComponent';
+import { ErrorCode } from './QuasmError';
 
 export interface ApiResponse<Payload> {
     success: boolean;
     payload?: Payload;
     error?: {
         location: QuasmComponent;
-        code: number;
+        code: ErrorCode;
         message: string;
     };
 }
@@ -24,6 +25,7 @@ export interface ApiRoomPayload {
     isCurrentUserGameMaster: boolean;
     lastImageUrl: string | undefined;
     lastMessages: string[] | undefined;
+    numOfUnreadStuff: number;
 }
 
 export type FetchRoomsResponse = ApiResponse<ApiRoomPayload[]>;
@@ -38,14 +40,15 @@ export interface ApiPlayerPayload {
     isReady: boolean;
 }
 
-export interface RoomDetailsPayload {
+export interface ApiRoomDetailsPayload {
     id: string;
     roomName: string;
     gameMasterID: string;
+    maxPlayers: number;
     currentPlayer: ApiPlayerPayload;
 }
 
-export type GetRoomResponse = ApiResponse<RoomDetailsPayload>;
+export type GetRoomResponse = ApiResponse<ApiRoomDetailsPayload>;
 
 // =======================
 // /getRoomPlayers/
@@ -78,7 +81,7 @@ export interface ApiMessagePayload {
     id: number;
     authorName: string;
     characterPictureURL: string | undefined;
-    timestamp: Date;
+    timestamp: string;
     content: string;
 }
 
@@ -133,3 +136,14 @@ export interface ApiStoryChunk {
 }
 
 export type FetchStoryResponse = ApiResponse<ApiStoryChunk[]>;
+
+// ======================
+// /getUnreadMessages/
+// ======================
+
+export type GetUnreadMessagesResponse = ApiResponse<Record<string, number>>;
+
+// ======================
+// /getUnreadStory/
+// ======================
+export type GetUnreadStoryResponse = ApiResponse<number>;

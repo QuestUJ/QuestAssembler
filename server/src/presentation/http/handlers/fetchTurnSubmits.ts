@@ -50,7 +50,7 @@ export function addFetchTurnSubmitsHandler(
                 return {
                     characterID: ch.id,
                     nick: ch.getNick(),
-                    profileIMG: ch.profileIMG,
+                    profileIMG: ch.getProfileImageURL(),
                     submit: submit
                         ? {
                               content: submit.content,

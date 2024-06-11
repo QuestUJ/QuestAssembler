@@ -1,16 +1,15 @@
-export const SocketErrorToast: { title: string; variant: 'destructive' } = {
-  title: 'Connection issue! Try refreshing site!',
-  variant: 'destructive'
-};
+export const SocketErrorTxt = 'Connection issue! Try refreshing site!';
 
-export function getResponseErrorToast(error?: string): {
-  title: string;
-  variant: 'destructive';
-  description: string | undefined;
-} {
-  return {
-    title: 'Something went wrong!',
-    variant: 'destructive',
-    description: error
-  };
+export function buildResponseErrorToast(error?: string): [
+  string,
+  {
+    description: string | undefined;
+  }
+] {
+  return [
+    'Something went wrong!',
+    {
+      description: error
+    }
+  ];
 }

@@ -52,7 +52,11 @@ export enum ErrorCode {
     // Story related
     MasterAction = 'master.action',
     CantViewOtherActions = 'cant.view.other.actions',
-    UnauthorizedStorySubmit = 'unauthorized.story.submit'
+    UnauthorizedStorySubmit = 'unauthorized.story.submit',
+
+    // Storage related
+    StorageAPI = 'storage.api',
+    StorageValidationFailed = 'storage.validation.failed'
 }
 
 /**
@@ -97,7 +101,10 @@ export const ErrorMap: Record<ErrorCode, string> = {
 
     [ErrorCode.MasterAction]: `Game master is not able to submit actions only Story`,
     [ErrorCode.CantViewOtherActions]: `Regular player cannot view other players' turn submits`,
-    [ErrorCode.UnauthorizedStorySubmit]: `Only game master can submit story chunks`
+    [ErrorCode.UnauthorizedStorySubmit]: `Only game master can submit story chunks`,
+
+    [ErrorCode.StorageAPI]: `Error in storage provider class`,
+    [ErrorCode.StorageValidationFailed]: `Image validation failed in storage class`
 };
 
 export class QuasmError extends Error {

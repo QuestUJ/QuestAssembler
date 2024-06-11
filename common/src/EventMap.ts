@@ -1,6 +1,11 @@
+import { ErrorCode } from './QuasmError';
+
 export interface Ack<T = undefined> {
     success: boolean;
-    error?: string;
+    error?: {
+        code: ErrorCode;
+        message: string;
+    };
     payload?: T;
 }
 
@@ -22,6 +27,7 @@ export interface ChangeCharacterSettingsPayload {
     roomID: string;
     nick: string;
     description: string;
+    avatar: Uint8Array | undefined;
 }
 
 export interface ChangeRoomSettingsPayload {
@@ -47,6 +53,7 @@ export interface SubmitActionAck {
 export interface SubmitStoryPayload {
     roomID: string;
     story: string;
+    image: Uint8Array | undefined;
 }
 
 export interface SubmitStoryAck {
@@ -54,6 +61,17 @@ export interface SubmitStoryAck {
     title: string;
     content: string;
     imageURL?: string;
+}
+
+export interface MarkStoryReadPayload {
+    roomID: string;
+    chunkID: number;
+}
+
+export interface MarkMessageReadPayload {
+    roomID: string;
+    senderID: string;
+    messageID: number;
 }
 
 export interface ClientToServerEvents {
@@ -81,11 +99,14 @@ export interface ClientToServerEvents {
         submit: SubmitStoryPayload,
         callback: (res: Ack<SubmitStoryAck>) => void
     ) => void;
+    markStoryRead: (payload: MarkStoryReadPayload) => void;
+    markMessageRead: (payload: MarkMessageReadPayload) => void;
 }
 
 // ==============================================================================================
 export interface MsgEvent {
     id: number;
+    broadcast: boolean;
     roomID: string;
     from: string;
     authorName: string;
@@ -133,4 +154,5 @@ export interface InternalEvents {}
 export interface SocketData {
     userID: string;
     token: string;
+    subscribedRoomID: string | null;
 }

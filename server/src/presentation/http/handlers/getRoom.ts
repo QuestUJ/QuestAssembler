@@ -7,7 +7,6 @@ import {
 import { UUID } from 'crypto';
 import { FastifyInstance } from 'fastify';
 
-import { logger } from '@/infrastructure/logger/Logger';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 import { getRoomCheckUser } from './utils';
@@ -23,11 +22,6 @@ export function addGetRoomHandler(
             roomID: string;
         };
     }>('/getRoom/:roomID', async (request, reply) => {
-        logger.info(
-            QuasmComponent.HTTP,
-            `${request.user.userID} | GET /getRoom RECEIVED ${request.params.roomID}`
-        );
-
         const room = await getRoomCheckUser({
             roomID: request.params.roomID as UUID,
             userID: request.user.userID,
@@ -43,11 +37,9 @@ export function addGetRoomHandler(
             );
         }
 
-        const players = room.characters.getCharacters();
-
-        const currentPlayer = players.find(
-            p => p.userID === request.user.userID
-        )!;
+        const currentPlayer = room.characters.getCharacterByUserID(
+            request.user.userID
+        );
 
         await reply.send({
             success: true,
@@ -55,18 +47,14 @@ export function addGetRoomHandler(
                 id: room.id,
                 roomName: room.roomSettings.getName(),
                 gameMasterID: room.characters.getGameMaster().id,
+                maxPlayers: room.roomSettings.getMaxPlayerCount(),
                 currentPlayer: {
                     id: currentPlayer.id,
                     nick: currentPlayer.getNick(),
-                    profileIMG: currentPlayer.profileIMG,
+                    profileIMG: currentPlayer.getProfileImageURL(),
                     isReady: !!currentPlayer.getTurnSubmit()
                 }
             }
         });
-
-        logger.info(
-            QuasmComponent.HTTP,
-            `${request.user.userID} | GET /getRoom SUCCESS ${request.params.roomID}`
-        );
     });
 }

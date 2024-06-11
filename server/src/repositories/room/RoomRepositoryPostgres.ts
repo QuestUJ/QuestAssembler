@@ -6,7 +6,6 @@ import { Character, CharacterDetails } from '@/domain/game/character/Character';
 import { Room } from '@/domain/game/room/Room';
 import { RoomSettingsDetails } from '@/domain/game/room/RoomSettings';
 import { PlayerTurnSubmit } from '@/domain/game/story/PlayerTurnSubmit';
-import { logger } from '@/infrastructure/logger/Logger';
 import { Database } from '@/infrastructure/postgres/db';
 
 import { DataAccessFacade } from '../DataAccessFacade';
@@ -58,10 +57,6 @@ export class RoomRepositoryPostgres implements IRoomRepository {
         room.characters.restoreCharacter(master);
         room.chats.spawnChats();
 
-        logger.info(
-            QuasmComponent.DATABASE,
-            `Room ${roomUUID} validation passed, persisting in database`
-        );
         await this.db.transaction().execute(async trx => {
             await trx
                 .insertInto('Rooms')
@@ -139,7 +134,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             const submit =
                 r.submitContent && r.submitTimestamp
                     ? new PlayerTurnSubmit(r.submitContent, r.submitTimestamp)
-                    : null;
+                    : undefined;
 
             const character = new Character(
                 this.dataAccess!.characterRepository,
@@ -193,7 +188,7 @@ export class RoomRepositoryPostgres implements IRoomRepository {
             const submit =
                 r.submitContent && r.submitTimestamp
                     ? new PlayerTurnSubmit(r.submitContent, r.submitTimestamp)
-                    : null;
+                    : undefined;
 
             const character = new Character(
                 this.dataAccess!.characterRepository,

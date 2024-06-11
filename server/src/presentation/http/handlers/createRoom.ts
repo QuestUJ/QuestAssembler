@@ -1,11 +1,6 @@
-import {
-    CreateRoomBody,
-    CreateRoomResponse,
-    QuasmComponent
-} from '@quasm/common';
+import { CreateRoomBody, CreateRoomResponse } from '@quasm/common';
 import { FastifyInstance } from 'fastify';
 
-import { logger } from '@/infrastructure/logger/Logger';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
 export function addCreateRoomHandler(
@@ -16,11 +11,6 @@ export function addCreateRoomHandler(
         Body: CreateRoomBody;
         Reply: CreateRoomResponse;
     }>('/createRoom', async (request, reply) => {
-        logger.info(
-            QuasmComponent.HTTP,
-            `${request.user.userID} | POST /createRoom RECEIVED ${JSON.stringify(request.body)}`
-        );
-
         const { name, maxPlayers } = request.body as {
             name: string;
             maxPlayers: number;
@@ -42,10 +32,5 @@ export function addCreateRoomHandler(
             success: true,
             payload: room.id
         });
-
-        logger.info(
-            QuasmComponent.HTTP,
-            `${request.user.userID} | POST /createRoom SUCCESS ${JSON.stringify(request.body)}`
-        );
     });
 }

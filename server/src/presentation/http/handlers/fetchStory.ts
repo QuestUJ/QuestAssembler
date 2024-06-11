@@ -32,11 +32,23 @@ export function addFetchStoryHandler(
             offset: request.query.offset
         });
 
+        const character = room.characters.getCharacterByUserID(
+            request.user.userID
+        );
+
+        if (story.length > 0) {
+            await room.notifier.markStoryAsRead({
+                chunkID: story[story.length - 1].id,
+                characterID: character.id
+            });
+        }
+
         await reply.send({
             success: true,
             payload: story.map(s => ({
                 id: s.id,
-                content: s.content
+                content: s.content,
+                imageURL: s.imageURL
             }))
         });
     });

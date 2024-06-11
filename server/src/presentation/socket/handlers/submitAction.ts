@@ -5,7 +5,7 @@ import { withErrorHandling } from './withErrorHandling';
 
 export function submitActionHandler({ socket, dataAccess, io }: HandlerConfig) {
     socket.on('submitAction', ({ content, roomID }, res) => {
-        withErrorHandling(res, async () => {
+        withErrorHandling(async () => {
             const room = await dataAccess.roomRepository.getRoomByID(
                 roomID as UUID
             );
@@ -39,11 +39,11 @@ export function submitActionHandler({ socket, dataAccess, io }: HandlerConfig) {
                 masterSocket.emit('turnSubmit', {
                     characterID: character.id,
                     nick: character.getNick(),
-                    profileIMG: character.profileIMG,
+                    profileIMG: character.getProfileImageURL(),
                     content: savedContent,
                     timestamp: timestamp.toISOString()
                 });
             }
-        });
+        }, res);
     });
 }

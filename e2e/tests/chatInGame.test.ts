@@ -31,17 +31,29 @@ testWithRooms.describe('[FM2, FS2] Chat in game', () => {
             await room.sendMessage(bob, 'josh', 'Secret message to josh');
             await room.sendMessage(josh, 'bob', 'Secret message to bob');
 
-            await expect(bob.getByText('Secret message to josh')).toBeVisible();
-            await expect(bob.locator('p:has-text("Secret message to bob")')).toBeVisible();
+            const bobMessages = bob.getByTestId('messages');
+            const joshMessages = josh.getByTestId('messages');
+            const aliceMessges = alice.getByTestId('messages');
 
             await expect(
-                josh.getByText('Secret message to josh')
+                bobMessages.getByText('Secret message to josh')
             ).toBeVisible();
-            await expect(josh.getByText('Secret message to bob')).toBeVisible();
-
-            await expect(alice.getByText('Hello from alice')).toBeVisible();
             await expect(
-                alice.getByText('Secret message to josh')
+                bobMessages.locator('p:has-text("Secret message to bob")')
+            ).toBeVisible();
+
+            await expect(
+                joshMessages.getByText('Secret message to josh')
+            ).toBeVisible();
+            await expect(
+                joshMessages.getByText('Secret message to bob')
+            ).toBeVisible();
+
+            await expect(
+                aliceMessges.getByText('Hello from alice')
+            ).toBeVisible();
+            await expect(
+                aliceMessges.getByText('Secret message to josh')
             ).not.toBeVisible();
         }
     );

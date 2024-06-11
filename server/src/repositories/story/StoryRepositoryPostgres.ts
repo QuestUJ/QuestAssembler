@@ -18,6 +18,7 @@ export class StoryRepositoryPostgres implements IStoryRepository {
             .insertInto('StoryChunks')
             .values({
                 roomID,
+                imageURL: chunk.imageURL,
                 ...chunk
             })
             .returningAll()
@@ -33,15 +34,47 @@ export class StoryRepositoryPostgres implements IStoryRepository {
     }
 
     async fetchStory(roomID: UUID, range: ChunkRange): Promise<StoryChunk[]> {
-        const storyChunkData = await this.db
+        let baseQuery = this.db
             .selectFrom('StoryChunks')
             .where('roomID', '=', roomID)
+            .orderBy('chunkID desc');
+
+        if (range.offset) {
+            baseQuery = baseQuery.where('chunkID', '<', range.offset);
+        }
+
+        const storyChunkData = await baseQuery
             .limit(range.count)
             .selectAll()
             .execute();
 
+        return storyChunkData
+            .reverse()
+            .map(
+                ch =>
+                    new StoryChunk(
+                        ch.chunkID,
+                        ch.title,
+                        ch.content,
+                        ch.imageURL ? ch.imageURL : ''
+                    )
+            );
+    }
+
+    async fetchAllStoryChunks() {
+        const storyChunkData = await this.db
+            .selectFrom('StoryChunks')
+            .selectAll()
+            .execute();
+
         return storyChunkData.map(
-            ch => new StoryChunk(ch.chunkID, ch.title, ch.content)
+            ch =>
+                new StoryChunk(
+                    ch.chunkID,
+                    ch.title,
+                    ch.content,
+                    ch.imageURL ? ch.imageURL : ''
+                )
         );
     }
 }

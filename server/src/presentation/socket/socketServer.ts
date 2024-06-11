@@ -8,6 +8,7 @@ import {
 import { type Server, Socket } from 'socket.io';
 
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
+import { IFileStorage } from '@/domain/tools/file-storage/IFileStorage';
 import { logger } from '@/infrastructure/logger/Logger';
 import { DataAccessFacade } from '@/repositories/DataAccessFacade';
 
@@ -31,19 +32,19 @@ export type QuasmSocket = Socket<
 export function startSocketServer(
     io: QuasmSocketServer,
     dataAccess: DataAccessFacade,
-    authProvider: IAuthProvider
+    authProvider: IAuthProvider,
+    fileStorageProvider: IFileStorage
 ) {
-    logger.info(QuasmComponent.SOCKET, 'Socket.io attached');
+    logger.info(QuasmComponent.SOCKET, ['Socket.io attached']);
 
     io.use(auth(authProvider));
 
     io.on('connection', socket => {
-        logger.info(
-            QuasmComponent.SOCKET,
+        logger.info(QuasmComponent.SOCKET, [
             `Received connection from: ${socket.data.userID}`
-        );
+        ]);
 
-        new User(socket, io, dataAccess, authProvider);
+        new User(socket, io, dataAccess, authProvider, fileStorageProvider);
     });
 }
 

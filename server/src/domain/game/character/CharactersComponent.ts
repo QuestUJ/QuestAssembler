@@ -1,28 +1,37 @@
 import { ErrorCode, QuasmComponent, QuasmError } from '@quasm/common';
 import { UUID } from 'crypto';
 
+import { AsyncEventEmitter } from '@/domain/core/AsyncEventEmitter';
+import { IQuasmEventEmitter } from '@/domain/core/IQuasmEventEmitter';
 import { ICharacterRepository } from '@/repositories/character/ICharacterRepository';
 
 import { RoomSettings } from '../room/RoomSettings';
 import { Character, CharacterDetails } from './Character';
 
-export class CharactersComponent {
+interface CharactersEventMap {
+    playerJoined: (character: Character) => void;
+    playerLeft: (character: Character) => void;
+}
+
+export class CharactersComponent
+    implements IQuasmEventEmitter<CharactersEventMap>
+{
     private characters: Character[] = [];
-    private characterJoinHandler?: (character: Character) => void;
-    private characterLeaveHandler?: (character: Character) => void;
+    private eventEmitter: AsyncEventEmitter<CharactersEventMap>;
 
     constructor(
         private characterRepository: ICharacterRepository,
         private roomID: UUID,
         private settings: RoomSettings
-    ) {}
-
-    onCharacterJoin(handler: (character: Character) => void) {
-        this.characterJoinHandler = handler;
+    ) {
+        this.eventEmitter = new AsyncEventEmitter();
     }
 
-    onCharacterLeave(handler: (character: Character) => void) {
-        this.characterLeaveHandler = handler;
+    on<T extends keyof CharactersEventMap>(
+        event: T,
+        handler: CharactersEventMap[T]
+    ): void {
+        this.eventEmitter.on(event, handler);
     }
 
     validateCharacter(character: CharacterDetails) {
@@ -111,9 +120,7 @@ export class CharactersComponent {
 
         this.characters.push(character);
 
-        if (this.characterJoinHandler) {
-            this.characterJoinHandler(character);
-        }
+        await this.eventEmitter.emit('playerJoined', character);
 
         return character;
     }
@@ -135,9 +142,9 @@ export class CharactersComponent {
             );
         }
         const characterToBeDeleted = this.characters[characterIndex];
-        if (this.characterLeaveHandler) {
-            this.characterLeaveHandler(characterToBeDeleted);
-        }
+
+        await this.eventEmitter.emit('playerLeft', characterToBeDeleted);
+
         this.characters.splice(characterIndex, 1);
         await characterToBeDeleted.delete();
     }

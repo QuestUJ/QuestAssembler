@@ -1,14 +1,14 @@
 import './index.css';
 
-import { Auth0Provider } from '@auth0/auth0-react';
+import { AppState, Auth0Provider } from '@auth0/auth0-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { Toaster } from '@/components/ui/toaster';
 import { config } from '@/config';
 
+import { Toaster } from './components/ui/sonner';
 import { routeTree } from './routeTree.gen';
 
 const router = createRouter({ routeTree });
@@ -31,6 +31,12 @@ if (!rootElement.innerHTML) {
 
   const queryClient = new QueryClient();
 
+  const onRedirectCallback = (appState: AppState | undefined) => {
+    if (appState?.returnTo) {
+      window.location.replace(appState.returnTo);
+    }
+  };
+
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
@@ -42,6 +48,7 @@ if (!rootElement.innerHTML) {
             audience: AUTH0_AUDIENCE
           }}
           cacheLocation='localstorage'
+          onRedirectCallback={onRedirectCallback}
         >
           <RouterProvider router={router} />
           <Toaster />

@@ -10,6 +10,7 @@ import { Settings } from 'lucide-react';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import shortUUID from 'short-uuid';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -22,8 +23,8 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useSocket } from '@/lib/socketIOStore';
-import { getResponseErrorToast, SocketErrorToast } from '@/lib/toasters';
+import { useSocket } from '@/lib/stores/socketIOStore';
+import { buildResponseErrorToast, SocketErrorTxt } from '@/lib/toasters';
 
 import {
   Form,
@@ -32,7 +33,6 @@ import {
   FormItem,
   FormMessage
 } from '../ui/form';
-import { useToast } from '../ui/use-toast';
 import { DeleteRoomDialog } from './DeleteRoomDialog';
 
 const formSchema = z.object({
@@ -57,26 +57,35 @@ const formSchema = z.object({
     })
 });
 
-export function RoomSettingsDialog() {
+export function RoomSettingsDialog({
+  roomName,
+  maxPlayers
+}: {
+  roomName: string;
+  maxPlayers: number;
+}) {
   const [open, setOpen] = useState(false);
   const { roomId }: { roomId: string } = useParams({
     strict: false
   });
   const socket = useSocket();
-  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
       maxPlayers: 0
+    },
+    values: {
+      name: roomName,
+      maxPlayers
     }
   });
 
   // override and fill with actual settings change on the backend
   const formHandler: SubmitHandler<z.infer<typeof formSchema>> = data => {
     if (!socket) {
-      toast(SocketErrorToast);
+      toast.error(SocketErrorTxt);
       return;
     }
 
@@ -89,11 +98,9 @@ export function RoomSettingsDialog() {
       },
       res => {
         if (res.success) {
-          toast({
-            title: 'Room settings changed successfully'
-          });
+          toast('Room settings changed successfully');
         } else {
-          toast(getResponseErrorToast(res.error));
+          toast.error(...buildResponseErrorToast(res.error?.message));
         }
       }
     );
@@ -105,7 +112,7 @@ export function RoomSettingsDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className='m-0 h-12 w-12 rounded p-0'>
+        <Button className='m-0 h-10 w-10 rounded p-0'>
           <Settings className='h-full text-background' />
         </Button>
       </DialogTrigger>

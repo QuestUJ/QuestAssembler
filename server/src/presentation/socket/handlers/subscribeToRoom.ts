@@ -1,7 +1,7 @@
 import { ErrorCode, QuasmComponent, QuasmError } from '@quasm/common';
 import { UUID } from 'crypto';
 
-import { logger } from '@/infrastructure/logger/Logger';
+import { Chat } from '@/domain/game/chat/Chat';
 
 import { isMemberOf } from '../utils';
 import { HandlerConfig } from './HandlerConfig';
@@ -9,12 +9,7 @@ import { withErrorHandling } from './withErrorHandling';
 
 export function subscribeToRoomHandler({ socket, dataAccess }: HandlerConfig) {
     socket.on('subscribeToRoom', (id, respond) => {
-        withErrorHandling(respond, async () => {
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET subscribeToRoom RECEIVED ${id}`
-            );
-
+        withErrorHandling(async () => {
             const room = await dataAccess.roomRepository.getRoomByID(
                 id as UUID
             );
@@ -28,6 +23,30 @@ export function subscribeToRoomHandler({ socket, dataAccess }: HandlerConfig) {
                 );
             }
 
+            // Unsubscribe old room
+            if (socket.data.subscribedRoomID) {
+                const oldRoom = await dataAccess.roomRepository.getRoomByID(
+                    socket.data.subscribedRoomID as UUID
+                );
+                const oldCharacter = oldRoom.characters.getCharacterByUserID(
+                    socket.data.userID
+                );
+
+                await socket.leave(oldRoom.id);
+
+                await Promise.all(
+                    oldRoom.chats
+                        .getPrivateChatsOfCharacter(oldCharacter.id)
+                        .map(async chat => {
+                            await socket.leave(
+                                JSON.stringify(
+                                    Chat.toId(chat.chatters as [UUID, UUID])
+                                )
+                            );
+                        })
+                );
+            }
+
             const character = room.characters.getCharacterByUserID(
                 socket.data.userID
             );
@@ -38,13 +57,19 @@ export function subscribeToRoomHandler({ socket, dataAccess }: HandlerConfig) {
                 room.chats
                     .getPrivateChatsOfCharacter(character.id)
                     .map(async chat => {
-                        await socket.join(JSON.stringify(chat.chatters));
+                        await socket.join(
+                            JSON.stringify(
+                                Chat.toId(chat.chatters as [UUID, UUID])
+                            )
+                        );
                     })
             );
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET subscribeToRoom SUCCESS ${id}`
-            );
-        });
+
+            socket.data.subscribedRoomID = room.id;
+
+            respond({
+                success: true
+            });
+        }, respond);
     });
 }

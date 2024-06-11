@@ -30,10 +30,9 @@ export async function startHTTPServer(
 
     app.setErrorHandler(async (error, _, reply) => {
         if (error instanceof QuasmError) {
-            logger.error(
-                error.errorLocation,
+            logger.error(error.errorLocation, [
                 `ErrorCode: ${error.errorCode}, Context: ${error.message}`
-            );
+            ]);
             await reply.status(error.statusCode).send({
                 success: false,
                 error: {

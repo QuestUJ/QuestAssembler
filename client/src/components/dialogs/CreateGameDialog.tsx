@@ -7,6 +7,8 @@ import {
 } from '@quasm/common';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import shortUUID from 'short-uuid';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -19,8 +21,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
-import { useApiPost } from '@/lib/api';
+import { useCreateGame } from '@/lib/api/createGame';
 
 import {
   Form,
@@ -54,7 +55,6 @@ const formSchema = z.object({
 
 export function CreateGameDialog() {
   const [open, setOpen] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,20 +64,21 @@ export function CreateGameDialog() {
     }
   });
 
-  const { mutate: createGame } = useApiPost<
-    string,
-    { name: string; maxPlayers: number }
-  >({
-    path: '/createRoom',
-    invalidate: ['roomFetch'],
-
-    onSuccess: code => {
-      toast({
-        title: 'Room created succcessfully',
-        description: `Your room game code is ${code} `
-      });
-      form.reset();
-    }
+  const { mutate: createGame } = useCreateGame(code => {
+    const shortCode = shortUUID().fromUUID(code);
+    toast.success('Room created!', {
+      description: `Your code: ${shortCode}`,
+      action: {
+        label: 'Copy code',
+        onClick: () =>
+          void navigator.clipboard
+            .writeText(`${window.origin}/joinRoom/${shortCode}`)
+            .then(() => {
+              toast('Invitation copied!');
+            })
+      }
+    });
+    form.reset();
   });
 
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = data => {

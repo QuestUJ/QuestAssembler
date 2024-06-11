@@ -61,7 +61,6 @@ export async function up(db: Kysely<Database>): Promise<void> {
         )
         .addColumn('to', 'varchar(36)', col =>
             col
-                .notNull()
                 .references('Characters.id')
                 .onUpdate('cascade')
                 .onDelete('cascade')
@@ -71,9 +70,56 @@ export async function up(db: Kysely<Database>): Promise<void> {
             col.notNull().defaultTo(sql`NOW()`)
         )
         .execute();
+
+    await db.schema
+        .createTable('ChatReadTracking')
+        .addColumn('receiver', 'varchar(36)', col =>
+            col
+                .references('Characters.id')
+                .onUpdate('cascade')
+                .onDelete('cascade')
+                .notNull()
+        )
+        .addColumn('sender', 'varchar(36)', col => col.notNull())
+        .addColumn('senderCharacter', 'varchar(36)', col =>
+            col
+                .references('Characters.id')
+                .onUpdate('cascade')
+                .onDelete('cascade')
+        )
+        .addColumn('lastRead', 'integer', col =>
+            col
+                .references('ChatMessages.messageID')
+                .onUpdate('cascade')
+                .onDelete('set null')
+        )
+        .addPrimaryKeyConstraint('ChatReadTracking_pkey', [
+            'receiver',
+            'sender'
+        ])
+        .execute();
+
+    await db.schema
+        .createTable('StoryReadTracking')
+        .addColumn('receiver', 'varchar(36)', col =>
+            col
+                .primaryKey()
+                .references('Characters.id')
+                .onUpdate('cascade')
+                .onDelete('cascade')
+        )
+        .addColumn('lastRead', 'integer', col =>
+            col
+                .references('StoryChunks.chunkID')
+                .onUpdate('cascade')
+                .onDelete('set null')
+        )
+        .execute();
 }
 
 export async function down(db: Kysely<Database>): Promise<void> {
+    await db.schema.dropTable('ChatReadTracking').execute();
+    await db.schema.dropTable('StoryReadTracking').execute();
     await db.schema.dropTable('ChatMessages').execute();
     await db.schema.dropTable('Characters').execute();
     await db.schema.dropTable('StoryChunks').execute();

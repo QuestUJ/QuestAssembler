@@ -1,20 +1,20 @@
-import { ApiPlayerPayload, RoomDetailsPayload } from '@quasm/common';
-import { useQueryClient } from '@tanstack/react-query';
 import { useParams } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import shortUUID from 'short-uuid';
 
-import { useApiGet } from '@/lib/api';
-import { useQuasmStore } from '@/lib/quasmStore';
-import { useSocket, useSocketEvent } from '@/lib/socketIOStore';
+import { useGetRoom } from '@/lib/api/getRoom';
+import { useGetRoomPlayers } from '@/lib/api/getRoomPlayers';
+import { useGetUnreadMessages } from '@/lib/api/getUnreadMessages';
+import { useGetUnreadStory } from '@/lib/api/getUnreadStory';
+import { useQuasmStore } from '@/lib/stores/quasmStore';
 
+import { CopyGameCode } from '../CopyGameCode';
 import { CharacterSettingsDialog } from '../dialogs/CharacterSettingsDialog';
 import { LeaveRoomDialog } from '../dialogs/LeaveRoomDialog';
 import { RoomSettingsDialog } from '../dialogs/RoomSettingsDialog';
 import LogoWithText from '../LogoWithText';
 import { SvgSpinner } from '../Spinner';
 import { Accordion } from '../ui/accordion';
-import { useToast } from '../ui/use-toast';
 import { CharactersAccordion } from './content/CharactersAccordion';
 import { ToolsAccordion } from './content/ToolsAccordion';
 
@@ -27,17 +27,10 @@ export function SidebarContentRoom() {
 
   const roomUUID = shortUUID().toUUID(roomId);
 
-  const { data: roomDetails } = useApiGet<RoomDetailsPayload>({
-    path: `/getRoom/${roomUUID}`,
-    queryKey: ['getRoom', roomUUID]
-  });
-
-  const { data: players } = useApiGet<ApiPlayerPayload[]>({
-    path: `/getRoomPlayers/${roomUUID}`,
-    queryKey: ['getRoomPlayers', roomUUID]
-  });
-
-  const { toast } = useToast();
+  const { data: roomDetails } = useGetRoom(roomUUID);
+  const { data: players } = useGetRoomPlayers(roomUUID);
+  const { data: unreadMessages } = useGetUnreadMessages(roomUUID);
+  const { data: unreadStory } = useGetUnreadStory(roomUUID);
 
   useEffect(() => {
     setRoomName(roomDetails?.roomName);
@@ -46,99 +39,6 @@ export function SidebarContentRoom() {
     );
   }, [roomDetails, setRoomName, setIsGameMaster]);
 
-  const queryClient = useQueryClient();
-  const socket = useSocket();
-
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.emit('subscribeToRoom', roomUUID, res => {
-      if (!res.success) {
-        toast({
-          title: 'Connection error! Try refreshing site!'
-        });
-      }
-    });
-  }, [socket, roomUUID, toast]);
-
-  useSocketEvent('newPlayer', player => {
-    if (!players) return;
-
-    const playerQueryData: ApiPlayerPayload = {
-      id: player.id,
-      nick: player.nick,
-      profileIMG: player.profileIMG,
-      isReady: player.isReady
-    };
-
-    queryClient.setQueryData<ApiPlayerPayload[]>(
-      ['getRoomPlayers', roomUUID],
-      [playerQueryData, ...players]
-    );
-
-    toast({
-      title: player.nick,
-      description: 'has joined the game!'
-    });
-  });
-
-  useSocketEvent('playerLeft', player => {
-    if (!players) return;
-
-    queryClient.setQueryData<ApiPlayerPayload[]>(
-      ['getRoomPlayers', roomUUID],
-      players.filter(arrayPlayer => arrayPlayer.id !== player.id)
-    );
-
-    toast({
-      title: player.nick,
-      description: 'has left the game!'
-    });
-  });
-
-  useSocketEvent('changeCharacterDetails', player => {
-    if (!roomDetails) {
-      return;
-    }
-
-    if (player.id === roomDetails.currentPlayer.id) {
-      queryClient.setQueryData<RoomDetailsPayload>(['getRoom', roomUUID], {
-        ...roomDetails,
-        currentPlayer:
-          player.id === roomDetails.currentPlayer.id
-            ? player
-            : roomDetails.currentPlayer
-      });
-    } else {
-      if (!players) return;
-
-      queryClient.setQueryData<ApiPlayerPayload[]>(
-        ['getRoomPlayers', roomUUID],
-        players.map(p => (p.id === player.id ? player : p))
-      );
-    }
-  });
-
-  useSocketEvent('changeRoomSettings', roomData => {
-    if (!roomDetails) return;
-    setRoomName(roomData.name);
-  });
-
-  useSocketEvent('playerReady', characterID => {
-    if (!players) return;
-
-    queryClient.setQueryData(
-      ['getRoomPlayers', roomUUID],
-      players.map(p => (p.id === characterID ? { ...p, isReady: true } : p))
-    );
-  });
-
-  useSocketEvent('newTurn', async () => {
-    await queryClient.invalidateQueries({
-      queryKey: ['getRoomPlayers', roomUUID]
-    });
-  });
-
   return (
     <div className='flex h-full flex-col justify-between p-4'>
       <div>
@@ -146,11 +46,17 @@ export function SidebarContentRoom() {
           <LogoWithText />
         </div>
         <Accordion type='multiple'>
+          <ToolsAccordion
+            numOfUnreadBroadcast={
+              unreadMessages ? unreadMessages['broadcast'] : undefined
+            }
+            numOfUnreadStory={unreadStory}
+          />
           <CharactersAccordion
             gameMaster={roomDetails?.gameMasterID}
             characters={players}
+            unreadMessages={unreadMessages}
           />
-          <ToolsAccordion />
         </Accordion>
       </div>
       <div className='w-full'>
@@ -165,7 +71,17 @@ export function SidebarContentRoom() {
               />
             )}
           </div>
-          {isGameMaster ? <RoomSettingsDialog /> : <LeaveRoomDialog />}
+          <div className='flex items-center space-x-2'>
+            {<CopyGameCode gameCode={roomId} />}
+            {isGameMaster ? (
+              <RoomSettingsDialog
+                roomName={roomDetails ? roomDetails.roomName : ''}
+                maxPlayers={roomDetails ? roomDetails.maxPlayers : 0}
+              />
+            ) : (
+              <LeaveRoomDialog />
+            )}
+          </div>
         </div>
       </div>
     </div>

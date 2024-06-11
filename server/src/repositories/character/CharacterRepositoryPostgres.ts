@@ -44,7 +44,7 @@ export class CharacterRepositoryPostgres implements ICharacterRepository {
                 description: newCharacter.getDescription(),
                 isGameMaster: false,
                 userID: newCharacter.userID,
-                profileIMG: newCharacter.profileIMG,
+                profileIMG: newCharacter.getProfileImageURL(),
                 submitContent: null,
                 submitTimestamp: null
             })

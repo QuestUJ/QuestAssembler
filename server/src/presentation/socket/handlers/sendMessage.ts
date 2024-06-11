@@ -1,20 +1,14 @@
-import { MsgEvent, QuasmComponent } from '@quasm/common';
+import { MsgEvent } from '@quasm/common';
 import { UUID } from 'crypto';
 
 import { Chat } from '@/domain/game/chat/Chat';
-import { logger } from '@/infrastructure/logger/Logger';
 
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
 
 export function sendMessageHandler({ socket, dataAccess }: HandlerConfig) {
     socket.on('sendMessage', ({ roomID, receiver, content }, respond) => {
-        withErrorHandling(respond, async () => {
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET sendMessage RECEIVED receiver: ${receiver}`
-            );
-
+        withErrorHandling(async () => {
             const room = await dataAccess.roomRepository.getRoomByID(
                 roomID as UUID
             );
@@ -36,12 +30,13 @@ export function sendMessageHandler({ socket, dataAccess }: HandlerConfig) {
 
             const payload: MsgEvent = {
                 id: msg.id,
+                broadcast: receiver === 'broadcast',
                 roomID: room.id,
                 from: msg.from,
                 authorName: myCharacter.getNick(),
                 content: content,
-                timestamp: msg.timestamp,
-                characterPictureURL: myCharacter.profileIMG
+                timestamp: msg.timestamp.toISOString(),
+                characterPictureURL: myCharacter.getProfileImageURL()
             };
 
             respond({
@@ -56,11 +51,6 @@ export function sendMessageHandler({ socket, dataAccess }: HandlerConfig) {
                     .to(JSON.stringify(Chat.toId([msg.from, msg.to])))
                     .emit('message', payload);
             }
-
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET sendMessage SUCCESS receiver: ${receiver}`
-            );
-        });
+        }, respond);
     });
 }

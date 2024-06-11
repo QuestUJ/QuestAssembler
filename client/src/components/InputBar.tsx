@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { KeyboardEventHandler, useState } from 'react';
 
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
@@ -13,15 +13,26 @@ export function InputBar({
   const [inputValue, setInputValue] = useState('');
 
   const handleClick = () => {
-    setInputValue('');
-    handleSend(inputValue);
+    if (inputValue) {
+      setInputValue('');
+      handleSend(inputValue);
+    }
+  };
+
+  const onKeyDown: KeyboardEventHandler = e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleClick();
+    }
   };
 
   return (
     <div className='m-4 flex h-12 flex-nowrap gap-4'>
       <Textarea
+        onKeyDown={onKeyDown}
         placeholder='Type your message here...'
         value={inputValue}
+        required={true}
         onChange={e => setInputValue(e.target.value)}
       />
       <Button

@@ -1,19 +1,17 @@
 import { ErrorCode, QuasmComponent, QuasmError } from '@quasm/common';
 import { UUID } from 'crypto';
 
-import { logger } from '@/infrastructure/logger/Logger';
-
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
 
-export function deleteRoomHandler({ io, socket, dataAccess }: HandlerConfig) {
+export function deleteRoomHandler({
+    io,
+    socket,
+    dataAccess,
+    fileStorageProvider
+}: HandlerConfig) {
     socket.on('deleteRoom', (data, respond) => {
-        withErrorHandling(respond, async () => {
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET deleteRoom RECEIVED ${data.roomID}`
-            );
-
+        withErrorHandling(async () => {
             const room = await dataAccess.roomRepository.getRoomByID(
                 data.roomID as UUID
             );
@@ -30,6 +28,31 @@ export function deleteRoomHandler({ io, socket, dataAccess }: HandlerConfig) {
                 );
             }
 
+            const avatarURLs = room.characters
+                .getCharacters()
+                .map(character => character.getProfileImageURL())
+                .filter(
+                    (url: string | undefined): url is string =>
+                        url !== undefined && url !== ''
+                );
+
+            for (const url of avatarURLs) {
+                await fileStorageProvider.deleteImageAtPublicURL(url);
+            }
+
+            const storyChunkImagesURLs = (
+                await room.story.fetchAllStoryChunks()
+            )
+                .map(storyChunk => storyChunk.imageURL)
+                .filter(
+                    (url: string | undefined): url is string =>
+                        url !== undefined && url !== ''
+                );
+
+            for (const url of storyChunkImagesURLs) {
+                await fileStorageProvider.deleteImageAtPublicURL(url);
+            }
+
             await dataAccess.roomRepository.deleteRoom(data.roomID as UUID);
 
             io.in(data.roomID).emit('roomDeletion');
@@ -37,10 +60,6 @@ export function deleteRoomHandler({ io, socket, dataAccess }: HandlerConfig) {
             respond({
                 success: true
             });
-            logger.info(
-                QuasmComponent.SOCKET,
-                `${socket.data.userID} | SOCKET deleteRoom SUCCESS ${data.roomID}`
-            );
-        });
+        }, respond);
     });
 }

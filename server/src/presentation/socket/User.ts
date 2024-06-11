@@ -1,4 +1,9 @@
+import { QuasmComponent } from '@quasm/common';
+import chalk from '@stagas/chalk';
+
 import { IAuthProvider } from '@/domain/tools/auth-provider/IAuthProvider';
+import { IFileStorage } from '@/domain/tools/file-storage/IFileStorage';
+import { logger } from '@/infrastructure/logger/Logger';
 import {
     QuasmSocket,
     QuasmSocketServer
@@ -10,6 +15,8 @@ import { changeRoomSettingsHandler } from './handlers/changeRoomSettings';
 import { deleteRoomHandler } from './handlers/deleteRoom';
 import { joinRoomHandler } from './handlers/joinRoom';
 import { leaveRoomHandler } from './handlers/leaveRoom';
+import { markMessageReadHandler } from './handlers/markMessageRead';
+import { markStoryReadHandler } from './handlers/marStoryRead';
 import { sendMessageHandler } from './handlers/sendMessage';
 import { submitActionHandler } from './handlers/submitAction';
 import { submitStoryHandler } from './handlers/submitStory';
@@ -20,8 +27,19 @@ export class User {
         socket: QuasmSocket,
         io: QuasmSocketServer,
         dataAccess: DataAccessFacade,
-        authProvider: IAuthProvider
+        authProvider: IAuthProvider,
+        fileStorageProvider: IFileStorage
     ) {
+        socket.data.subscribedRoomID = null;
+
+        socket.prependAny(event => {
+            logger.info(QuasmComponent.SOCKET, [
+                chalk.green(socket.data.userID),
+                chalk.redBright('RECV'),
+                event
+            ] as string[]);
+        });
+
         const handlers = [
             joinRoomHandler,
             subscribeToRoomHandler,
@@ -30,7 +48,10 @@ export class User {
             changeRoomSettingsHandler,
             submitActionHandler,
             leaveRoomHandler,
-            submitStoryHandler
+            submitStoryHandler,
+            deleteRoomHandler,
+            markStoryReadHandler,
+            markMessageReadHandler
         ];
 
         handlers.forEach(handler => {
@@ -38,15 +59,9 @@ export class User {
                 io,
                 socket,
                 dataAccess,
-                authProvider
+                authProvider,
+                fileStorageProvider
             });
-        });
-
-        deleteRoomHandler({
-            io,
-            socket,
-            dataAccess,
-            authProvider
         });
     }
 }

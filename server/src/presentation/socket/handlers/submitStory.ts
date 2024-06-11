@@ -4,9 +4,13 @@ import { UUID } from 'crypto';
 import { HandlerConfig } from './HandlerConfig';
 import { withErrorHandling } from './withErrorHandling';
 
-export function submitStoryHandler({ socket, dataAccess, io }: HandlerConfig) {
+export function submitStoryHandler({
+    socket,
+    dataAccess,
+    fileStorageProvider
+}: HandlerConfig) {
     socket.on('submitStory', (submit, respond) => {
-        withErrorHandling(respond, async () => {
+        withErrorHandling(async () => {
             const room = await dataAccess.roomRepository.getRoomByID(
                 submit.roomID as UUID
             );
@@ -24,9 +28,22 @@ export function submitStoryHandler({ socket, dataAccess, io }: HandlerConfig) {
                 );
             }
 
+            let imageURL = '';
+            if (submit.image) {
+                imageURL = await fileStorageProvider.uploadImage(
+                    submit.image,
+                    submit.roomID
+                );
+            }
             const chunk = await room.story.addStoryChunk({
                 title: 'test ',
-                content: submit.story
+                content: submit.story,
+                imageURL: imageURL
+            });
+
+            await room.notifier.markStoryAsRead({
+                characterID: character.id,
+                chunkID: chunk.id
             });
 
             respond({
@@ -35,16 +52,16 @@ export function submitStoryHandler({ socket, dataAccess, io }: HandlerConfig) {
                     id: chunk.id,
                     title: chunk.title,
                     content: chunk.content,
-                    imageURL: chunk.imageUrl
+                    imageURL: chunk.imageURL
                 }
             });
 
-            io.to(room.id).emit('newTurn', {
+            socket.to(room.id).emit('newTurn', {
                 id: chunk.id,
                 title: chunk.title,
                 story: chunk.content,
-                imageURL: chunk.imageUrl
+                imageURL: chunk.imageURL
             });
-        });
+        }, respond);
     });
 }

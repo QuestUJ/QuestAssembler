@@ -20,7 +20,7 @@ export function User() {
   }
 
   return (
-    <div className='jutify-end flex h-8 items-center gap-4 lg:h-10'>
+    <div className='jutify-end flex h-full w-fit flex-shrink-0 items-center justify-end gap-4'>
       <h2 className='hidden text-xs lg:block lg:text-sm'>{user?.name}</h2>
       <img className='h-10 rounded-full' src={user?.picture} />
       <Button
