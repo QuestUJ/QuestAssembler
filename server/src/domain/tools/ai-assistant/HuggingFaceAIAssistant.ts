@@ -1,3 +1,5 @@
+import { ErrorCode, QuasmComponent, QuasmError } from '@quasm/common';
+
 import { IAIAssistant } from './IAIAssistant';
 
 type HuggingFaceAPIResponse = {
@@ -41,7 +43,7 @@ export class HuggingFaceAiAssistant implements IAIAssistant {
 
     async getText(prompt: string): Promise<string> {
         return fetch(
-            'https://api-inference.huggingface.co/models/microsoft/Phi-3-mini-4k-instruct',
+            'https://api-inference.huggingface.co/models/microsoft/Phi-3-mini-128k-instruct',
             {
                 method: 'POST',
                 headers: {
@@ -54,8 +56,17 @@ export class HuggingFaceAiAssistant implements IAIAssistant {
             }
         )
             .then(res => res.json())
-            .then((res: HuggingFaceAPIResponse) =>
-                this.processString(res[0].generated_text)
-            );
+            .then((res: HuggingFaceAPIResponse) => {
+                if (!(res instanceof Array)) {
+                    throw new QuasmError(
+                        QuasmComponent.AI,
+                        500,
+                        ErrorCode.Unexpected,
+                        res
+                    );
+                }
+
+                return this.processString(res[0].generated_text);
+            });
     }
 }

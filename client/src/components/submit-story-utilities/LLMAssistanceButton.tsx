@@ -1,4 +1,5 @@
 import { Bot } from 'lucide-react';
+import { useEffect } from 'react';
 
 import { useGenerateText } from '@/lib/api/generateText';
 import { useStoryChunkStore } from '@/lib/stores/storyChunkStore';
@@ -14,10 +15,16 @@ export function LLMAssistanceButton() {
     state => state.isGeneratingWithLLM
   );
 
-  const { mutate: callLLMSupport } = useGenerateText();
+  const { mutate: callLLMSupport, isError } = useGenerateText();
+
+  useEffect(() => {
+    if (isError) {
+      setGeneratingStatus(false);
+    }
+  }, [isError, setGeneratingStatus]);
 
   const handleLLMSupport = () => {
-    setGeneratingStatus();
+    setGeneratingStatus(true);
     callLLMSupport({
       prompt: story
     });

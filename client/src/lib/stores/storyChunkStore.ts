@@ -10,7 +10,7 @@ type StoryChunkActions = {
   setNewStoryWithLLM: (newStory: string) => void;
   setStory: (newStory: string) => void;
   revertStory: () => void;
-  setGeneratingStatus: () => void;
+  setGeneratingStatus: (val: boolean) => void;
 };
 
 export const useStoryChunkStore = create<StoryChunkState & StoryChunkActions>()(
@@ -33,9 +33,9 @@ export const useStoryChunkStore = create<StoryChunkState & StoryChunkActions>()(
         story: state.oldStory,
         oldStory: undefined
       })),
-    setGeneratingStatus: () =>
+    setGeneratingStatus: val =>
       set(() => ({
-        isGeneratingWithLLM: true
+        isGeneratingWithLLM: val
       }))
   })
 );

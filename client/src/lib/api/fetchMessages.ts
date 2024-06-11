@@ -28,6 +28,8 @@ export function useFetchMessages(roomUUID: string, other: string) {
 
     const offsetString = pageParam ? `&offset=${pageParam}` : '';
 
+    console.log('refetch', pageParam);
+
     const result = await fetchGET<ApiMessagePayload[]>({
       path: `${path}${offsetString}`,
       token,

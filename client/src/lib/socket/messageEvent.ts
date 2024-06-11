@@ -58,8 +58,10 @@ export function useMessageEvent(
       queryClient.setQueryData<
         InfiniteData<ApiMessagePayload[], number | undefined>
       >(['fetchMessages', roomUUID, key], data => ({
-        pages: data ? [[msg], ...data.pages] : [[msg]],
-        pageParams: data ? [msg.id, ...data.pageParams] : [msg.id]
+        pages: data
+          ? [[...data.pages[0], msg], ...data.pages.slice(1)]
+          : [[msg]],
+        pageParams: data ? [...data.pageParams] : [undefined]
       }));
     }
   });
