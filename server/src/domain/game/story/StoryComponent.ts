@@ -39,7 +39,7 @@ export class StoryComponent implements IQuasmEventEmitter<StoryEventMap> {
     }
 
     fetchAllStoryChunks(): Promise<StoryChunk[]> {
-        return this.storyRepository.fetchAllStoryChunks();
+        return this.storyRepository.fetchAllStoryChunks(this.roomID);
     }
 
     async addStoryChunk(chunk: StoryChunkDetails): Promise<StoryChunk> {

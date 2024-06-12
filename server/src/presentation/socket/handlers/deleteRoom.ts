@@ -55,6 +55,8 @@ export function deleteRoomHandler({
 
             await dataAccess.roomRepository.deleteRoom(data.roomID as UUID);
 
+            socket.data.subscribedRoomID = null;
+
             io.in(data.roomID).emit('roomDeletion');
 
             respond({
