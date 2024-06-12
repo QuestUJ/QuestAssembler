@@ -1,10 +1,14 @@
 import { ErrorCode, QuasmComponent, QuasmError } from '@quasm/common';
 
+import { config } from '@/config';
+
 import { IAIAssistant } from './IAIAssistant';
 
 type HuggingFaceAPIResponse = {
     generated_text: string;
 }[];
+
+const { LLM_URL } = config.pick(['LLM_URL']);
 
 /**
  * Simple HuggingFace client
@@ -42,19 +46,16 @@ export class HuggingFaceAiAssistant implements IAIAssistant {
     }
 
     async getText(prompt: string): Promise<string> {
-        return fetch(
-            'https://api-inference.huggingface.co/models/microsoft/Phi-3-mini-128k-instruct',
-            {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${this.token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    inputs: this.PROMPT_PREFIX + prompt
-                })
-            }
-        )
+        return fetch(LLM_URL, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${this.token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                inputs: this.PROMPT_PREFIX + prompt
+            })
+        })
             .then(res => res.json())
             .then((res: HuggingFaceAPIResponse) => {
                 if (!(res instanceof Array)) {
@@ -62,7 +63,7 @@ export class HuggingFaceAiAssistant implements IAIAssistant {
                         QuasmComponent.AI,
                         500,
                         ErrorCode.Unexpected,
-                        res
+                        JSON.stringify(res)
                     );
                 }
 
