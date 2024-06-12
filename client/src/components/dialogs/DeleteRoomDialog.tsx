@@ -15,6 +15,8 @@ import {
 import { useSocket } from '@/lib/stores/socketIOStore';
 import { buildResponseErrorToast, SocketErrorTxt } from '@/lib/toasters';
 
+import { SvgSpinner } from '../Spinner';
+
 export function DeleteRoomDialog() {
   const [open, setOpen] = useState(false);
   const { roomId }: { roomId: string } = useParams({
@@ -22,6 +24,8 @@ export function DeleteRoomDialog() {
   });
 
   const socket = useSocket();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDelete = () => {
     if (!socket) {
@@ -37,7 +41,10 @@ export function DeleteRoomDialog() {
       } else {
         toast.error(...buildResponseErrorToast(res.error?.message));
       }
+      setIsLoading(false);
     });
+
+    setIsLoading(true);
   };
 
   return (
@@ -53,12 +60,18 @@ export function DeleteRoomDialog() {
           </DialogDescription>
         </DialogHeader>
         <div className='mt-4 flex justify-between'>
-          <Button className='bg-secondary' onClick={() => setOpen(false)}>
-            No, I was just joking
-          </Button>
-          <Button className='bg-destructive' onClick={handleDelete}>
-            Yes, let's end this story
-          </Button>
+          {isLoading ? (
+            <SvgSpinner className='mx-auto h-20 w-20' />
+          ) : (
+            <>
+              <Button className='bg-secondary' onClick={() => setOpen(false)}>
+                No, I was just joking
+              </Button>
+              <Button className='bg-destructive' onClick={handleDelete}>
+                Yes, let's end this story
+              </Button>{' '}
+            </>
+          )}
         </div>
       </DialogContent>
     </Dialog>

@@ -34,9 +34,11 @@ export function leaveRoomHandler({
                 socket.leave(
                     JSON.stringify(Chat.toId([other.id, character.id]))
                 );
+                socket.data.subscribedRoomID = null;
             });
 
             await socket.leave(room.id);
+            socket.data.subscribedRoomID = null;
 
             socket.to(room.id).emit('playerLeft', {
                 id: character.id,

@@ -61,9 +61,10 @@ export class StoryRepositoryPostgres implements IStoryRepository {
             );
     }
 
-    async fetchAllStoryChunks() {
+    async fetchAllStoryChunks(roomID: UUID) {
         const storyChunkData = await this.db
             .selectFrom('StoryChunks')
+            .where('StoryChunks.roomID', '=', roomID)
             .selectAll()
             .execute();
 

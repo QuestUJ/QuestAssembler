@@ -9,7 +9,8 @@ export function StoryTextArea() {
   const setStory = useStoryChunkStore(state => state.setStory);
   const story = useStoryChunkStore(state => state.story);
   const oldStory = useStoryChunkStore(state => state.oldStory);
-  const reverseStory = useStoryChunkStore(state => state.revertStory);
+  const revertStory = useStoryChunkStore(state => state.revertStory);
+
   return (
     <div className='relative lg:h-full lg:w-full'>
       <Textarea
@@ -21,7 +22,7 @@ export function StoryTextArea() {
       {oldStory ? (
         <Button
           className='absolute bottom-2 right-2 h-10 w-10 p-2 lg:bottom-1 lg:right-1'
-          onClick={reverseStory}
+          onClick={revertStory}
         >
           <RotateCcw className='h-full w-full' />
         </Button>
