@@ -26,7 +26,9 @@ const configMap = {
     SUPABASE_SERVICE_KEY: Config.loadString('SUPABASE_SERVICE_KEY'),
     SUPABASE_CONNECTION_URL: Config.loadString('SUPABASE_CONNECTION_URL'),
     AVATARS_BUCKET: Config.loadString('AVATARS_BUCKET'),
-    STORY_BUCKET: Config.loadString('STORY_BUCKET')
+    STORY_BUCKET: Config.loadString('STORY_BUCKET'),
+
+    LLM_URL: Config.loadString('LLM_URL')
 };
 
 /**
@@ -37,7 +39,7 @@ const configMap = {
    'AUTH0_DOMAIN',
    'AUTH0_AUDIENCE'
  ]);
-* 
+*
  * ```
  */
 export const config = new Config(configMap);
