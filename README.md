@@ -74,8 +74,7 @@ This project aims to provide a text-based Role Playing Game platform to enjoy ga
 > As the Game Master, you direct the story based on player's submissions each turn. Support your storytelling with the LLM's assistance and add photos for a visually interesting plot.
 
 ![](/assets/StoryChunk.png)
-
----
+[LLM demonstration](https://www.youtube.com/watch?v=cdRVN7Uuv5U)
 
 # Thanks for Your Support!
 We hope you're enjoying Quest Assembler and having epic adventures with your friends. 
