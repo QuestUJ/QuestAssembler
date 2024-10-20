@@ -6,7 +6,9 @@
     "lint": "pnpm --prefix server lint && pnpm --prefix client lint && pnpm --prefix common lint",
     "lint:fix": "pnpm --prefix server lint:fix && pnpm --prefix client lint:fix && pnpm --prefix common lint:fix",
     "format": "pnpm --prefix server format && pnpm --prefix client format && pnpm --prefix common format",
-    "prepare": "husky"
+    "prepare": "husky",
+    "build": "pnpm --prefix common build && cd client && npx vite build && cd .. && pnpm --prefix server build",
+    "start": "pnpm --prefix server start"
   },
   "keywords": [],
   "author": "",
